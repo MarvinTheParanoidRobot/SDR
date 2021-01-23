@@ -35,7 +35,6 @@ int main(int argc, char *argv[]) {
 	//---------------------------------
 	//----- CREATE THE GTK WINDOW -----
 	//---------------------------------
-	testsdr();
 	GtkWidget *MainWindow;
 	
 	gtk_init(&argc, &argv);
@@ -60,7 +59,7 @@ int main(int argc, char *argv[]) {
     outputPath="../data/secret-test.wav"; 
     tinywav_open_write(&tw1, NUM_CHANNELS, SAMPLE_RATE, TW_FLOAT32, TW_INLINE, outputPath);
 	int i;
-	for ( i = 0; i < 50; i++) {
+	for ( i = 0; i < 5; i++) {
   		// samples are always presented in float32 format
   		float samples[BLOCK_SIZE];
   		tinywav_read_f(&tw, samples, BLOCK_SIZE);
