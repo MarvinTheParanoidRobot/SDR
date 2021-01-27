@@ -31,27 +31,28 @@
 //====================================================================
 // FUNCTION DECLARATIONS
 //====================================================================
+void on_window_main_destroy();
+
 int main(int argc, char *argv[]) {
-	//---------------------------------
-	//----- CREATE THE GTK WINDOW -----
-	//---------------------------------
-	GtkWidget *MainWindow;
 	
-	gtk_init(&argc, &argv);
-	
-	MainWindow= gtk_window_new(GTK_WINDOW_TOPLEVEL); 		//GTK_WINDOW_TOPLEVEL = Has a titlebar and border, managed by the window manager. 
-	gtk_window_set_title(GTK_WINDOW(MainWindow), "My Application");
-	gtk_window_set_default_size(GTK_WINDOW(MainWindow), 400, 300);		//Size of the the client area (excluding the additional areas provided by the window manager)
-	gtk_window_set_position(GTK_WINDOW(MainWindow), GTK_WIN_POS_CENTER);
-	gtk_widget_show_all(MainWindow);
+	GtkBuilder      *builder; 
+    GtkWidget       *window;
 
-	//Close the application if the x button is pressed if ALT+F4 is used
-	g_signal_connect(G_OBJECT(MainWindow), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    gtk_init(&argc, &argv);
+
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file (builder, "../GUI/sdr_window.glade", NULL);
+
+    window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
+    gtk_builder_connect_signals(builder, NULL);
+
+    g_object_unref(builder);
+
+    gtk_widget_show(window);                
 
 
-
-	int NUM_CHANNELS,SAMPLE_RATE,BLOCK_SIZE,NUM_ITERATIONS;
-	NUM_CHANNELS=1;SAMPLE_RATE=48000;BLOCK_SIZE=48000;NUM_ITERATIONS=0;
+	int NUM_CHANNELS,SAMPLE_RATE,BLOCK_SIZE;
+	NUM_CHANNELS=1;SAMPLE_RATE=48000;BLOCK_SIZE=48000;
 
 	TinyWav tw,tw1;
 	tinywav_open_read(&tw, "../data/Secrets.wav", TW_INLINE, TW_FLOAT32);
@@ -75,4 +76,14 @@ int main(int argc, char *argv[]) {
 	gtk_main();		//Enter the GTK+ main loop until the application closes.
 
 	return 0;
+}
+
+// called when window is closed
+void on_window_main_destroy(){
+    gtk_main_quit();
+}
+
+void on_quit_activate(GtkMenuItem *menuitem)
+{
+    gtk_main_quit();
 }

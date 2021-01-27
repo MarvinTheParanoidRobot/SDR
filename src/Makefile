@@ -1,7 +1,7 @@
 
 IDIR =../include
 CC=gcc
-CFLAGS=-I$(IDIR) `pkg-config --libs gtk+-3.0` `pkg-config --cflags gtk+-3.0`
+CFLAGS=-I$(IDIR)  -Wall `pkg-config --libs gtk+-3.0` `pkg-config --cflags gtk+-3.0` -export-dynamic
 
 ODIR=obj
 LDIR =../lib
