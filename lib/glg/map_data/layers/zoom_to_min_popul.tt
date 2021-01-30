@@ -1,0 +1,30 @@
+# Selects city/town minimum population threshold to display depending on 
+# the zoom level.
+
+INPUT DATA TYPE= GLM_D
+OUTPUT DATA TYPE= GLM_D
+
+# Display nothing until zoom level reaches 10. It's already eliminated using 
+# LIF's MIN ZOOM, but handle it too just in case.
+#
+0.   1000000000
+
+2.5	 500000
+3	 400000
+5	 300000
+8	 200000
+12       100000
+18        75000
+25        50000
+30        40000
+35        30000
+45        25000
+60        20000
+90        15000
+120       10000
+150        5000
+200        2500
+250        1000
+
+# Display all starting at this zoom level
+500           0

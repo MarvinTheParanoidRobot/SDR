@@ -1,0 +1,17 @@
+# Chooses marker type depending on city/town population
+
+INPUT DATA TYPE= GLM_D
+OUTPUT DATA TYPE= GLM_D
+
+# Marker fill types from GlgAPI.h
+# 1 - cross
+# 2 - box
+# 6 - filled box with edge
+# 8 - circle
+# 24 - filled circle with edge
+# 56 - filled circle with edge and dot
+
+0	1
+50000	6
+100000	24
+500000	24

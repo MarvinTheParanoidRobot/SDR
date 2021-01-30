@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>AJAX Dials and Meters: Mobile Dials and Meters Demo</title>
+  <script src="glg_script.js" type="text/javascript"></script>
+  <script type="text/javascript">
+<!--
+
+// glg_script.js contains the JS source code of the GLG script object that
+// provides convenience methods for communicating with the GLG JSP servlet.
+
+var gso = null;        // GLG script object
+var small_size = true;
+var dial_type = 0;
+
+function OnLoad()
+{
+   gso = new GlgSO();   // Create GLG script object.
+
+   gso.SetImageID( "dial_image" );   // Image to receive servlet's output
+   gso.SetServletBase( "glg_dial" ); // Servlet URL's base
+   gso.SetIdleTimeout( 600 );        // Stop updates after 10 mins of inactivity
+   
+   // Start/Stop Updates buttons whose state will be updated by the 
+   // StartUpdates() and StopUpdates() methods.
+   //
+   gso.SetStartButtonID( "start_updates" );
+   gso.SetStopButtonID( "stop_updates" );
+
+   // Defines method that provides custom parameters to be sent to the servlet.
+   gso.SetCustomRequestParam( CustomRequestParam );
+
+   // Starts updates with the selected update interval.
+   ChangeUpdateInterval( false );
+}
+
+// Provides dial type and custom label parameters to be appended to the 
+// servlet request.
+//
+function CustomRequestParam()
+{
+   // Specify a dial to use.
+   var custom_param = "&dial_type=" + dial_type;
+
+   // Use a custom label if defined.
+   var label_string = document.getElementById( "label" ).value;
+   if( label_string != "" )
+     custom_param += "&label=" + label_string;
+
+   return custom_param;
+}
+
+function ChangeUpdateInterval( update_now )
+{
+   var update_interval;
+
+   if( document.getElementById( "3sec" ).selected )
+      update_interval = 3000;
+   else if( document.getElementById( "5sec" ).selected )
+      update_interval = 5000;
+   else if( document.getElementById( "10sec" ).selected )
+      update_interval = 10000;
+   else if( document.getElementById( "1min" ).selected )
+      update_interval = 60000;
+   else
+      alert( "Invalid update interval!" );
+
+   gso.SetUpdateInterval( update_interval );
+
+   // update_now is false on load: image has already been loaded.
+   gso.StartUpdates( update_now );
+}
+
+function ChangeImageSize()
+{
+   if( small_size )
+   {
+      gso.SetServletSize( 300, 300 );     // Set larger size
+      small_size = false;
+   }
+   else
+   {
+      gso.SetServletSize( 200, 200 );     // Set smaller size
+      small_size = true;
+   }
+   
+   gso.UpdateImage();
+}
+
+function ChangeDialType()
+{
+   dial_type += 1;
+   if( dial_type >= 5 )    // Demo shows 5 dials, [0;4]
+     dial_type = 0;
+   
+   gso.UpdateImage();   // Display right away
+}
+
+//-->
+  </script>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body onload="OnLoad()" style="font-family: Arial;" bgcolor="white">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+<h2> GLG Graphics Server: AJAX Dials and Meters Demo </h2>
+<input id="start_updates" value="Start Updates"
+ onclick="gso.StartUpdates( true )" type="button">
+<input id="stop_updates" value="Stop Updates"
+ onclick="gso.StopUpdates()" type="button"> Update Interval:
+<select size="1" name="interval_menu"
+ onchange="ChangeUpdateInterval( true )">
+<option id="3sec" value="3" selected="selected">3 seconds</option>
+<option id="5sec" value="5">5 seconds</option>
+<option id="10sec" value="10">10 seconds</option>
+<option id="1min" value="60">1 minute</option>
+</select>
+<hr style="width: 100%; height: 2px;">
+<img id="dial_image" src="glg_dial?width=200&height=200&label=Load"
+ alt="Loading Image..." title="Dial Sample"><br>
+<br>
+Label: <input id="label" size="8" value="" onchange="gso.UpdateImage()"
+ type="text">
+<input value="Change Dial Type" onclick="ChangeDialType()" type="button"><input
+ value="Change Dial Size" onclick="ChangeImageSize()" type="button">
+<hr style="width: 100%; height: 2px;"><a
+ href="java_src/GlgDialServlet.java">JSP Servlet Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="csharp_src/GlgDialHandler.cs_source">ASP.NET Handler Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="glg_dial?width=200&height=200&dial_type=0&label=Load">Dynamic
+Image URL</a>
+<hr style="width: 100%; height: 2px;">
+<p>This demo displays a dynamic dial <b>updated with real-time data</b>
+using
+a JavaScript timer. </p>
+<p>The dial image of the requested size is generated on the server side
+using the <a href="http://www.genlogic.com/graphics_server.html">GLG
+Graphics Server</a>
+in the form of a <b style="font-weight: bold;">JSP Servlet</b> or an <span
+ style="font-weight: bold;">ASP.NET Handler</span>. The <b>size of the
+dial image</b> is specified using the <i>width</i> and <i>height</i>
+parameters of the URL. <a
+ href="glg_dial?width=200&height=200&dial_type=0&label=Load&value=20">Click
+here</a> to display the dial's URL directly to see its parameters. </p>
+<p>The dial Servlet or Handler used by the demo is written in a generic
+way and
+may be used to display various types of dials by using the
+<i>dial_type</i> URL parameter. The same image URL may be used as a
+component in multiple web pages. For example, the <a
+ href="ajax_dashboard_demo.html">AJAX Dashboard Demo</a> uses the URL
+to render three instances of dials in a larger dashboard. <a
+ href="java_src/GlgDialServlet.java">JSP
+Servlet</a> or <a href="csharp_src/GlgDialHandler.cs_source">ASP.NET Handler</a>
+source code is provided and may be further customized if required.</p>
+<p></p>
+<p>The <b>value to be displayed in the dial</b> may be provided as the
+<i>value</i> parameter of the <a
+ href="glg_dial?width=200&height=200&dial_type=0&label=Load&value=20">
+URL</a>. If the <i>value</i> parameter is not specified, the data will
+be supplied by the Servlet or Handler from a data source on the server
+side.
+The <i>"Label:"</i> entry field demonstrates how to supply Servlet or
+Handler parameters for the dial from HTML.</p>
+<p></p>
+<p>The demo uses a few pre-built dials from the Dials and Meters
+palette provided with the <a
+ href="http://www.genlogic.com/widgets.html#Controls">
+controls widget set</a>. The dials' drawings may be customized using
+the <a href="http://www.genlogic.com/toolkit.html#Graphics_Builder">
+GLG Graphics Builder</a>. Custom dials may be built from scratch using
+the Graphics Builder as well.</p>
+<p></p>
+<p>The dial Servlet or Handler loads dial drawings just once and reuses
+them
+between all Servlet or Handler instances and threads for increased
+performance.<br>
+</p>
+<hr style="width: 100%; height: 2px;">
+<p style="font-size: 80%; font-family: arial;"><a
+ href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+</body>
+</html>

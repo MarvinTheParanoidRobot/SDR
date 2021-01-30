@@ -1,0 +1,441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <title>Mobile Process Control and SCADA: AJAX Process Control Demo</title>
+  <script src="glg_script.js" type="text/javascript"></script>
+  <script type="text/javascript">
+<!--
+
+// glg_script.js contains the JS source code of the GLG script object that
+// provides convenience methods for communicating with the GLG JSP servlet.
+
+var gso = null;        // GLG script object
+var small_size = false;
+var show_pipes = 0;
+var show_flow = 1;
+
+function OnLoad()
+{
+   gso = new GlgSO();   // Create GLG script object.
+
+   gso.SetImageID( "process_image" );    // Image to receive servlet's output
+   gso.SetServletBase( "glg_process" );  // Servlet URL's base
+   gso.SetIdleTimeout( 600 );      // Stop updates after 10 mins of inactivity
+   
+   gso.SetTooltipID( "tooltip_div", "tooltip_data" ); // Tooltip elements
+   gso.SetDialogID( "dialog_div", "dialog_data" ); // MouseClick dialog elements
+
+   // Two-stage dialog: the name of the object selected by MouseClick will 
+   // be used to request dialog data.
+   gso.SetTwoStageDialog( true );
+
+   // Specify a custom method for pre-processing returned click data
+   // before they are displayed in a dialog.
+   gso.SetClickDataCB( ProcessClickData );
+
+   // Start/Stop Updates buttons whose state will be updated by the 
+   // StartUpdates() and StopUpdates() methods.
+   //
+   gso.SetStartButtonID( "start_updates" );
+   gso.SetStopButtonID( "stop_updates" );
+
+   // Defines method that provides custom parameters to be sent to the servlet.
+   gso.SetCustomRequestParam( CustomRequestParam );
+
+   // Starts updates with the selected update interval.
+   ChangeUpdateInterval( false );
+}
+
+// Provides show_pipes and show_flow parameters to be appended to the 
+// servlet request.
+//
+function CustomRequestParam()
+{
+   return "&show_pipes=" + show_pipes + "&show_flow=" + show_flow;
+}
+
+function ChangeUpdateInterval( update_now )
+{
+   var update_interval;
+
+   if( document.getElementById( "3sec" ).selected )
+      update_interval = 3000;
+   else if( document.getElementById( "5sec" ).selected )
+      update_interval = 5000;
+   else if( document.getElementById( "10sec" ).selected )
+      update_interval = 10000;
+   else if( document.getElementById( "1min" ).selected )
+      update_interval = 60000;
+   else
+      alert( "Invalid update interval!" );
+
+   gso.SetUpdateInterval( update_interval );
+
+   // update_now is false on load: image has already been loaded.
+   gso.StartUpdates( update_now );
+}
+
+function ChangeImageSize()
+{
+   if( small_size )
+   {
+      gso.SetServletSize( 800, 650 );     // Set larger size
+      small_size = false;
+   }
+   else
+   {
+      gso.SetServletSize( 500, 400 );     // Set smaller size
+      small_size = true;
+   }
+   
+   gso.UpdateImage();
+}
+
+function OnMove( event )
+{
+   // Processes tooltip events and displays a tooltip.
+   gso.ProcessTooltip( event );
+}
+
+function OnClick( event )
+{
+   // Processes mouse click events to find selected object and display a
+   // dialog with detailed information.
+   //
+   gso.ProcessClick( event );
+}
+
+function ProcessClickData( responseText )
+{
+   // Display selected object name
+   document.getElementById( "selected_div" ).innerHTML =
+     "<b>Selected Object:</b> " + responseText;
+
+   // Check if user clicked on a button: if true, don't proceed to display 
+   // a dialog.
+   if( ProcessButtons( responseText ) )
+     return false;
+      
+   return true;
+}
+
+function ProcessButtons( selected_name )
+{
+   // Check if selected object is a button and handle the action.
+   if( selected_name == "3DPipesToggle" )
+   {
+      show_pipes = ( show_pipes == 0 ? 1 : 0 );
+      if( show_pipes == 0 )
+        show_flow = 1;       // Need at least one, show_pipes or show_flow.
+
+      gso.UpdateImage();
+      return true;
+   }
+   else if( selected_name == "FlowToggle" )
+   {
+      show_flow = ( show_flow == 0 ? 1 : 0 );
+      if( show_flow == 0 )
+        show_pipes = 1;       // Need at least one, show_pipes or show_flow.
+
+      gso.UpdateImage();
+      return true;
+   }
+   return false;   // Not a button.
+}
+
+//-->
+  </script>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body onload="OnLoad()" style="font-family: Arial;" bgcolor="white">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+<h2> GLG Graphics Server: AJAX Process Control Demo </h2>
+<input id="start_updates" value="Start Updates"
+ onclick="gso.StartUpdates( true )" type="button">
+<input id="stop_updates" value="Stop Updates"
+ onclick="gso.StopUpdates()" type="button">Update Interval:
+<select size="1" name="interval_menu"
+ onchange="ChangeUpdateInterval( true )">
+<option id="3sec" value="3" selected="selected">3 seconds</option>
+<option id="5sec" value="5">5 seconds</option>
+<option id="10sec" value="10">10 seconds</option>
+<option id="1min" value="60">1 minute</option>
+</select>
+<input value="Change Image Size" onclick="ChangeImageSize()"
+ type="button">
+<hr style="width: 100%; height: 2px;">
+<div id="selected_div"> <b>Selected Object:</b> Click on tanks or
+valves to select and display values, hover over for a tooltip </div>
+<hr style="width: 100%; height: 2px;">
+<img id="process_image" src="glg_process?width=800&height=650"
+ onclick="OnClick(event)" onmousemove="OnMove(event)"
+ onmouseout="OnMove(null)" alt="Loading Image...">
+<div id="dialog_div" onclick="gso.EraseDataDialog()"
+ style="position: absolute; display: none; top: 200px; left: 200px; z-index: 10000;">
+<table style="background-color: black;" border="0" cellpadding="2"
+ cellspacing="1">
+  <tbody>
+    <tr>
+      <td border="1" style="background-color: white;"> <span
+ id="dialog_data"> No Data </span>
+      <hr style="width: 100%; height: 2px;"> <input value="Close"
+ onclick="gso.EraseDataDialog()" type="button"> </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div id="tooltip_div"
+ style="position: absolute; display: none; top: 0px; left: 0px; z-index: 10000;">
+<table style="background-color: black;" border="0" cellpadding="2"
+ cellspacing="1">
+  <tbody>
+    <tr>
+      <td id="tooltip_data" border="1"
+ style="background-color: rgb(255, 255, 204);"> Tooltip </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br>
+<hr style="width: 100%; height: 2px;">
+<a href="java_src/GlgProcessServlet.java">JSP Servlet Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="csharp_src/GlgProcessHandler.cs_source">ASP.NET Handler Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<a
+ href="glg_process?width=800&height=650">Dynamic Image URL</a>
+<hr style="width: 100%; height: 2px;">
+<p><a href="#overview">Demo Overview</a><br>
+<a href="#flexibility">Ultimate Flexibility and Performance</a><br>
+<a href="#image_generation">Image Generation</a><br>
+<a href="#simplest_example">The Simplest Image Generation Example</a><br>
+<a href="#ajax_user_interaction">AJAX-Based User Interaction</a><br>
+<a href="#dynamic_data">Dynamic Data Supply</a><br>
+<a href="#customizing">Customizing JSP Servlet or ASP.NET Handler</a><br>
+<br>
+<a href="glg_process?width=600&height=500">Image URL</a> with the <a
+ href="java_src/GlgProcessServletSimple.java">Servlet Source Code</a><br>
+<a href="java_src/GlgProcessServlet.java">Full Source Code of the
+Servlet with User Interaction and Drill-Down Dialogs</a></p>
+<a name="overview"></a>
+<h4> Overview </h4>
+This AJAX demo demonstrates the <b>thin-client server-side
+solution</b> for displaying dynamic real-time graphics on a web page
+using the <a href="http://www.genlogic.com/graphics_server.html">
+GLG Graphics Server</a>. It is <span style="font-weight: bold;">browser
+independent</span> and may be used on any <b>embedded </b>or <b>mobile
+device</b>.
+<p>The GLG Graphics Server is deployed on the server with either <span
+ style="font-weight: bold;">JSP</span> or <span
+ style="font-weight: bold;">ASP.NET</span>. The client side uses
+industry-standard
+<b>HTML</b> and <b>JavaScript</b> (including HTML5).<br>
+</p>
+<p>
+<a name="flexibility"></a></p>
+<h4>Ultimate Flexibility and Performance</h4>
+<p>With the help of the <a
+ href="http://www.genlogic.com/toolkit.html#Graphics_Builder">
+GLG Graphics Builder</a>, <b>not just simple
+dashboards</b> with graphs and meters, but <b>complex visualizations</b>
+and <b>custom HMI screens</b> may be created interactively, presented
+on the application's web pages and updated with <b>real-time data</b>.
+A vast collection of <a
+ href="http://www.genlogic.com/widgets.html#2D_Graphs">
+graphs</a>, <a href="http://www.genlogic.com/widgets.html#Controls">
+meters and dials</a>, <a
+ href="http://www.genlogic.com/widgets.html#Avionics">
+avionics gauges</a> and <a
+ href="http://www.genlogic.com/widgets.html#Process_Control">
+process control widgets</a> are provided in addition to the custom
+graphics.</p>
+<p>The custom visualizations are <b>created interactively using the
+GLG
+Graphics Builder</b> and saved as a GLG drawing. The drawing contains
+definitions of all graphical objects as well as their <a
+ href="http://www.genlogic.com/toolkit.html#Inherent_Dynamics">
+dynamic properties</a> and <a
+ href="http://www.genlogic.com/architecture.html#Resource_Based_Data_Access">
+resources</a>. The Graphics Server loads the drawing and
+uses it to generate dynamic images, <b>updating the drawing with
+real-time data</b> before processing each image request. Once the
+drawing is loaded, it is used to generate web images over and over
+<b>without the overhead of recreating the graphics</b> on every
+request, resulting in a superior server performance.</p>
+<p>The graphics displayed on the web page may be changed by editing
+the drawing using the Graphics Builder and reloading the drawing into
+the Graphics Server, <b>with no programming required</b>.</p>
+<p>The GLG Graphics Server utilizes the power of the <b>GLG Toolkit</b>
+for ultimate performance. When the data changes, the highly optimized <b>GLG
+Object Engine</b> ensures that only the graphical elements that
+are affected by the new data get updated, lowering the server
+load.</p>
+<a name="image_generation"></a>
+<h4>Image Generation</h4>
+<p>A server-side JSP Servlet or ASP.NET Handler generates an image of
+the monitored
+process updated with real-time data. The image is periodically
+reloaded by client-side JavaScript with a user-defined update interval.
+</p>
+<p>The Servlet or Handler generates an image by loading a GLG drawing
+and invoking the drawing's <i>CreateImage()</i> method. The drawing is
+created using the <b>GLG Graphics Builder</b>, which allows a
+developer to draw graphical objects, attach <a
+ href="http://www.genlogic.com/toolkit.html#Unlimited_Geometrical_Dynamics">
+dynamic actions</a>, define selection events and tooltips, as well as
+define object <a
+ href="http://www.genlogic.com/architecture.html#Resource_Based_Data_Access">
+resources</a> to animate the drawing with data. With the help of the
+Builder, dynamic drawing may be created and modified interactively
+without tedious graphics programming.</p>
+<p>GLG drawings are <a
+ href="http://www.genlogic.com/toolkit.html#Scalable_Vector_Graphics">
+screen-resolution independent</a>. When a
+drawing is loaded into the Servlet or Handler, it may be scaled to
+generate
+images of arbitrary sizes. Before generating an image, the Servlet
+or Handler updates the drawing with <span style="font-weight: bold;">real-time</span><b>
+data</b> by setting
+the drawing's resources using <a
+ href="http://www.genlogic.com/integration.html#Data_Supply">
+<i>SetResource</i></a> methods of the GLG API.</p>
+<p>The drawing is <b>loaded only once</b> and reused between all
+Servlet
+or Handler instances and threads. This increases performance and also
+ensures that all generated images display the same state of the
+monitored process.<br>
+</p>
+<p>The demo displays the generated process image in an HTML page, and
+JavaScript is used periodic refreshes and handling user interaction.
+The same image URL may be used as a component in multiple web pages.</p>
+<a name="simplest_example"></a>
+<h4>The Simplest Image Generation Example</h4>
+<p><a href="glg_process?width=600&height=500">Click here</a> to view
+the output image directly as a URL.</p>
+<p>Reload the page to see new data or change the width/height
+parameters of the URL to change image size. A <i>"&show_pipes=1"</i>
+parameter may be appended to the URL to activate pipes display.</p>
+<p>Such a dynamic URL may be inserted as an image in any web page, and
+a timer can be used to periodically reload the image to show new data. </p>
+<p>Click on the links to see the <b>source code</b> of the simplest <a
+ href="java_src/GlgProcessServletSimple.java">JSP Servlet</a> or <a
+ href="csharp_src/GlgProcessHandler.java">ASP.NET</a><a
+ href="csharp_src/GlgProcessHandlerSimple.cs_source"> Handler</a> that
+generates a dynamic image of a GLG drawing.<br>
+</p>
+<a name="ajax_user_interaction"></a>
+<h4>AJAX-Based User Interaction</h4>
+The demo shows examples of handling user interaction, such as:
+<ul>
+  <li>Object Selection and Drill-Downs</li>
+  <li>Tooltips</li>
+  <li>User Input (Pressing Buttons in the Drawing)</li>
+</ul>
+<p>When the user moves the mouse over an object in the image, a
+tooltip is displayed. When the user clicks on an object in the image,
+the name of the selected object is displayed in the web page above the
+image. If the selected object has any data associated with it, a
+dialog showing the object's data is also displayed. The two buttons at
+the lower left corner of the demo are used to toggle display of 3D
+pipes and flow lines.</p>
+<p>The tooltips and object selection are processed by the GLG Graphics
+Server's engine on the server side, with <b>no image maps</b> or
+vector
+objects created in the browser on the client side. This technique
+handles large number of vector objects in the drawing without the HTML
+performance limitations.</p>
+<p>The demo adds <i>onclick</i> and <i>onmousemove</i> event handlers
+to the image to invoke JavaScript when the user clicks on the image or
+moves a mouse over it. The JavaScript sends an AJAX request to the
+Servlet or Handler to find the objects located at the mouse position.
+If an
+object selection is detected, the Servlet or Handler returns the name
+of the
+selected object to JavaScript, which executes an appropriate
+action depending on the selected object, displaying a tooltip on
+MouseOver or displaying data dialog when an object is selected with
+the MouseClick.</p>
+<p>Alternatively, the user interaction may be handled by the Servlet
+or Handler on the server side. For example, when the <i>Toggle3DPipes</i>
+button is
+selected, the Servlet or Handler may toggle the 3D Pipes display in the
+drawing
+instead of returning the button name back to the client and letting
+the client handle it, as shown in the demo.</p>
+<p>Click on the links to see the
+<b>full source code</b> of the <a
+ href="java_src/GlgProcessServlet.java">JSP Servlet</a> or <a
+ href="csharp_src/GlgProcessHandler.cs_source">ASP.NET</a> Handler for
+generating images and
+handling user interaction requests.</p>
+<a name="dynamic_data"></a>
+<h4>Dynamic Data Supply</h4>
+<p>The demo uses simulated process control data. In an application,
+the Servlet or Handler can query data from any data source, such as a
+PLC or
+process database, using <span style="font-weight: bold;">any preferred
+data
+connectivity API</span>. Alternatively, the data may also be supplied
+by the HTML or
+JavaScript via the parameters of the image URL.</p>
+<p>The Servlet or Handler updates the drawing with new data by setting
+the drawing's
+resources using <a
+ href="http://www.genlogic.com/integration.html#Data_Supply"><i>SetResource</i></a>
+methods of the GLG API. The <a
+ href="http://www.genlogic.com/architecture.html#Resource_Based_Data_Access">
+resources</a> for animating the drawing with data are defined in the
+Graphics Builder when the drawing is created.</p>
+<p>For example, in the demo's drawing, an object named <i>"Heater"</i>
+has
+a resource named <i>"HeaterLevel"</i> that controls the fill level of
+the
+heater's tank. The Servlet or Handler updates the displayed fill level
+by using
+the <i>"Heater/HeaterLevel"</i> resource name:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;
+<i>drawing.SetDResource( "Heater/HeaterLevel", heater_level_var );</i></p>
+<p>The use of resources helps to separate graphics from the
+programming logic. The application simply sets a logical resource
+named <i>"Heater/HeaterLevel"</i>, and the GLG's graphics engine takes
+care of
+all low-level details of rendering the objects' graphics.</p>
+<a name="customizing"></a>
+<h4>Customizing JSP Servlet or ASP.NET Handler<br>
+</h4>
+<p>The Servlet or Handler functionality can be customized according to
+the application requirements. The
+<b style="font-weight: bold;">source code for the JSP Servlet</b><span
+ style="font-weight: bold;"> or ASP.NET Handler</span> is provided and
+may be
+customized to perform various application-specific tasks. The Servlet
+or Handler uses the <b>GLG Graphics Server library</b> that provides
+developers with both the GLG Standard and Extended API methods
+described in the GLG documentation.</p>
+<p>All graphical features of the GLG applications are also available
+in the Servlet or Handler, including the programmatic creation of
+objects in the
+drawing and on-the-fly creation of dynamic icons using the GLG
+Extended API.</p>
+<hr style="width: 100%; height: 2px;">
+<p style="font-size: 80%; font-family: arial;"><a
+ href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+</body>
+</html>

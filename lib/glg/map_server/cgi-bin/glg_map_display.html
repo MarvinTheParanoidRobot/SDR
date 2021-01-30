@@ -1,0 +1,629 @@
+<html>
+
+<head>
+<title>GLG Map Server: Sample HTML GIS Viewer</title>
+
+<script type="text/javascript">
+<!--
+
+/* Copyright 2008 by Generic Logic, Inc.
+   Free for use with the Community Edition of the GLG Map Server.
+ */
+
+/*************** URL of the map server with the map server setup. */
+var map_server_url = "http://www.myserver.com";
+
+/*************** Location of the map script on the server. */
+var map_script = "cgi-bin/GlmScript";  
+
+/* Projection constants. */
+var RECT=0;
+var ORTHO=1;
+
+/* Parameters of the initial map image, for both RECT and ORTHO projections. */
+var map_width = 700;
+var map_height = 500;
+var map_bg_color = "0x000000";    /* Black */
+var projection = ORTHO;
+var extent2_lon_ortho = 6500000.;  /* half-extent in meters */
+var extent2_lat_ortho = 6500000.;  /* half-extent in meters */
+var extent2_lon_rect = 180.;   /* half-extent in degrees */
+var extent2_lat_rect = 90.;    /* half-extent in degrees */
+var center_lon_rect = 0.;
+var center_lat_rect = 0.;
+var center_lon_ortho = 10.;
+var center_lat_ortho = 40.;
+var map_stretch_rect = 1;     /* Use default stretch=ON for RECT. */ 
+var map_stretch_ortho = 0;    /* Use default stretch=OFF for ORTHO. */ 
+var zoom_by = 2.;             /* Zoom factor, must be > 1. */
+
+/* Scroll factor */
+var scroll_by_rect = 30;    /* RECT: percentage of the window from 0 to 100 */
+var scroll_by_ortho = 30.;  /* ORTHO: degrees. */
+
+/* Intial display state of layers */
+var earth_layer_state = 1;
+var shadow_layer_state = 1;
+/* May be used as background instead of or in addition to the earth layer. */
+var political_filled_layer_state = 0;
+var political_borders_layer_state = 1;
+var grid_layer_state = 1;
+
+/* Misc. variables, set by OnLoad(). */
+var center_lon, center_lat;
+var extent2_lon, extent2_lat;
+var map_stretch, scroll_by;
+var xml_http = null;   /* Used to query lat/lon on mouse click on the map */
+var projection_str, box_str;
+
+function OnLoad()
+{
+  if( projection == ORTHO )
+  {
+     extent2_lon = extent2_lon_ortho;          
+     extent2_lat = extent2_lat_ortho;          
+     center_lon = center_lon_ortho;          
+     center_lat = center_lat_ortho;          
+     map_stretch = map_stretch_ortho;
+     scroll_by = scroll_by_ortho;
+  }
+  else /* RECT */
+  {
+     extent2_lon = extent2_lon_rect;          
+     extent2_lat = extent2_lat_rect;          
+     center_lon = center_lon_rect;          
+     center_lat = center_lat_rect;          
+     map_stretch = map_stretch_rect;
+     scroll_by = scroll_by_rect
+  }
+
+
+  /* Update displayed values to match initial values above. */
+  UpdateProjectionDisplay();
+  UpdateLayersDisplay();
+  UpdateStretchDisplay();
+  UpdateCenterDisplay();
+  UpdateExtentDisplay();
+  UpdateZoomByDisplay();
+  UpdateScrollByDisplay();
+
+  GetMapImage();   /* Finally: get map image */
+}
+
+/* Forms a request string to get map image based on the current parameter
+   values and gets the image.
+ */ 
+function GetMapImage()
+{
+   GetProjectionAndBoxStrings();
+
+   var earth_layer = 
+     ( document.getElementById( "earth_layer" ).checked ? 1 : 0 );
+   var shadow_layer = 
+     ( document.getElementById( "shadow_layer" ).checked ? 1 : 0 );
+   var political_filled_layer = 
+     ( document.getElementById( "political_filled_layer" ).checked ? 1 : 0 );
+   var political_borders_layer = 
+     ( document.getElementById( "political_borders_layer" ).checked ? 1 : 0 );
+   var grid_layer = 
+     ( document.getElementById( "grid_layer" ).checked ? 1 : 0 );
+
+   var layer_string = "";
+   if( earth_layer )
+      layer_string += "earth";
+   if( political_filled_layer )    /* Used as background: before shadow */
+      layer_string += ",political_filled";
+   if( shadow_layer )
+      layer_string += ",shadow";
+   if( political_borders_layer )
+      layer_string += ",political";
+   if( grid_layer )
+      layer_string += ",grid50";
+
+   var image = document.getElementById( "map_image" );
+   image.src = map_server_url + "/" + map_script + 
+      "?VERSION=1.3.0&REQUEST=GetMap&" +
+      projection_str + "&" +
+      "WIDTH=" + map_width + "&HEIGHT=" + map_height + 
+      "&BBOX=" + box_str +
+      "&BGCOLOR=" + map_bg_color + 
+      "&STYLES=default&FORMAT=image/jpeg&" +
+      "LAYERS=" + layer_string +
+      "&STRETCH=" + map_stretch;
+}
+
+function GetProjectionAndBoxStrings()
+{
+   if( projection == ORTHO )
+   {
+      projection_str = "SRS=AUTO2:42003,1," + center_lon + "," + center_lat;
+      box_str = "" + 
+         ( -extent2_lon ) + "," + ( -extent2_lat )  + "," +
+         extent2_lon      + "," + extent2_lat;
+   }
+   else  /* RECT */
+   {
+      projection_str = "SRS=EPSG:4326";
+      box_str = "" + 
+         ( center_lon - extent2_lon ) + "," + 
+         ( center_lat - extent2_lat ) + "," +
+         ( center_lon + extent2_lon ) + "," + 
+         ( center_lat + extent2_lat );
+   }
+}
+
+function ChangeProjection()
+{
+   if( document.getElementById( "ortho" ).selected )
+   {
+      projection = ORTHO;
+      SetStretchValue( map_stretch_ortho );
+      SetScrollByValue( scroll_by_ortho );
+
+      /* Keep center for orto. proj. */
+   }
+   else
+   {
+      projection = RECT;
+      scroll_by = scroll_by_rect;
+      SetStretchValue( map_stretch_rect );
+      SetScrollByValue( scroll_by_rect );
+      ResetCenterValue();   /* Reset center for rect. proj. */
+   }
+
+   /* Reset zoom when changing projection to avoid converting the extent
+      from meters to degrees and back.
+    */
+   ResetZoomValue();
+
+   GetMapImage();
+}
+
+function UpdateProjectionDisplay()
+{
+  if( projection == ORTHO )
+     document.getElementById( "ortho" ).selected = 1;
+  else
+     document.getElementById( "rect" ).selected = 1;  
+}
+
+function UpdateLayersDisplay()
+{
+  document.getElementById( "earth_layer" ).checked =
+    ( earth_layer_state ? true : false );
+  document.getElementById( "shadow_layer" ).checked =
+    ( shadow_layer_state ? true : false );
+  document.getElementById( "political_filled_layer" ).checked =
+    ( political_filled_layer_state ? true : false );
+  document.getElementById( "political_borders_layer" ).checked =
+    ( political_borders_layer_state ? true : false );
+  document.getElementById( "grid_layer" ).checked =
+    ( grid_layer_state ? true : false );
+}
+
+function ChangeStretch()
+{
+   map_stretch = ( document.getElementById( "map_stretch" ).checked ? 1 : 0 );
+   GetMapImage();
+}
+
+function UpdateStretchDisplay()
+{
+   document.getElementById( "map_stretch" ).checked = 
+                   ( map_stretch ? true : false );
+}
+
+function ChangeLayers()
+{
+   GetMapImage();
+}
+
+function ChangeZoomBy()
+{
+   zoom_by = ParseFloat( document.getElementById( "zoom_by" ), zoom_by );
+   if( zoom_by <= 1. )
+   {
+      alert( "Zoom By must be > 1!" );
+      zoom_by = 2.;
+      UpdateZoomByDisplay();
+   }
+   else if( zoom_by > 10. )
+   {
+      alert( "Zoom by must be < 10 to be usable." );
+      zoom_by = 2.;
+      UpdateZoomByDisplay();
+   }
+}
+
+function ChangeScrollBy()
+{
+   scroll_by = ParseFloat( document.getElementById( "scroll_by" ), scroll_by );
+
+   if( scroll_by <= 0. )
+   {
+      alert( "Scroll By must be > 0!" );
+      scroll_by = 30.;
+      UpdateScrollByDisplay();
+   }
+}
+
+function ChangeCenterLon()
+{
+   center_lon = 
+      ParseFloat( document.getElementById( "center_lon" ), center_lon );
+}
+
+function ChangeCenterLat()
+{
+   center_lat = 
+     ParseFloat( document.getElementById( "center_lat" ), center_lat );
+}
+
+function ChangeExtentLon()
+{
+   extent2_lon = 
+     ParseFloat( document.getElementById( "extent_lon" ), extent2_lon );
+}
+
+function ChangeExtentLat()
+{
+   extent2_lat = 
+     ParseFloat( document.getElementById( "extent_lat" ), extent2_lat );
+}
+
+function UpdateMap()
+{
+   GetMapImage();
+}
+
+function ParseFloat( text_field, value )
+{
+   var parsed_value = parseFloat( text_field.value );
+   if( isNaN( parsed_value ) )
+   {
+      alert( "Invalid numeric value!" );
+      text_field.value = value;    /* Restore to last value */
+   }
+   else
+   {
+     text_field.value = parsed_value;
+     return parsed_value;
+   }
+}
+
+function ResetZoom()
+{
+   ResetZoomValue();
+   if( projection == RECT )
+      ResetCenterValue();
+   GetMapImage();
+}
+
+function ZoomIn()
+{
+   extent2_lon /= zoom_by;
+   extent2_lat /= zoom_by;
+
+   UpdateExtentDisplay();
+   GetMapImage();
+}
+
+function ZoomOut()
+{
+   extent2_lon *= zoom_by;
+   extent2_lat *= zoom_by;
+
+   UpdateExtentDisplay();
+   GetMapImage();
+}
+
+function ScrollRight()
+{
+   if( projection == RECT )
+      center_lon += scroll_by / 100. * extent2_lon;
+   else    /* ORTH */
+      center_lon += scroll_by;
+
+   UpdateCenterDisplay();
+   GetMapImage();
+}
+
+function ScrollLeft()
+{
+   if( projection == RECT )
+      center_lon -= scroll_by / 100. * extent2_lon;
+   else    /* ORTH */
+      center_lon -= scroll_by;
+
+   UpdateCenterDisplay();
+   GetMapImage();
+}
+
+function ScrollUp()
+{
+   if( projection == RECT )
+      center_lat += scroll_by / 100. * extent2_lat;
+   else    /* ORTH */
+      center_lat += scroll_by;
+
+   UpdateCenterDisplay();
+   GetMapImage();
+}
+
+function ScrollDown()
+{
+   if( projection == RECT )
+      center_lat -= scroll_by / 100. * extent2_lat;
+   else    /* ORTH */
+      center_lat -= scroll_by;
+
+   UpdateCenterDisplay();
+   GetMapImage();
+}
+
+function UpdateCenterDisplay()
+{
+   document.getElementById( "center_lon" ).value = center_lon;
+   document.getElementById( "center_lat" ).value = center_lat;
+}
+
+function UpdateExtentDisplay()
+{
+   document.getElementById( "extent_lon" ).value = extent2_lon;
+   document.getElementById( "extent_lat" ).value = extent2_lat;
+   if( projection == ORTHO )
+      document.getElementById( "extent_units" ).innerHTML = "meters";
+   else   /* RECT */
+      document.getElementById( "extent_units" ).innerHTML = "degrees";
+}
+
+function UpdateZoomByDisplay()
+{
+   document.getElementById( "zoom_by" ).value = zoom_by;
+}
+
+function UpdateScrollByDisplay()
+{
+   document.getElementById( "scroll_by" ).value = scroll_by;
+   if( projection == ORTHO )
+      document.getElementById( "scroll_by_units" ).innerHTML = "degrees";
+   else   /* RECT */
+      document.getElementById( "scroll_by_units" ).innerHTML = "% of window";
+}
+
+function ResetZoomValue()
+{
+   if( projection == ORTHO )
+   {
+      extent2_lon = extent2_lon_ortho;          
+      extent2_lat = extent2_lat_ortho;          
+   }
+   else /* RECT */
+   {
+      extent2_lon = extent2_lon_rect;          
+      extent2_lat = extent2_lat_rect;          
+   }
+
+   UpdateExtentDisplay();
+}
+
+function ResetCenterValue()
+{
+   if( projection == ORTHO )
+   {
+      center_lon = center_lon_ortho;          
+      center_lat = center_lat_ortho;          
+   }
+   else /* RECT */
+   {
+      center_lon = center_lon_rect;          
+      center_lat = center_lat_rect;          
+   }
+
+   UpdateCenterDisplay();
+}
+
+function SetStretchValue( value )
+{
+   map_stretch = value;
+   UpdateStretchDisplay();
+}
+
+function SetScrollByValue( scroll_by_value )
+{
+   scroll_by = scroll_by_value;
+   UpdateScrollByDisplay();
+}
+
+/* Displays lat/lon coordinates of the point on mouse click on the map. */
+function DisplayLatLon( event )
+{
+   var map_image = document.getElementById( "map_image" );
+
+   var x = event.clientX - map_image.offsetLeft + document.body.scrollLeft;
+   var y = event.clientY - map_image.offsetTop + document.body.scrollTop;
+
+   GetProjectionAndBoxStrings();
+
+   var url =
+      map_server_url + "/" + map_script + 
+      "?VERSION=1.3.0&REQUEST=GetFeatureInfo&" +
+      projection_str + "&" +
+      "WIDTH=" + map_width + "&HEIGHT=" + map_height + 
+      "&BBOX=" + box_str +
+      "&STRETCH=" + map_stretch +
+      "&QUERY_LAYERS=default&INFO_TYPE=lat_lon&INFO_FORMAT=text/plain" +
+      "&I=" + x + "&J=" + y;
+
+   GetData( url, HandleLatLonData );
+}
+
+function GetData( url, callback )
+{
+   if( !GetXmlHttp() )
+     return;
+
+   xml_http.open( "GET", url, true );
+
+   // After open to allow reuse  in IE, where open resets it if was completed.
+   xml_http.onreadystatechange = callback;
+
+   xml_http.send( null );
+}
+
+function HandleLatLonData()
+{
+   if( xml_http.readyState != 4 )
+      return;
+
+   if( xml_http.status == 200 )
+   {
+      var selected_point = document.getElementById( "status_div" );
+      selected_point.innerHTML = "Selected Point: " + xml_http.responseText;
+   }
+   else   
+     alert( "Can't query lat/lon, returned status: " + xml_http.status );
+}
+
+/* Used to query lat/lon on mouse click on the map */
+function GetXmlHttp()
+{
+   if( xml_http )
+     return xml_http;
+
+   if( window.XMLHttpRequest )
+   {
+      xml_http = new XMLHttpRequest();
+   }
+   else if( window.ActiveXObject )
+   {
+      var i;
+      var version_strings = 
+        new Array( "MSXML2.XMLHttp.7.0",
+                   "MSXML2.XMLHttp.6.0",
+                   "MSXML2.XMLHttp.5.0",
+                   "MSXML2.XMLHttp.4.0",
+                   "MSXML2.XMLHttp.3.0",
+                   "MSXML2.XMLHttp",
+                   "Microsoft.XMLHttp" );
+
+      for( i=0; i < version_strings.length; i++ )
+      {
+         try
+         {
+            xml_http = new ActiveXObject( version_strings[i] );
+            if( xml_http )
+            {
+               //alert( "Using " + version_strings[i] );
+               break;
+            }
+         }
+         catch( err )
+         {
+            //alert( version_strings[i] + " not supported." );
+         }
+      }
+   }
+
+   if( !xml_http )
+      alert( "Your browser does not support XMLHttpRequest, please upgrade." );
+
+   return xml_http;
+}
+
+//-->
+</script>
+
+</head>
+
+
+<body onload="OnLoad()" bgcolor="#ffffff" text="#000000">
+<font style="font-family: Arial;" size="-1">
+
+This is an <b>example of an HTML viewer</b> that uses JavaScript to pan and zoom a map using a GLG Map Server. It allows the user to change map projection and select layers to be displayed from a sample GIS dataset. It also displays lat/lon coordinates of the selected point when the user clicks on the map. The controls below the map allow the user to manually select the map area to be displayed. <b>To use this HTML file, edit the <i>map_server_url</i> and <i>map_script</i> parameters of the JavaScript to point to a GLG Map Server setup on your web server.</b> 
+
+<hr style="width: 100%; height: 2px;">
+
+Projection: 
+<select size="1" name="projection_menu" onchange="ChangeProjection()">
+      <option id="ortho" value="1"  selected>Orthographic</OPTION>
+      <option id="rect"  value="2"          >Rectangular</OPTION>
+</select>
+
+<input id="map_stretch" type="checkbox" checked="false"
+ onclick="ChangeStretch()">Stretch
+
+<hr style="width: 100%; height: 2px;">
+
+Layers: 
+<input id="earth_layer" type="checkbox" checked="true" 
+    onclick="ChangeLayers()">Earth
+<input id="shadow_layer" type="checkbox" checked="true" 
+    onclick="ChangeLayers()">Elevation
+<input id="political_filled_layer" type="checkbox" checked="true" 
+    onclick="ChangeLayers()">Political Filled
+<input id="political_borders_layer" type="checkbox" checked="true" 
+    onclick="ChangeLayers()">Political Borders
+<input id="grid_layer" type="checkbox" checked="true" 
+    onclick="ChangeLayers()">Grid
+
+<hr style="width: 100%; height: 2px;">
+
+<input value="Reset Zoom" onclick="ResetZoom()" type="button">
+<input value="Zoom In" onclick="ZoomIn()" type="button">
+<input value="Zoom Out" onclick="ZoomOut()" type="button">
+Zoom By: <input id="zoom_by" value="" type="text" size="3"
+          onchange="ChangeZoomBy()">
+
+<hr style="width: 100%; height: 2px;">
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input value="Scroll Up" onclick="ScrollUp()" type="button">
+<br>
+<input value="Scroll Left" onclick="ScrollLeft()" type="button">
+<input value="Scroll Right" onclick="ScrollRight()" type="button">
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+Scroll By: <input id="scroll_by" value="" type="text" size="3"
+            onchange="ChangeScrollBy()">
+<label id="scroll_by_units">units</label>
+
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input value="Scroll Down" onclick="ScrollDown()" type="button">
+
+<br>
+
+<hr style="width: 100%; height: 2px;">
+
+<div id="status_div">Selected Point: None</div>
+
+<hr style="width: 100%; height: 2px;">
+
+<div id="map_div">
+<img id="map_image" onclick="DisplayLatLon( event )">
+</div>
+
+<hr style="width: 100%; height: 2px;">
+
+Center Lon:
+<input id="center_lon" value="" type="text" size="5" 
+ onchange="ChangeCenterLon()">
+Center Lat: 
+<input id="center_lat" value="" type="text" size="5" 
+ onchange="ChangeCenterLat()">
+<br>
+ExtentLon/2:
+<input id="extent_lon" value="" type="text" size="8" 
+ onchange="ChangeExtentLon()">
+ExtentLat/2: 
+<input id="extent_lat" value="" type="text" size="8" 
+ onchange="ChangeExtentLat()">
+<label id="extent_units">units</label>
+
+<br>
+<input id="update_map" value="Update Map" type="button" onclick="UpdateMap()">
+
+</font></body>

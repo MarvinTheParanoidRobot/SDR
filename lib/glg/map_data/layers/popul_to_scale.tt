@@ -1,0 +1,10 @@
+# Chooses font scale depending on city/town population
+
+INPUT DATA TYPE= GLM_D
+OUTPUT DATA TYPE= GLM_D
+
+0	0.80
+10000	0.80
+50000	0.9
+100000	0.9
+500000	1.0

@@ -1,0 +1,13 @@
+TYPE=VECTOR
+TRANS TYPE=OPAQUE
+FILENAME=bnd_polbndl.lft.gvf
+INCLUDE=bnd_polbndl.lft.gvf.slf
+EDGE COLOR=1,1,1
+LINE WIDTH=1
+ALPHA=1.
+#MIN ZOOM=3
+MIN ZOOM=10
+DEFAULT ON=1
+
+# Zoom attr index = -4
+ATTR MAP=3 EdgeColor    	polbndl_type_to_color.tt          ABS

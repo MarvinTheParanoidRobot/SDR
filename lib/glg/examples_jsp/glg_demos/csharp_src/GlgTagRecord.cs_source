@@ -1,0 +1,18 @@
+using System;
+using GenLogic;
+
+public class GlgTagRecord 
+{
+   public GlgObject tag_obj; 
+   public GlgDataType data_type;
+   public String tag_source;
+   public bool if_changed;
+   
+   public double d_value;
+   public String s_value;
+   public bool data_filled;
+   
+   public GlgTagRecord()
+   {
+   }
+}

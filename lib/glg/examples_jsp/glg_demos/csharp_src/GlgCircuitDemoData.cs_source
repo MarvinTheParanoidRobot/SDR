@@ -1,0 +1,64 @@
+using System;
+using GenLogic;
+
+/* Simulated data for the demo. In an application, the data may come from 
+   any datasource, such as a PLC or process database.
+*/
+public class GlgCircuitDemoData
+{
+   // Constants
+   const int UPDATE_INTERVAL = 1000;   // milliseconds
+
+   /* Contains a list of all resources to animate, which was queried 
+      from the drawing.
+   */
+   public GlgObject resource_list;
+
+   DateTime last_time = DateTime.Now.AddHours( -1.0 );
+
+   public GlgCircuitDemoData()
+   {
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   // Updates simulated data. An application would query its 
+   // data from a custom data source using JDBC or Java OPC.
+   //////////////////////////////////////////////////////////////////////////
+   public void UpdateCircuitData()
+   {
+      DateTime curr_time = DateTime.UtcNow;
+
+      /* Update simulation data only as often as defined by UPDATE_INTERVAL:
+         once a second.
+      */
+      TimeSpan difference = curr_time.Subtract( last_time );
+      if( difference.TotalMilliseconds < UPDATE_INTERVAL )
+        return;
+
+      IterateCircuit();
+
+      last_time = curr_time;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   // Update each resource with new data value.
+   //////////////////////////////////////////////////////////////////////////
+   void IterateCircuit()
+   {
+      if( resource_list == null )
+        return;
+
+      int size = resource_list.GetSize();
+      for( int i=0; i<size; ++i )
+      {
+         GlgSimulationResource resource = (GlgSimulationResource)
+           resource_list.GetElement( i );
+
+         if( resource.type != GlgDataType.D ) 
+            continue;      // Update only resources of D type
+
+         // Get new resource value.
+         resource.value = resource.range * GlgObject.Rand( 0.0, 1.0 );
+      } 
+   }
+}

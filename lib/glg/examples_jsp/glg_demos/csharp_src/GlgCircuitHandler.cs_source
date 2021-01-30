@@ -1,0 +1,294 @@
+﻿using System;
+using System.Globalization;
+using System.Web;
+using System.Drawing.Imaging;
+using GenLogic;
+
+namespace CircuitHandler
+{
+   public class CircuitHandler : IHttpHandler
+   {
+      private static Object init_lock = new Object();
+      private static GlgHttpRequestProcessor request_processor = null;
+      private static GlgObject viewport = null;
+
+      /* If true, the resource path is used to animate resources of the drawing.
+         If false, stored resource ID is used to set resource directly with 
+         null path using the Extended API. 
+         Alternatively, tags may be used instead of resources.
+      */
+      bool USE_RESOURCE_PATH = false;
+
+      static String drawing_name = "electric_circuit2.g";
+      static String app_path = "CircuitHandler";
+
+      // Global simulated data used by all handler instances.
+      static GlgCircuitDemoData data = new GlgCircuitDemoData();
+
+      ///////////////////////////////////////////////////////////////////
+      public bool IsReusable
+      {
+         get { return false; }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      public void ProcessRequest( HttpContext context )
+      {
+         lock( init_lock )
+         {
+            /* First time only: create GlgHttpRequestProcessor that properly
+               handles ASP.NET synchronization context. ProcessRequestData is
+               registered as a custom application-specific method used by
+               the request processor to process HTTP requests.
+            */
+            if( request_processor == null )
+              request_processor = 
+                new GlgHttpRequestProcessor( ProcessRequestData );
+         }
+
+         /* Request processor will invoke ProcessRequestData method to
+            handle application-specific logic.
+         */
+         GlgHttpRequestData request_data = 
+           request_processor.ProcessRequest( context );
+
+         /* Returned data contains an image or HTML text response.
+            If there were request processing errors, the errors will be 
+            reported in the HTML output and returned data will be null.
+         */
+         if( request_data != null )
+         {
+            if( request_data.image != null )
+            {
+               // Save image.
+               context.Response.ContentType = "image/png";
+               request_data.image.Save( context.Response.OutputStream, 
+                                        ImageFormat.Png );
+            }
+            else
+              context.Response.Write( "Error: Unexpected response.<br>");
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // A custom method invoked to process HTTP context.
+      // 
+      // The HTTP context is passed in the request_data.context field.
+      // The generated image is assigned to the data.image field.
+      // The data.custom_data field may be used to pass additional 
+      //     custom data to the ProcessRequest method.
+      //
+      // The GlgObject.Error method may be used in the code to flag errors.
+      // Any errors will be reported in the generated HTML by the default
+      // GLG error handler. 
+      //
+      // A custom GLG error handler may be set using the 
+      // GlgObject.SetErrorHandler method inside this method. 
+      // The request_data.got_errors field may be set to true to flag errors 
+      // in case if a custom error handler is used.
+      ///////////////////////////////////////////////////////////////////
+      void ProcessRequestData( GlgHttpRequestData request_data )
+      {
+         HttpRequest request = request_data.context.Request;
+
+         // Get requested width/height of the image.
+         int width = GetIntegerParameter( request, "width", 500 );
+         int height = GetIntegerParameter( request, "height", 400 );
+         
+         // Limit max. size to avoid running out of heap space creating an image.
+         if( width > 1000 ) width = 1000;       
+         if( height > 1000 ) height = 1000;       
+
+         /* Load the drawing just once and share it between all instances of
+            this HTTP handler.
+         */
+         if( viewport == null )
+         {
+            GlgObject.Init();
+
+            String path;
+            String dir = request_data.context.Server.MapPath( "~" );
+            if( dir.IndexOf( app_path ) == -1 )
+              path = dir + app_path + "\\" + drawing_name;
+            else
+              path = dir + "\\" + drawing_name;
+
+            viewport = LoadDrawing( path );
+            viewport.SetImageSize( width, height );
+            viewport.SetupHierarchy();    // Setup to prepare to receive data
+
+            /* Create a list of resources to animate by querying them from the
+               drawing.
+            */
+            GlgObject resource_list = GetResourceList( viewport, null, null );
+            if( resource_list == null )
+              Error( "Found no resources to animate." );
+            else
+              data.resource_list = resource_list;
+         }
+         else   // Already loaded, reuse the drawing.
+           viewport.SetImageSize( width, height );
+ 
+         // Get the new data values from a custom data source.
+         data.UpdateCircuitData();
+
+         UpdateDrawingWithData();   // Push new data into the drawing.
+
+         // Setup after data update to prepare to generate image.
+         viewport.SetupHierarchy();
+
+         // Generate Image.
+         request_data.image = viewport.CreateImage( null );
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Helper methods
+      /////////////////////////////////////////////////////////////////
+      
+      /////////////////////////////////////////////////////////////////
+      int GetIntegerParameter( HttpRequest request, String name, 
+                               int default_value )
+      {
+         String parameter_string = request.QueryString[ name ];
+         if( parameter_string == null || parameter_string.Equals( "" ) )
+           return default_value;
+         
+         try
+         {
+            return int.Parse( parameter_string, CultureInfo.InvariantCulture );
+         }
+         catch( Exception )
+         {
+            Error( "Invalid parameter value for: " + name + 
+                   " = " + parameter_string );
+            return default_value;
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Can be used only in ProcessRequestData() or methods 
+      // originating from it.
+      /////////////////////////////////////////////////////////////////
+      void Error( String message )
+      {
+         GlgObject.Error( GlgErrorType.USER_ERROR, message, null );
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      GlgObject LoadDrawing( String drawing_path )
+      {
+         GlgObject drawing;
+         
+         drawing = GlgObject.LoadWidget( drawing_path, GlgMediumType.FILE );
+         if( drawing == null )
+         {
+            Error( "Can't load drawing: " + drawing_path );
+            return null;
+         }
+
+         // Disable viewport border in the image: let html define it if needed.
+         drawing.SetDResource( "LineWidth", 0.0 );
+
+         return drawing;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // Creates a list of resources to animate defined in the drawing.
+      // Queries the drawing to include all resources of interest that are 
+      // marked by having "#" as the first character of their names. 
+      // Alternatively, tags may be used instead of resources.
+      //////////////////////////////////////////////////////////////////////////
+      GlgObject GetResourceList( GlgObject top_obj, String res_path, 
+                                 GlgObject list )
+      {
+         // Using only named resources in this example, no aliases.
+         GlgObject res_list = top_obj.CreateResourceList( true, false, false );
+         if( res_list == null )
+           return list;
+         
+         int size = res_list.GetSize();
+         for( int i=0; i<size; ++i )
+         {
+            GlgObject obj = (GlgObject) res_list.GetElement( i );
+            
+            String name = obj.GetObjectName();
+            if( !name.StartsWith( "#" ) )
+              // We are interested only in resources that start with #
+              continue;
+
+            // Accumulate resource path.
+            String new_path;
+            if( res_path == null )
+              new_path = name;
+            else
+              new_path = res_path + "/" + name;
+            
+            GlgObjectType object_type = obj.GetObjectType();
+
+            // Data or attribute object: add to the list of resources to animate.
+            if( object_type == GlgObjectType.DATA || 
+                object_type == GlgObjectType.ATTRIBUTE )
+            {
+               GlgSimulationResource resource = new GlgSimulationResource();
+               resource.obj = obj;
+               resource.type = obj.GetDataType();
+               resource.resource_path = new_path;
+               
+               /* Set range for animating the resource.
+                  State resources may have ON (1) and OFF (0) values - 
+                  use 1.3 as a range to simulate. Use range=100 for the rest 
+                  of resources.
+               */
+               if( name.Equals( "#State" ) )
+                 resource.range = 1.3;
+               else
+                 resource.range = 1000.0;
+            
+               // Create a list if does not yet exist.
+               if( list == null )
+                 list = new GlgDynArray( GlgContainerType.NATIVE_OBJECT, 0, 0 );
+               
+               list.AddObjectToBottom( resource );
+            }
+            
+            int has_resources = obj.GetDResource( "HasResources" ).intValue();
+            
+            /* If object's HasResources=ON, recursively traverse all resources
+               inside it.
+            */
+            if( has_resources == 1 )
+              list = GetResourceList( obj, new_path, list );
+         }
+         return list;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // Updates drawing state with data.
+      //////////////////////////////////////////////////////////////////////////
+      void UpdateDrawingWithData()
+      {
+         GlgObject resource_list = data.resource_list;
+         if( resource_list == null )
+           return;
+         
+         int size = resource_list.GetSize();
+         for( int i=0; i<size; ++i )
+         {
+            GlgSimulationResource resource = (GlgSimulationResource)
+              resource_list.GetElement( i );
+
+            if( resource.type != GlgDataType.D ) 
+              continue;      // Update only resources of D type
+
+            if( USE_RESOURCE_PATH )
+              // Use resource path.
+              viewport.SetDResource( resource.resource_path, resource.value );
+            else
+              /* Use stored resource ID with null path to set the resource 
+                 directly using the Extended API.
+              */
+              resource.obj.SetDResource( null, resource.value );
+         } 
+      }
+   }
+}

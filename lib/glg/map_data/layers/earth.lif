@@ -1,0 +1,20 @@
+# The earth layer
+TYPE=IMAGE
+IMAGE FORMAT=JPEG
+TRANS TYPE=OPAQUE
+# this is the filename or template for tiling
+FILENAME=earth_tiff/earth_%_%.jpg
+# A fallback layer in case the number of tiles exceeds memory requirements
+FALLBACK LAYER=earth_fallback
+MAX TILES=40
+WIDTH=8192
+HEIGHT=4096
+NUM TILES X=20
+NUM TILES Y=20
+MIN LON=-180
+MAX LON=180
+MIN LAT=-90
+MAX LAT=90
+MIN ZOOM=-1.
+MAX ZOOM=-1.
+DEFAULT ON=1

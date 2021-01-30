@@ -1,0 +1,133 @@
+This file describes how to solve problems that may be encountered when running
+GLG Toolkit editors and executables on some systems.
+
+In addition to the comman-line options listed below, the -help option may be used
+to list all command-line options of GLG executables, such as GlgBuilder or a
+GLG demo.
+
+1.  FONT PROBLEMS ON LINUX
+2.  OPENGL PROBLEMS
+    2.1 OPENGL SETUP PROBLEMS
+    2.2 OPENGL RENDERING PROBLEMS
+    2.3 OPENGL WINDOW FLASHING WHEN MOUSE MOVES IN
+        (UNITY SHELL ON JETSON NANO LINUX)
+    2.4 VERY SLOW RENDERING WHEN USING SYSTEM'S SOFTWARE OPENGL
+        (JETSON NANO LINUX)
+    2.5 USING SOFTWARE OPENGL FOR GLG APPLICATIONS ON LINUX
+
+1. FONT PROBLEMS ON LINUX
+
+GLG editor menus use X11 fonts. If these fonts are missing, the following error
+will be displayed:
+
+  Can't find default font!
+  Make sure 75dpi and 100dpi X fonts are installed:
+  - xfonts-base xfonts-75dpi xfonts-100dpi packages for Debian/Ubuntu.
+  - xorg-x11-fonts-ISO8859-1-75dpi, xorg-x11-fonts-ISO8859-1-100dpi         
+    and xorg-x11-fonts-misc packages for RedHat/Fedora.         
+  The X Server may need to be restarted after installing the fonts.
+
+Install the font packages listed in the error message using the following
+commands:
+
+  Debian/Ubuntu:
+     sudo apt-get install xfonts-75dpi xfonts-100dpi
+
+  RedHat:
+     sudo yum install xorg-x11-fonts-ISO8859-1-75dpi \
+          xorg-x11-fonts-ISO8859-1-100dpi xorg-x11-fonts-misc packages
+
+The font server has to be restarted to detect the newly installed fonts,
+or the system may be rebooted as a simpler alternative.
+
+2. OPENGL PROBLEMS
+
+GLG editors, GLG C/C++ executables and (on Windows) the GLG ActiveX Control
+have an option of using either the OpenGL or GDI renderer. Using
+hardware-accelerated OpenGL renderer requires a graphics card that supports
+OpenGL, such as Nvidia or ATI. 
+
+By default, GLG editors and demos use the OpenGL renderer.
+
+2.1 OPENGL SETUP PROBLEMS
+
+If the OpenGL support is not configured on the system or the OpenGL driver
+has problems, or if a GLG executable is using remote display on Linux, the
+OpenGL version of the executable may generate error messages or have rendering
+problems.
+
+To remedy the OpenGL problems, either the software OpenGL or the GDI version of
+the renderer may be used.
+
+To start the GDI version of the editors or demos from the command line, use the
+editor or demo executable with the "_no_opengl" suffix. For example, the
+GlgBuilder_no_opengl executable may be used to start GlgBuilder with the
+GDI renderer (OpenGL disabled).
+
+Alternatively, the -glg-disable-opengl command-line option may be used to
+disable OpenGL, and the -glg-disable-hardware-opengl option may be used to
+use the software OpenGL.
+
+The GLG_OPENGL_MODE environment variable may be set to False to disable OpenGL
+renderer for all GLG executables, and GLG_DISABLE_HARDWARE_OPENGL environment
+variable may be set to False to force all GLG executables to use software OpenGL.
+
+2.2 OPENGL RENDERING PROBLEMS
+
+If a GLG executable correctly repaints only a portion of a drawing and leaves
+the rest of the drawing area black, it may indicate a problem with the
+persistency of the front buffer in the OpenGL driver. 
+
+To remedy the problem, try using the -glg-enable-opengl-full-redraw command-line
+option, or set the GLG_OPENGL_FULL_REDRAW environment variable to True.
+
+The FullRedraw OpenGL mode is ON by default for the Jetson Nano Linux to
+remidiate the Unity shell incorrect handling of the OpenGL application on this
+platform.
+
+2.3 OPENGL WINDOW FLASHING WHEN MOUSE MOVES IN (UNITY SHELL ON JETSON NANO LINUX)
+
+Unity shell on Jetson Nano Linux does not properly handle OpenGL programs.
+When the mouse moves into a window that uses OpenGL, the window may flash
+in black. The glxheads OpenGL test program from the mesa-utils package
+may be used to demonstrate the problem. The glxgears program may also be used,
+but the problem is less visible due to the program's black background.
+The intensity of the flash increases for more complex OpenGL scenes, such as
+GLG drawings.
+
+The problem does not happen if either the Ubuntu shell or any other window
+manager is used on Jetson Nano instead of Unity, or if the application is
+maximized to run in the full screen mode.
+
+To eliminate the flashing, the GLG_GLX_PIXMAP_DB environment variable may be set
+to True to force the OpenGL renderer to use an offscreen pixmap for
+double-buffering instead of the OpenGL buffers. Alternatively, either the
+software OpenGL or the GDI renderer described in the section 2.1 may be used to
+eliminate the flashing.
+
+2.4 VERY SLOW RENDERING WHEN USING SYSTEM'S SOFTWARE OPENGL (JETSON NANO LINUX)
+
+The libOSMesa library is used for software OpenGL rendering.
+
+On some systems, such as Jetson Nano linux, the system version of the library
+is painfully slow due to the configuration options used for its build.
+The Toolkit installation provides a working version of the library that has
+better performance, and using the system version of the library is disabled on
+the Jetson Nano Linux by default. The -glg-mesa-load command-line option
+or the GLG_OPENGL_MESA_LOAD environment variable may be used to control which
+library is used.
+
+2.5 USING SOFTWARE OPENGL FOR GLG APPLICATIONS ON LINUX
+
+Two libraries are required to enable software OpenGL rendering on Linux:
+libOSMesa and libtess_util. The GLG editors and GLG demos automatically find
+these libraries in the GLG installation directory. 
+
+Applications built with the GLG C/C++ library need additional settings to
+enable the software OpenGL. For a quick test, the GLG_DIR environment variable
+may be used to specify the path to the GLG installation directory. For a
+production deployment, the GLG_OPENGL_MESA_LIB_PATH environment variable may be
+used to point to the libOSMesa library, and libtess_util will be found in the
+same directory as libOSMesa. Alternatively, either the -glg-mesa-lib-path
+command-line option or the GlgOpenGLMesaLibPath global configuration variable
+setting in the program code may be used.

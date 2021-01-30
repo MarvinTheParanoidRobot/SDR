@@ -34,7 +34,7 @@
 void on_window_main_destroy();
 
 int main(int argc, char *argv[]) {
-	
+	testsdr();
 	GtkBuilder      *builder; 
     GtkWidget       *window;
 

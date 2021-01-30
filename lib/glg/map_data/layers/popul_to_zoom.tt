@@ -1,0 +1,26 @@
+# Selects minimum zoom level to display the city/town depending on its
+# population
+
+INPUT DATA TYPE= GLM_D
+OUTPUT DATA TYPE= GLM_D
+
+# Display all starting at 500 zoom level
+     0     500
+
+  1000     250
+  2500     200     
+  5000     150
+ 10000     120
+ 15000     90
+ 20000     60
+ 25000     45
+ 30000     35
+ 40000     30
+ 50000     25
+ 75000     18
+100000     12
+200000     8
+300000     5
+400000     3     
+500000     2.5
+

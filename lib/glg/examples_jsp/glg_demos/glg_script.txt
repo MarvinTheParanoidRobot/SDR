@@ -1,0 +1,117 @@
+The following describes public methods of the GlgSO java script object.
+
+SetImageID( name )
+  Specifies the name of the HTML image element that receives the servlet's 
+  output.
+
+SetServletBase( base_name )
+  Supplies the base name of the servlet URL.
+
+
+SetServletSize( width, height )
+  Specifies servlet's image size.
+
+SetUpdateInterval( sec )
+  Specifies servlet image update interval in seconds.
+
+SetIdleTimeout( sec )
+  Specifies the period of inactivity (in seconds) to stop updates after.
+
+SetStartButtonID( name )
+  Specifies the name of the HTML StartUpdates button. The button's enabled 
+  state will be updated by the StartUpdates and StopUpdates methods.
+   
+SetStopButtonID( name )
+  Specifies the name of the HTML StopUpdates button. The button's enabled
+  state will be updated by the StartUpdates and StopUpdates methods.
+
+SetTooltipID( top_name, content_name )
+  Specifies names of HTML elements used to display the tooltip:
+    top_name - the top-level container
+    containt_name - the element that receives tooltip data
+   
+SetTooltipTimeout( millisec )
+  Specifies tooltip timeout in millisecond - how long the mouse has to 
+  hover over an object for the tooltip to be activated.
+   
+SetDialogID( top_name, content_name )
+  Specifies names of HTML elements used to display the dialog:
+    top_name - the top-level container
+    containt_name - the element that receives dialog data
+      
+SetTwoStageDialog( true_or_false )
+  For two stage dialogs, the result of the MouseClick query 
+  (usually the name of the selected object) will be used passed to 
+  a second query to fetch dialog data for that object.
+  For the one stage dialogs the result of the query will be displayed 
+  in the dialog right away.
+
+SetCustomRequestParam( func )
+  Specifies the method to call to obtain additional request parameters.
+  This parameters will be passed to the servlet to alter the generated 
+  image. For example, in the dial demo the same servlet is used to generate
+  all dials images, and CustomRequestParam callback is used to supply 
+  the type of the dial to display in each of the dial images.
+ 
+SetPreUpdateCB( func )
+  Specifies the callback method to be invoked before each image update.
+   
+SetAfterUpdateCB( func )
+  Specifies the callback method to be invoked after each image update.
+  To synchronously update several servlet images displayed on the same page, 
+  a non-zero update interval may be defined for only one of them, an the rest
+  of the images may be updated via the AfterUpdateCB callback attached to the
+  updating image, as shown in the ajax dashboad demo.
+   
+SetClickDataCB( func )
+  Specifies the callback method to be invoked before processing returned 
+  click data. The callback will be invoked with the string received from
+  the sevlet in response to the MouseClick query. For two-stage dialogs,
+  it is the first stage response. If the callback returns false, the 
+  MouseClick dialog will not be displayed.
+  For example, the process demo uses the ClickDataCB callback to display
+  the name of the selected object and to handle user clicks on the buttons
+  displayed in the image.
+   
+SetDialogDataCB( func )
+  Specifies the method to be invoked before processing returned dialog data
+  for two stage dialogs. The callback will be invoked with the string 
+  received from the sevlet in response to the second-stage dialog query. 
+  If the callback returns false, the MouseClick dialog will not be displayed.
+  For example, the GIS demo uses the DialogDataCB callback to do additional
+  processing of the received dialog data to close a previously open dialog 
+  if the monitored flight has landed.
+
+SetEraseDialogCB( func )
+  Specifies the callback method to be invoked when a click dialog is erased.
+  For example, in the GIS demo the callback is used to reset the variable 
+  that stores data of a previoulsy opened dialog.
+  
+UpdateImage()
+  Fetches a new servlet image, invokes the CustomRequestParam callback
+  to obtain custom servlet request parameters, such as a dial type in
+  in the dial demo.
+
+StopUpdates()
+  Stops servlet image updates, disables the Stop button and enables the
+  Start button (if defined).
+
+StartUpdates( update_now )   
+  Starts servlet image updates, disables the Start button and enables the
+  Start button (if defined). Also invokes UpdateImage() if update_now is true.
+
+ProcessClick( event )
+  Starts processing of the mouse click events: queries the servlet to find 
+  an object selected by the mouse click in the servlet image and displays
+  a popup dialog with returned detailed data.
+
+EraseDataDialog()
+  Erases the currently active dialog (if any) and invokes the EraseDialogCB 
+  callback.
+
+ProcessTooltip( event )
+  Starts a tooltip timer; the tooltip will be displayed when the timer expires
+  if the mouse has not moved.
+
+EraseTooltip()
+  Erases an active toolip (if any).

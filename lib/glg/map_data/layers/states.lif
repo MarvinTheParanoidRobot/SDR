@@ -1,0 +1,19 @@
+# the state boundary layer
+TYPE=VECTOR
+TRANS TYPE=OPAQUE
+ALPHA=0.5
+# Uncomment the next line to use a converted file (faster)
+FILENAME=states.gvf
+# Uncomment out the following two lines to use a filter (slower)
+# FILENAME=states.vtr
+# FILTER="convert.x 1"
+#EDGE COLOR=0.,0.2,0.4
+#EDGE COLOR=0.8 0.8 1.
+EDGE COLOR=0.89 0.89 0.89
+DEFAULT ON=0
+# For faster clipping (without reading) of UNTILED vector data, 
+#   obtained using -gvf-info
+MIN LAT= 24.541760
+MAX LAT= 49.383080
+MIN LON= -124.731600
+MAX LON= -66.979850

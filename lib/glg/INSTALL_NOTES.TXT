@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------------
+1. LINUX NOTES
+
+1.1 Installation
+
+By default, GLG uses the standard X Windows fonts, which may not be installed 
+on some Linux distributions. Before starting GLG, please make sure the 
+following linux packages are installed:
+
+  Debian/Ubuntu:
+     xfonts-75dpi xfonts-100dpi
+
+  RedHat:
+     xorg-x11-fonts-ISO8859-1-75dpi xorg-x11-fonts-ISO8859-1-100dpi
+     xorg-x11-fonts-misc packages
+
+The font server has to be restarted to detect the newly installed fonts,
+or the system may be rebooted as a simpler alternative.
+
+-------------------------------------------------------------------------------
+2. OPENGL NOTES
+
+GLG provides two alternative graphics drivers: OpenGL or GDI/X11. For the
+hardware-accelerated OpenGL driver to work, the graphics card drivers must be
+prorerly installed. The software-based OpenGL may also be used, even if a
+graphics card that supports OpenGL is not available.
+
+By default, the Toolkit attempts to load the OpenGL driver, and uses it if it is
+available. If the hardware-accelerated OpenGL is not available, the software
+OpenGL is used. If the software OpenGL can't be loaded, the Toolkit switches 
+to the GDI driver.
+
+The -glg-disable-opengl command-line option may be used to force GLG programs to
+use the GDI driver. Alternatively, the GLG_OPENGL_MODE environment variable may
+be set to False to force the use of the GDI driver.
+
+The GLG installation provides symbolic links (shortcuts on Windows) ending with
+"_no_opengl" for the Graphics Builder and demos. These links may also be used to
+start GLG programs with the GDI driver.
+
+Software-based OpenGL is slower, and GLG programs generate a warning if only
+the software-based OpenGL is detected with no support for hardware acceleraton. 
+
+To supress the warning, use the -glg-enable-opengl command-line option or set
+the GLG_OPENGL_MODE enviroment variable to True. The -glg-disable-opengl
+command-line option may be used to force the GDI mode.
+
+OpenGL may be enabled or disabled in the GLG drawing on per-viewport basis
+(using More->OpenGLHint in the viewport's properties).

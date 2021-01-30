@@ -1,0 +1,4 @@
+Online Documentation for the GLG Toolkit is located at:
+
+   http://www.genlogic.com/doc_html/start.html
+

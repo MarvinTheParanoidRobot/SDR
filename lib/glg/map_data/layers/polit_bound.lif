@@ -1,0 +1,15 @@
+# the political boundary layer
+TYPE=VECTOR
+TRANS TYPE=OPAQUE
+# Uncomment the next line to use a converted file (faster)
+FILENAME=polit_bound.gvf
+# Uncomment out the following two lines to use a filter (slower)
+# FILENAME=polit_bound.vtr
+# FILTER="convert.x 2"
+#EDGE COLOR=0.,0.1,0.4
+EDGE COLOR=0.,0.1,0.5
+LINE WIDTH=1
+# Political boundaries contain small polygons with size < 1 pixel. 
+# Disable culling to avoid gaps.
+MIN PIXEL SIZE=0
+ALPHA=1.

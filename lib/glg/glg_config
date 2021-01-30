@@ -1,0 +1,299 @@
+########################################################################
+# GlgBuilder Configuration File
+#
+# To define strings with spaces, use quotes or a backslash:
+# Use \\ to enter a backslash. On Windows, a slash may be also used 
+# as a file separator. Examples:
+#     "c:\\glg\\color palette.g"
+#      c:/glg/color\ palette.g  
+#     /usr/local/glg/color\ palette.g
+#
+# Relative file paths are interpreted as relative to the GLG installation 
+# directory; if not found, they are also searched for in the current 
+# directory.
+########################################################################
+
+########################################################################
+# Builder configuration variables
+########################################################################
+
+# If set to 0, enables menus for adding old-style tooltips and custom events.
+# The old-style tooltips and custom events were added via named 
+# custom properties. Since the v. 3.5, they are added using action objects
+# that provide superior functionality.
+#DisablePre3-5Menus = 1
+
+# If set to 1, requires closing open dialogs before using the mouse in 
+# the Drawing Area.
+#ModalDialogs = 1
+
+# If set to 1, disables the Attribute Object dialog when editing the 
+# attribute object's transformation or alarm.
+#ModalXformDialogs = 1
+
+# May be used to adjust the size of the editor's dialogs.
+# For example, set to 0.8 to decrease or to 1.2 to increase dialog size.
+#DialogScaleFactor = 1.
+
+# If set to 1, the editor will start with the fixed scale drawing by default.
+#StartWithFixedScale = 0
+
+# If set to 1, a file extension will be added to the filename when the drawing
+# is saved, if necessary.
+#ForceFileExtensions = 0
+
+# Displays the Properties Dialog and Edit Toolbox for editing an object on
+# the first object selection.
+#FirstSelectionDemo = 0
+
+# If set to 1, disables viewport/light viewport conversion tip displayed after
+# adding the first viewport-based widget.
+#DisableEditingTips = 0
+
+# If set to 1, converts all string objects in the drawing to UTF8 before saving
+# the drawing.
+#ConvertToUTF8OnSave = 0
+
+#GridInterval     = 100
+#SnapInterval     = 20
+#ShowAxis         = 1
+#ShowCoords       = 1
+#ShowSpanMarkers  = 1
+#ShowSpanArea     = 1
+#GridColor        = 0.631 0.631 0.631
+#DrawingAreaColor = 1., 1., 1.
+#PSPortrait       = 1
+#PSStretch        = 1
+
+# On Windows, set to 0 to save PostScript instead of printing when the
+# Print toolbar button is used.
+#ToolbarPrint = 1
+
+# If set to 0, selecting a widget from a widget palette will insert it in the
+# middle of the drawing area. If set to 1, an additional click in the drawing 
+# area is required to place the widget at the selected position.
+#ManualWidgetPositioning = 0
+
+# Set to 1 to display color in the 0-255 range instead of the default 0-1 
+# range.
+#ColorDisplay255 = 0
+
+# If set to 1, the custom color palette will be shown first, otherwise
+# the default color palette is will be shown. Ctrl-click on the color palette
+# in the Editor changes the displayed palette.
+#CustomColorPaletteFirst = 0
+
+# Defines saturation of the pastel colors option. Pastel colors are activated
+# by Shift-Clicking in the color palette or via Options, Color Options,
+# Pastel Colors.
+#PastelColorLevel = 0.5
+
+# Defines the format of the Builder's SaveImage options. Supported formats
+# are jpeg and png.
+#SaveImageFormat=jpeg
+
+# If set to 1, the centers of object's scale and rotation dynamics will be 
+# preserved when the object is moved.
+#StickyMoveMode = 1
+
+# Control point display mode: 0 - object points, 1 - points of object's xforms,
+# 2 - points of xforms of object's control points.
+#ControlPointDisplay = 1
+
+# Set focus mode: 
+# 0 - direct focus for both Ctrl-Shift-Click and the SetFocus button
+# 1 - direct focus for Ctrl-Shift-Click, gradual focus for the SetFocus button
+# 2 - gradual focus for Ctrl-Shift-Click, direct focus for the SetFocus button
+# 3 - gradual focus for both Ctrl-Shift-Click and the SetFocus button
+#SetFocusMode=2
+
+# Specifies a default setting for the corresponding option in the 
+# Options->Selection Options menu. Set to 1 to disable geometrical dynamics 
+# attached to an object when the object is selected for editing to simplify
+# editing of rotated or scaled objects with Sticky move mode.
+#DisableDynamicsForEditing = 0
+
+# Specifies a default setting for the corresponding option in the 
+# Options->Dynamics Options menu. Set to 0 to display predefined attribute 
+# dynamics after the standard attribute transformation options.
+#ShowPredefinedDynamicsFirst = 1
+
+# Disables update performance indicators in the Run mode toolbar. 
+#DisablePerformanceDisplay = 0
+
+# Set to 1 to automatically load and save subdrawing files without displaying 
+# a file browser when traversing subdrawings hierarchy. If it is set to 0 
+# (defalut), a file dialog will be displayed to allow selecting a different 
+# subdrawing file or discarding the changes. Silent traversal provides a
+# simplified interface for unsophisticated users.
+#SilentSDTraversal = 0
+
+# Set to 0 to allow setting a text object's TextScaling attribute to RESIZE 
+# while BaseWidth of all parent viewports is unset. If set to 1, a warning 
+# is generated if BaseWidth is not set to a positive value, preventing the 
+# setting of the TextScaling attribute.
+#BaseWidthWarning = 1
+
+# Set to 1 to enable the ConstrainOne button (when applicable). 
+# By default, only the ConstrainAll button is enabled. 
+#EnableConstrainOne = 0
+
+# Set to 1 to enable advanced transformation objects, such as IDENTITY 
+# and TRANSFER.
+#EnableAdvancedTransforms = 0
+
+# Set to 1 to enable advanced deprecated transformation objects, such as RANGE
+# (in addition to the new RANGE INPUT transform).
+#EnableDeprecatedTransforms = 0
+
+# Set to 0 to disable More button in the Font Type and Font Size palettes.
+#FontPalettesMoreButton = 1 
+
+# If set to one, the tag selected in the Tag Browser is used as a TagName.
+# If set to 0, the selected tag is used as a TagSource.
+#BrowseTagSources = 1
+
+# If set to 1, highlights objects whose attributes are controlled by the selected
+# tag, resource, property or attribute.
+#TraceTagsResourcesAndConstraints = 0
+
+# If set to 1, highlights elements in Attribute dialog that are controlled by the
+# attribute marked as Mark0. This may be used to find the exact attribute of
+# the selected object that is controlled by the marked attribute.
+#TraceMark0 = 0
+
+# Controls tracing behavior. If set to 0, the first found drawable parent of the
+# traced object will be highlighted. If set to 1, the parent that has the
+# IsWidget resource will be highlighted.
+#HighlightWidgets = 0
+
+# Controls tracing behavior. If set to 0, the first found drawable parent of the
+# traced object will be highlighted. If set to 1, the parent that is a direct
+# child of the Drawing Area that has editing focus will be highlighted.
+#HighlightTopLevelObjects = 0
+
+# When set to 1, enables OEM mode that allows the user to add export tags
+# for public properties for components to be used in the HMI Editor.
+# The export tags are also used for editing predefined transformation 
+# templates.
+#OEM=0
+
+# OEM MODE ONLY: When set to 1, export tag information is shown in the
+# Tag field of the attribute object dialog (OEM default), otherwise
+# the data tag information is shown (non-OEM default). The OEM mode
+# for the Enterprise Edition of the Builder is started using the -oem
+# command-line option and is used for defining public properties for
+# objects by adding export tags to their attriburtes. The objects with
+# public properties are used in the HMI Editor as custom components with 
+# predefined properties.
+#ShowExportTagsAsAttrTags = 1
+
+# Defines the size of the Editor window.
+#EditorWindowWidth = 800
+#EditorWindowHeight = 600
+
+# Defines the default size of the fixed scale widget for File, New Widget.
+#WidgetWidth = 800
+#WidgetHeight = 600
+
+# Define Custom Width/Height Ratio for the New, Widget (Resize and Stretch) menu.
+#CustomSpanX = 1500
+#CustomSpanY = 1000
+
+########################################################################
+# Global GLG configuration resources (a partial list).
+# 
+# The application may set corresponding global configuration resources 
+# using the GLG API to achieve the same effect at run-time.
+########################################################################
+
+#GlgPickResolution = 5
+#GlgSaveFormat = ascii
+#GlgCompressFormat = compressed
+#GlgPSLevel = 2
+#GlgSearchPath = 
+#GlgJavaScriptFile = 
+#GlgArrowShape = 15. 5. 0
+#GlgButtonTooltipTimeout = 0.5
+#GlgMouseTooltipTimeout = 0.5
+#GlgFontCharset = 0
+#GlgMultibyteFlag = 0
+#GlgDefaultNumFontTypes = 12
+#GlgDefaultNumFontSizes = 7
+#GlgDefaultFontFile =
+#GlgDefaultXftFontFile =
+#GlgDefaultFontTableFile =
+#GlgDefaultPSFontFile =
+#GlgXFTFonts = 1
+#GlgDebugXFTFonts = 0
+#GlgIndexedColorTableFile =
+#GlgIndexedColorFile =
+#GlgDefaultColorTableType = 1
+#GlgSelectAllOnFocus = 1
+
+# Controls the number of color hues in the GLG Builder's palette.
+# Increase color factor gradually (3,4,5,6,...) to avoid creating 
+# a huge number of colors.
+#GlgDefaultColorFactor = 5
+
+# Controls the number of color grades in the GLG Builder's palette.
+#GlgDefaultNumColorGrades = 20
+
+# Disables OpenGL for viewports with the OpenGL priority greater than this
+# threshold.
+#GlgOpenGLThreshold = 10
+
+# Windows only: forces viewports with the OpenGL priority greater than this
+# threshold to use software renderer.
+#GlgOpenGLHardwareThreshold = 10
+
+########################################################################
+# Editor customization variables (for use by system integrators).
+########################################################################
+
+# Specifies a filename of a custom editor layout.
+#EditorLayoutFile =
+
+# Specifies a location of widget palettes.
+#PalettesLocation =
+
+# Specifies a filename of a custom OEM color palette drawing.
+#CustomColorPalette =
+
+# Specifies a filename of a drawing containing templates of custom OEM 
+# dynamics.
+#CustomXformTemplates =
+
+# Specifies a filename of a drawing containing templates of custom action
+# commands, custom action data sets, as well as custom data sets.
+#CustomCommandTemplates =
+
+# Specifies a filename of a Custom Data Library used in the Builder to
+# browse data tags of an application-specific process database. 
+#CustomDataLib =
+
+# Specifies a filename of a Custom Option DLL used to add OEM menus and icons
+# to the Editor. 
+#CustomOptionLib =
+
+# Specifies a filename of a drawing containing custom OEM icons used with 
+# the Custom Option Library.
+#CustomIcons =
+
+# Specifies a filename of a Custom Proto DLL used to provide a custom 
+# application for the Run Mode of the Editor. The custom application
+# may update the tags and resources defined in the drawing with real data,
+# and handle user interaction. The StartRun may be used to start the Editor
+# in the Run Mode.
+#CustomProtoLib =
+
+# Set to 1 to start the Editor in the Run mode.
+#StartRun = 0
+
+# Set to 1 to use a separate window for the Run mode.
+#RunWindow = 0
+
+# Defines the size of the separate Run window.
+#RunWindowWidth = 800
+#RunWindowHeight = 600
+

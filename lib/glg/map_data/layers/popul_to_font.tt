@@ -1,0 +1,10 @@
+# Chooses font depending on city/town population
+
+INPUT DATA TYPE= GLM_D
+OUTPUT DATA TYPE= GLM_S
+
+0	"roboto"
+10000	"roboto_b"
+50000	"roboto_b"
+100000	"roboto_b"
+500000	"roboto"

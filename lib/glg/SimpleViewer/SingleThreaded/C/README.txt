@@ -1,0 +1,49 @@
+This example provides a sample implementation of a simple GLG viewer 
+application and uses the GLG tags feature in a generic way, allowing 
+to animate any GLG drawing created in the GLG Builder or 
+GLG HMI Configurator. 
+
+The program loads a specified GLG drawing, queries a list of all 
+tags defined in the drawing at design time and animates the drawing 
+with data.
+
+The drawing filename may be supplied as a command line argument, or
+otherwise a default drawing name defined in the application code 
+is loaded. In this example, the default drawing name is "tags_example.g".
+
+Data connectivity between dynamic graphical parameters and the 
+data acquision system is defined at design time in the GLG editor,
+by attaching a tag to the data-driven dynamic attribute and 
+defining a TagSource that represents a database field (data variable)
+that will be used to drive the animation at run-time.
+
+Dynamic data values for animation are supplied either using simulated
+demo data in demo_datafeed.c, or live application data in datafeed.c.
+The application developer should provide custom data acquisition code
+for Read/Write functions datafeed.c to communicate with the application
+specific data acquisition system.
+
+Upon drawing loading, the program obtains a list of tags defined in
+the drawing. After the drawing is displayed, the program periodically
+queries a new data value for each tag in the list using the specified
+DataFeed object, pushes the new value into the graphics, and updates 
+the display to show new dynamic values.
+
+To use live data for animation:
+
+1. Provide custom implementation of the Read/Write methods in datafeed.c.
+
+2. Set RANDOM_DATA flag in GlgViewer.c to False, or use -live-data command 
+   line option. 
+
+Supported command line options:
+
+  -random-data  
+        uses simulated demo data for animation
+
+  -live-data
+        uses live application data for animation
+ 
+  <filename>
+         specifies GLG drawing filename to be loaded and animated;
+         if not defined, DefaultDrawingName is used.

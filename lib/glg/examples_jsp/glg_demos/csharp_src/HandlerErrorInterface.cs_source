@@ -1,0 +1,7 @@
+using System;
+
+// Interface for reporting handler error messages.
+public interface HandlerErrorInterface
+{
+   void Error( String message );
+}

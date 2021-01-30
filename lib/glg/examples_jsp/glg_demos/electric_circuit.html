@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Mobile Process Control and Monitoring : AJAX Circuit
+Monitoring Demo</title>
+  <script src="glg_script.js" type="text/javascript"></script>
+  <script type="text/javascript">
+<!--
+
+// glg_script.js contains the JS source code of the GLG script object that
+// provides convenience methods for communicating with the GLG JSP servlet.
+
+var gso = null;        // GLG script object
+var small_size = false;
+
+function OnLoad()
+{
+   gso = new GlgSO();   // Create GLG script object.
+
+   gso.SetImageID( "circuit_image" );    // Image to receive servlet's output
+   gso.SetServletBase( "glg_circuit" );  // Servlet URL's base
+   gso.SetIdleTimeout( 600 );        // Stop updates after 10 mins of inactivity
+   
+   // Start/Stop Updates buttons whose state will be updated by the 
+   // StartUpdates() and StopUpdates() methods.
+   //
+   gso.SetStartButtonID( "start_updates" );
+   gso.SetStopButtonID( "stop_updates" );
+
+   // Starts updates with the selected update interval.
+   ChangeUpdateInterval( false );
+}
+
+function ChangeUpdateInterval( update_now )
+{
+   var update_interval;
+
+   if( document.getElementById( "3sec" ).selected )
+      update_interval = 3000;
+   else if( document.getElementById( "5sec" ).selected )
+      update_interval = 5000;
+   else if( document.getElementById( "10sec" ).selected )
+      update_interval = 10000;
+   else if( document.getElementById( "1min" ).selected )
+      update_interval = 60000;
+   else
+      alert( "Invalid update interval!" );
+
+   gso.SetUpdateInterval( update_interval );
+
+   // update_now is false on load: image has already been loaded.
+   gso.StartUpdates( update_now );
+}
+
+function ChangeImageSize()
+{
+    if( small_size )
+    {
+       gso.SetServletSize( 800, 600 );     // Set larger size
+       small_size = false;
+    }
+    else
+    {
+       gso.SetServletSize( 600, 450 );     // Set smaller size
+       small_size = true;
+    }
+    
+    gso.UpdateImage();
+}
+
+//-->
+  </script>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body onload="OnLoad()" style="font-family: Arial;" bgcolor="white">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+<h2> GLG Graphics Server: AJAX Electrical Circuit Monitoring Demo </h2>
+<input id="start_updates" value="Start Updates"
+ onclick="gso.StartUpdates( true )" type="button">
+<input id="stop_updates" value="Stop Updates"
+ onclick="gso.StopUpdates()" type="button">Update Interval:
+<select size="1" name="interval_menu"
+ onchange="ChangeUpdateInterval( true )">
+<option id="3sec" value="3" selected="selected">3 seconds</option>
+<option id="5sec" value="5">5 seconds</option>
+<option id="10sec" value="10">10 seconds</option>
+<option id="1min" value="60">1 minute</option>
+</select>
+<input value="Change Image Size" onclick="ChangeImageSize()"
+ type="button">
+<hr style="width: 100%; height: 2px;"><img id="circuit_image"
+ src="glg_circuit?width=800&height=600" alt="Loading Image..."
+ title="Circuit Monitoring"><br>
+<hr style="width: 100%; height: 2px;">
+<a href="java_src/GlgCircuitServlet.java">JSP Servlet Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="csharp_src/GlgCircuitHandler.cs_source">ASP.NET Handler Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="glg_circuit?width=800&height=600">Dynamic Image URL</a>
+<hr style="width: 100%; height: 2px;">
+<p><a href="#overview">Demo Overview</a><br>
+<a href="#thin_client">Thin-client solution</a><br>
+<a href="#image_example">Image Generation</a><br>
+<a href="#dynamic_data">Dynamic Data Supply</a><br>
+<a href="#customizing">Customizing JSP Servlet or ASP.NET Handler</a><br>
+</p>
+<a name="overview"></a>
+<h4> Overview </h4>
+<p>This AJAX demo demonstrates using the <a
+ href="http://www.genlogic.com/graphics_server.html">GLG Graphics Server</a>
+for a web-based electrical circuit monitoring application.<br>
+</p>
+<p>Refer to the <a href="process_demo.html">Process Demo</a> for an
+AJAX example of handling <a
+ href="process_demo.html#ajax_user_interaction">user interaction</a>
+such as <b>tooltips</b>, <b>object selection</b> and <b>drill-down</b>.
+The
+<a href="process_demo.html">Process Demo</a> also provides a
+detailed explanation of how the GLG Graphics Server
+work.</p>
+<a name="thin_client"></a>
+<h4> Thin Client Solution </h4>
+<p>This AJAX demo demonstrates the <b>thin-client server-side
+solution</b> for displaying dynamic real-time graphics on a web page
+using the <a href="http://www.genlogic.com/graphics_server.html">
+GLG Graphics Server</a>. It is <span style="font-weight: bold;">browser
+independent</span> and may be used on any <b>embedded </b>or <b>mobile
+device</b>. </p>
+<p>The GLG Graphics Server is deployed on the server with either <span
+ style="font-weight: bold;">JSP</span> or <span
+ style="font-weight: bold;">ASP.NET</span>. The client side uses
+industry-standard
+<b>HTML</b> and <b>JavaScript</b> (including HTML5).<br>
+</p>
+<a name="image_generation"></a>
+<h4>Image Generation</h4>
+<p>A server-side JSP Servlet or ASP.NET Handler generates an image of
+the monitored
+process updated with real-time data. The image is periodically
+reloaded by client-side JavaScript with a user-defined update interval.
+</p>
+<p>The Servlet or Handler generates an image by loading a GLG drawing
+and invoking the drawing's <i>CreateImage()</i> method. The drawing is
+created using the <b>GLG Graphics Builder</b>, which allows a
+developer to draw graphical objects, attach <a
+ href="http://www.genlogic.com/toolkit.html#Unlimited_Geometrical_Dynamics">
+dynamic actions</a>, define selection events and tooltips, as well as
+define object <a
+ href="http://www.genlogic.com/architecture.html#Resource_Based_Data_Access">
+resources</a> to animate the drawing with data. With the help of the
+Builder, dynamic drawing may be created and modified interactively
+without tedious graphics programming.</p>
+<p>GLG drawings are <a
+ href="http://www.genlogic.com/toolkit.html#Scalable_Vector_Graphics">
+screen-resolution independent</a>. When a
+drawing is loaded into the Servlet or Handler, it may be scaled to
+generate
+images of arbitrary sizes. Before generating an image, the Servlet
+or Handler updates the drawing with <span style="font-weight: bold;">real-time</span><b>
+data</b> by setting
+the drawing's resources using <a
+ href="http://www.genlogic.com/integration.html#Data_Supply">
+<i>SetResource</i></a> methods of the GLG API.</p>
+<p>The drawing is <b>loaded only once</b> and reused between all
+Servlet
+or Handler instances and threads. This increases performance and also
+ensures that all generated images display the same state of the
+monitored process.<br>
+</p>
+<p>The demo displays the generated process image in an HTML page, and
+JavaScript is used periodic refreshes and handling user interaction.
+The same image URL may be used as a component in multiple web pages.</p>
+<a name="image_example"></a>
+<h4>Image Generation Example</h4>
+<p><a href="glg_circuit?width=800&height=600">Click here</a> to view
+the output image directly as a URL.</p>
+<p>Reload the page to see new data or change the width/height
+parameters of the URL to change image size.</p>
+<p>Such a dynamic URL may be inserted as an image in any web page, and
+a timer can be used to periodically reload the image to show new data. </p>
+<p>Click on the links to see the <b>source code</b> of the <a
+ href="java_src/GlgCircuitServlet.java">JSP Servlet</a> or the <a
+ href="csharp_src/GlgCircuitHandler.cs_source">ASP.NET</a> Handler used for to
+generate the image.</p>
+<a name="dynamic_data"></a>
+<h4>Dynamic Data Supply</h4>
+<p>The demo uses simulated data to update the circuit display. In an
+application,
+the Servlet or Handler can query data from any data source, such as a
+PLC or
+process database, using <span style="font-weight: bold;">any preferred
+data
+connectivity API</span>. Alternatively, the data may also be supplied
+by the HTML or
+JavaScript via the parameters of the image URL.</p>
+<p>The Servlet or Handler updates the drawing with new data by setting
+the drawing's
+resources using <a
+ href="http://www.genlogic.com/integration.html#Data_Supply"><i>SetResource</i></a>
+methods of the GLG API. The <a
+ href="http://www.genlogic.com/architecture.html#Resource_Based_Data_Access">
+resources</a> for animating the drawing with data are defined in the
+Graphics Builder when the drawing is created.</p>
+For example, in the demo's drawing, a switch object named <i>"#SW1_1"</i>
+has a resource named <i>"#State"</i> that controls the state of the
+switch, ON or OFF. The servlet may update the displayed switch state by
+using
+the <i>"#SW1_1/#State"</i> resource name:
+<p>&nbsp;&nbsp;&nbsp;&nbsp;
+<i>drawing.SetDResource( "#SW1_1/#State", switch_1_1_var );</i></p>
+<p>The use of resources helps to separate graphics from the
+programming logic. The application simply sets a logical resource
+named <i>"#SW1_1/#State"</i>, and the GLG's graphics engine takes care
+of
+all low-level details of rendering the objects' graphics.</p>
+<a name="customizing"></a>
+<h4>Customizing JSP Servlet or ASP.NET Handler</h4>
+<p>The Servlet or Handler functionality can be customized according to
+the application requirements. <a href="java_src/GlgCircuitServlet.java">JSP
+Servlet</a><span style="font-weight: bold;"> </span>and<span
+ style="font-weight: bold;"> </span><a
+ href="csharp_src/GlgCircuitHandler.cs_source">ASP.NET Handler</a> source code
+is provided and
+may be
+customized to perform various application-specific tasks. The Servlet
+or Handler uses the <b>GLG Graphics Server library</b> that provides
+developers with both the GLG Standard and Extended API methods
+described in the GLG documentation.</p>
+<p>All graphical features of the GLG applications are also available
+in the Servlet or Handler, including the programmatic creation of
+objects in the
+drawing and on-the-fly creation of dynamic icons using the GLG
+Extended API.</p>
+<hr style="width: 100%; height: 2px;">
+<p style="font-size: 80%; font-family: arial;"><a
+ href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+</body>
+</html>

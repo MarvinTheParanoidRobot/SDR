@@ -1,0 +1,98 @@
+# US cities layer. Displays smaller cities and towns as zoom factor
+# increases.
+
+TYPE=VECTOR
+TRANS TYPE=OPAQUE
+
+FILENAME=us_cities.gvf
+# Example of using filters:
+#    FILTER="mkr_convert.x"
+#    FILENAME=us_cities.mkr
+
+# TrueType font sample
+FONT=roboto_b
+FONT SCALE=10
+
+# Vector font sample
+#    FONT=roman
+#    FONT SCALE=0.3
+
+TEXT TYPE="MAPPED FLAT"
+TEXT ANGLE=0.
+TEXT ANCHOR=HLEFT VCENTER
+LABEL STYLE=OUTLINE
+LABEL EDGE COLOR=1. 1. 0.
+LABEL OUTLINE COLOR=0. 0.2 0.
+
+LAYOUT TYPE=GLOBAL
+
+# Minimum zoom for the whole layer. Zoom threshold is attached below to
+# control MIN ZOOM for each city depending on its population.
+MIN ZOOM=2.5
+MAX ZOOM=-1.
+
+# Example of an elaborate label with population and lat/lon display.
+#    LABEL FORMAT="City: <0>, pop:<1%.0lf>\n<-1%.3lf> N/S, <-2%.3lf> E/W"
+
+# Example of using custom attributes to print either "Town" or "City"
+#    depending on value of the population attribute:
+#    LABEL FORMAT="<5>: <0>\npopulation:<1%.0lf>"
+# Custom attribute for printing a custom string (i.e. City, Town) based
+# on the value of the population attribute.
+#    CUSTOM ATTR=5 CityDescriptor GLM_S
+#    ATTR MAP=1 CityDescriptor   popul_to_city.tt   ABS
+
+# Simple label using place name (attr index=0):
+LABEL FORMAT=<0>
+
+MARKER ICON TYPE="CIRCLE_FILL,CIRCLE_EDGE,DOT"
+MARKER ICON SIZE=7
+MARKER EDGE COLOR=1. 1. 1.
+MARKER FILL COLOR=1. 0. 0
+TEXT OFFSET VERT=2
+TEXT OFFSET HORIZ=2
+
+# Mapping for attributes
+
+# Example of changing LabelEdgeColor depending on zoom factor (index=-4):
+#   ATTR MAP=-4 LabelEdgeColor     	zoom_to_color.tt          ABS
+
+# Examples of changing city marker attributes depending on the population 
+# attribute (index=1)
+ATTR MAP=1 MarkerSize    	popul_to_size.tt          ABS
+ATTR MAP=1 MarkerType    	popul_to_type.tt          ABS
+ATTR MAP=1 MarkerFillColor	popul_to_color.tt         ABS
+ATTR MAP=1 MarkerEdgeColor	popul_to_edge_color.tt    ABS
+ATTR MAP=1 FontScale     	popul_to_scale.tt         REL
+ATTR MAP=1 TextFont     	popul_to_font.tt          ABS
+ATTR MAP=1 LabelPriority     	popul_to_priority.tt      ABS
+
+# A simple example of displaying smaller cities and towns as zoom 
+# factor increases. The ATTR MAP changes MinZoom factor for each city
+# depending on its population attribute (index=1). The MIN ZOOM setting
+# above controls the MIN ZOOM factor for switching off the whole layer.
+#
+ATTR MAP=1 MinZoom   popul_to_zoom.tt    ABS
+
+# A more complex example of displaying smaller cities and towns as zoom 
+# factor increases. If does the same thing as the MinZoom ATTR MAP above, 
+# but uses an attribute condition, which is faster and more flexible.
+# It defines the MinPopulation custom attribute (index=6) and defines an
+# attribute condition that displays cities/towns with the population 
+# attribute (index=1) greater than MinPopulation custom attribute (index=6).
+#
+#   ATTR COND= @1 > @6
+#
+# Custom attribute that controls the minimum city population to be displayed.
+#    CUSTOM ATTR=6 MinPopulation GLM_D
+#
+# Maps zoom factor (index=-4) to the value of the MinPopulation custom attr
+# using a threshold table.
+#    ATTR MAP=-4 MinPopulation   zoom_to_min_popul.tt   ABS
+
+# For faster clipping of UNTILED vector data (without reading),
+#   generated using bounding box extraction utility (-gvf-info option).
+MIN LAT= 19.729722
+MAX LAT= 64.837778
+MIN LON= -158.217500
+MAX LON= -67.840833

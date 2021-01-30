@@ -1,0 +1,45 @@
+# layer and font directories must be defined before layers or fonts are defined
+#GLM ROOT DIR=/usr/local/glg/map_data
+#LAYER DIR=layers
+FONT DIR=../fonts
+
+ZOOM FACTOR TYPE="EXTENT AND WIDTH"
+
+# Fonts
+VECTOR FONT=roman romans.data
+VECTOR FONT=script scriptc.data
+
+IMAGE FONT=roboto     Roboto-Regular.ttf
+IMAGE FONT=roboto_i   Roboto-Italic.ttf
+IMAGE FONT=roboto_b   Roboto-Bold.ttf
+IMAGE FONT=roboto_bi  Roboto-BoldItalic.ttf
+IMAGE FONT=roboto_t   Roboto-Thin.ttf
+IMAGE FONT=roboto_ti  Roboto-ThinItalic.ttf
+IMAGE FONT=roboto_l   Roboto-Light.ttf
+IMAGE FONT=roboto_li  Roboto-LightItalic.ttf
+IMAGE FONT=roboto_m   Roboto-Medium.ttf
+IMAGE FONT=roboto_mi  Roboto-MediumItalic.ttf
+IMAGE FONT=roboto_k   Roboto-Black.ttf
+IMAGE FONT=roboto_ki  Roboto-BlackItalic.ttf
+
+DEFAULT FONT=roboto
+ERROR FONT=roboto
+
+# Layers from the sample map_data dataset, kept in the layers directory.
+LAYER=earth          ../layers/earth.lif
+LAYER=earth_fallback ../layers/earth_fallback.lif
+
+# Grid layer
+LAYER=grid               grid_aircombat.lif
+
+ALIAS=shadow   "dem_shadow,dem_shadow2,dem_shadow3,dem_shadow4,dem_shadow5"
+
+# DCW layers
+LAYER=bnd_polbnda        v0noa/j/j/bnd_polbnda.aft.gvf.lif
+LAYER=hydro_inwatera     v0noa/j/j/hydro_inwatera.aft.gvf.lif
+LAYER=pop_builtupa       v0noa/j/j/pop_builtupa.aft.gvf.lif
+
+LAYER=bnd_coastl         v0noa/j/j/bnd_coastl.lft.gvf.lif
+LAYER=hydro_watrcrsl     v0noa/j/j/hydro_watrcrsl.lft.gvf.lif
+LAYER=trans_railrdl      v0noa/j/j/trans_railrdl.lft.gvf.lif
+LAYER=trans_roadl        v0noa/j/j/trans_roadl.lft.gvf.lif

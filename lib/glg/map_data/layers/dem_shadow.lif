@@ -1,0 +1,17 @@
+TYPE=IMAGE
+
+TRANS TYPE="BUMP MAP"
+FILENAME=dem_shadow_1350x675.jpg
+
+# with BUMPMAPs, alpha >1. is acceptable
+ALPHA=2.5
+
+MIN LON=-180.
+MAX LON=180.
+MIN LAT=-90.
+MAX LAT=90.
+
+#MIN ZOOM=1.
+MAX ZOOM=20.
+
+DEFAULT ON=1

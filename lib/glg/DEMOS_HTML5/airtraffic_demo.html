@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HTML5 & JavaScript: Real-Time GIS Monitoring:
+      GIS Air Traffic Control Web Demo</title>
+
+    <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon">
+    <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon"> 
+    <link rel="stylesheet" href="demo.css">
+
+    <script defer src="GlgDemo.js"></script>
+    <script defer src="GlgToolkitDemo.js"></script>
+    <script defer src="gunzip.min.js"></script>
+    <script defer src="airtraffic_demo.js"></script>
+    <script> var MobileVersion = false; </script>
+  </head>
+
+  <body>
+    <p>
+      <a href="http://www.genlogic.com">Home</a> |
+      <a href="http://www.genlogic.com/demos.html">Demos</a> |
+      <a href="http://www.genlogic.com/index.html#Products">Products</a>
+    </p>
+
+    <h4>GIS Air Traffic Control Web Demo (HTML5 & JavaScript)</h4>
+
+    <p>This is an example of a <b>GIS monitoring application written entirely
+        in JavaScript</b> using the GLG Extended API. The demo demonstrates      
+      the use of the <b>GLG Map Server</b> integrated inside of a GLG drawing
+      as a GLG GIS Object. The Map Server is used to generate the background map,
+      while the GLG Toolkit is used to <b>display dynamic icons on top of the
+        map</b> and handle user interaction.
+      <a href="#info" >More information</a></p>
+
+    <p>The demo uses a simple vector dataset. More detailed datasets, such as
+      an <a href="http://www.genlogic.com/rel38.html#Open_Street_Map_Dataset">
+        <b>Open Street Map dataset (OSM)</b></a>, may be used depending on the
+      application needs.</p>
+
+    <button id="change_size" type="button" class="top_button"
+            onclick="SetDrawingSize( true )">Change Drawing Size</button>
+    <a href="airtraffic_demo.js" target="_blank" style="text-decoration: none;">
+      <button type="button" class="top_button">Source Code</button>
+    </a>
+    <button type="button" class="top_button" onclick="EnableTouchDragging()">
+      Enable Touch Dragging</button>
+    <a href="airtraffic_demo_mobile.html" style="text-decoration: none;">
+      <button type="button" class="top_button">
+        Mobile Version</button>
+    </a>
+
+    <br><br>
+    <div id="glg_area" class="glg_wrapper"
+         style="width: 100%; height: 300px; background-color: white; 
+                padding: 0px;"> 
+    </div>
+
+    <p><a name="info"></a>
+      The JavaScript version of the demo provides the same functionality as
+      the desktop versions written in C/C++, C# and Java. The GLG drawing and
+      the programming logic are shared between all versions of the demo, with
+      only syntax differences between the source code of different versions.
+      The <a href="http://www.genlogic.com/download.html">GLG Demo Download</a>
+      includes the desktop versions of this demo.</p>
+    
+    <p>The demo uses asyncronous map loading requests: when the map is zoomed or
+      scrolled, the program will continue to operate in the old zoom or pan state
+      and will switch to the new zoom or pan when the new map is ready. 
+      The <a href="gis_demo.html">GIS Air Traffic Monitoring Demo</a>
+      demonstrates an <b>alternative approach</b> that changes the drawing
+      to the new zoom or pan state right away, while the new map will appear
+      when it's loaded.</p>
+
+    <ul>
+      <li><a href="#Overview">Overview</a><a></a></li>
+      <li><a href="#User_Interface">User Interface</a></li>
+    </ul>
+    
+    <h4><a name="Overview"></a>Overview </h4>
+
+    <p>The demo shows functionality typical for the air traffic applications,
+      changing the airplane icons to display <b>more elaborate shapes</b> when
+      the map is zoomed in. The color of the airplane icon changes to
+      <b>display the plane's status</b>. For the high zoom factors, the
+      <b>plane history</b> is also displayed in a form of a shading out
+      airplane trail.</p>
+
+    <p>The plane labels may also be turned on or off to control the amount
+      of displayed information, and a <b>tooltip with the flight information</b>
+      is displayed when the mouse is moved over a plane icon. The airport icons
+      also display a tooltip with their coordinates on mouse over.
+      On <b>mobile devices</b>, tooltips are activated by a touch and hold
+      action.</p>
+
+    <p>When an <b>airplane icon is selected with the mouse</b>, a popup panel
+      is activated to display additional information about the flight,
+      including its flight number, lat/lon coordinates, speed and elevation.</p>
+
+    <p>The demo also shows an example of implementing a
+      <b>distance measuring mode</b>.</p>
+
+    <p>On the initial appearance, the demo shows the map of the whole world
+      in the orthographic projection, then zooms on the Florida area to show
+      more details. When the map is zoomed in, the shape of the icons will
+      change to show the plane's direction, and labels with additional
+      information about the airplane will be displayed. A vertical bar next
+      to the airplane icon will show the <b>airplane's elevation</b>.
+      Icon labels may be turned on or off with a toolbar button.</p>
+
+    <p>The map may be zoomed using zoom buttons in the toolbar. The tooltips
+      may be used to identify toolbar buttons. The directional buttons in the
+      upper left corner of the map may be used to scroll the map.
+      The <b>GLG GIS Object</b> takes a complete care of the map display,
+      automatically generating Map Server requests to re-generate the map image
+      when the map is panned or zoomed.</p>
+
+    <h4><a name="User_Interface"></a>User Interaface </h4>
+
+    <ul>
+      <li>Move the mouse over an icon <b>to display a tooltip</b> with
+        icon information, (touch and hold an icon on mobile devices).
+        </li>
+
+      <li>Move the mouse over a map (or touch on mobile devices)
+        <b>to display the lat/lon coordinates</b> of the cursor (touch)
+        in the lower right corner of the map.</li>
+
+      <li>Click on the moving icon to select it and display detailed
+        information about the plane, including its current speed,
+        position and elevation.</li>
+
+      <li>The toolbar contains buttons for <b>switching various layers on and
+          off</b>, changing plane icon size and turning icon labels on and off.
+        Use tooltips to identify toolbar buttons.</li>
+
+      <li><b>To measure a distance</b> on the map, press the
+        <i>Distance Measuring</i> toolbar button, then select several points
+        on the map with the mouse. The distance between the point will be
+        displayed in the lower left corner of the map. To exit the measuring
+        mode, press the <i>Distance Measuring</i> button again, or press 
+        either the right mouse button or the <i>ESC</i> key.
+      </li>
+
+      <li>The status area at the bottom displays prompts for various demo modes,
+        and displays status information and prompts.<li>
+    </ul>
+
+    <p><b>NOTE:</b> To run the demo locally from your own server, the
+      GLG Map Server has to be setup on that server. If the map server
+      is not set up, the map image will be missing.</p>
+
+  </body>
+</html>

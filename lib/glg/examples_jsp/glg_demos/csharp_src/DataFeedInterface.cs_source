@@ -1,0 +1,21 @@
+using System;
+using System.Collections.Generic;
+
+// Data feed interface.
+public interface DataFeedInterface
+{
+   // Fill values of the provided tag list.
+   void ReadValues( List<GlgTagRecord> tag_records );
+
+   // Query a D (double) tag value from the database.
+   bool ReadDValue( GlgTagRecord tag_record );
+
+   // Query an S (string) tag value from the database.
+   bool ReadSValue( GlgTagRecord tag_record );
+
+   // Write numerical value into the provided database tag. 
+   bool WriteDValue( String tag_source, double d_value );
+ 
+   // Write string value into the provided database tag. 
+   bool WriteSValue( String tag_source, String s_value );
+}

@@ -1,0 +1,83 @@
+#!/bin/sh
+
+##########################################################################
+# To use this script in UNIX environment (on Windows, use GlmScript.pl):
+#
+# 1. Copy the map server executable <glg_dir>/bin/GlmMap, the cgi-script
+#    <glg_dir>/map_server/cgi-bin/GlgScript and the dataset directory 
+#    <glg_dir>/map_data into the web server's cgi-bin directory
+#    (/usr/lib/cgi-bin in the default linux/apache configuration).
+#
+# 2. Make sure GlmMap and GlmScript have execute permission (refer to the 
+#    Map Server INSTALLATION INSTRUCTIONS for details).
+#
+# 3. Create glm_err.log file in the cgi-bin directory (or copy it from
+#    <glg_dir>/map_server/cgi-bin/glm_err.log) and make it writable by 
+#    the web server's cgi-bin (www-data user and/or group in the default 
+#    linux/apache configuration). This file will contain map server's
+#    error messages. To debug the cgi-bin setup, uncomment lines for extra
+#    logging and verbosity in the script below.
+#
+# 4. Edit the MAP_SERVER_EXE variable in the script below to point to the
+#    location of the map server executable.
+#
+# 5. Edit the DATASET variable in the script below to point to the 
+#    location of the dataset's sdf file.
+#
+# 6. If an evaluation version of the map server is used, set the 
+#    GLG_EVAL_STRING variable in the script below to the up-to-date
+#    evaluation code obtained from Generic Logic (www.genlogic.com).
+#    For the production version of the map server, comment out 
+#    GLG_EVAL_STRING settings.
+#
+# The following sample requests use the default demo dataset and may be 
+# used to test a map server installation. To use them, cut and paste a 
+# request into the location field of the browser, replacing "my_web_server"
+# with the name of the web server where the map server is installed.
+#
+#http://my_web_server.com/cgi-bin/GlmScript?VERSION=1.3.0&REQUEST=GetMap&SRS=AUTO2:42003,1.,10,40&WIDTH=714&HEIGHT=512&BBOX=-5102508.8,-5085401.6,5102508.8,5085401.6&BGCOLOR=0x0&STYLES=default&FORMAT=image/jpeg&LAYERS=default&STRETCH=0
+#
+#http://my_web_server.com/cgi-bin/GlmScript?VERSION=1.3.0&REQUEST=GetMap&SRS=AUTO2:42003,1.,10,40&WIDTH=714&HEIGHT=512&BBOX=-5102508.8,-5085401.6,5102508.8,5085401.6&BGCOLOR=0x0&STYLES=default&FORMAT=image/jpeg&LAYERS=earth,political,grid&STRETCH=0
+#http://my_web_server.com/cgi-bin/GlmScript?VERSION=1.3.0&REQUEST=GetMap&SRS=EPSG:4326&WIDTH=800&HEIGHT=700&BBOX=-180,-90,180,90&BGCOLOR=0x0&STYLES=default&FORMAT=image/jpeg&LAYERS=earth&STRETCH=0
+##########################################################################
+
+##########################################################################
+# Configuration variables
+#
+MAP_SERVER_EXE=./GlmMap
+DATASET=/usr/local/map_data/sample.sdf
+ERROR_LOG=./glm_err.log
+
+##########################################################################
+# Uncomment the following lines for extra logging
+#
+# echo >> ${ERROR_LOG}
+# echo NEW MAP REQUEST AT DATE: `date` >> ${ERROR_LOG}
+# echo >> ${ERROR_LOG}
+# echo `env | grep QUERY_STRING` >> ${ERROR_LOG}
+# echo >> ${ERROR_LOG}
+
+##########################################################################
+# Uncomment the following line to generate map server debugging 
+# information
+#
+#VERBOSITY="-verbosity 1"
+
+##########################################################################
+# The following string is required to use the evaluation version of the 
+# map server. Put a most recent eval string here. Comment out 
+# GLG_EVAL_STRING setting for the production or free non-commercial 
+# version of the map server.
+##########################################################################
+#export GLG_EVAL_STRING=CFA7BA9C-3F6E320C-EVAL
+
+##########################################################################
+# Use the following line to test map server installation
+##########################################################################
+${MAP_SERVER_EXE} -generate -cgi ${VERBOSITY} -dataset ${DATASET} \
+		    2>> ${ERROR_LOG}
+
+##########################################################################
+# Use the following line for production installation
+##########################################################################
+#${MAP_SERVER_EXE} -generate -cgi ${VERBOSITY} -dataset ${DATASET}

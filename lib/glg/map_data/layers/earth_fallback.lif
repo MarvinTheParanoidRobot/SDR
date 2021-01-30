@@ -1,0 +1,16 @@
+# the fallback (child) layer for the earth layer
+TYPE=IMAGE
+IMAGE FORMAT=JPEG
+TRANS TYPE=OPAQUE
+# this is the filename or template for tiling
+FILENAME=earth_smaller.jpg
+MIN LON=-180
+MAX LON=180
+MIN LAT=-90
+MAX LAT=90
+MIN ZOOM=-1.
+MAX ZOOM=-1.
+#Image size for information only, it is automatically detected 
+#for untiled layers
+#WIDTH=2048
+#HEIGHT=1024

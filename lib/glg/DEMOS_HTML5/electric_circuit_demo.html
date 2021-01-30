@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HTML5 & JavaScript Library: Electrical Circuit Monitoring Web Demo
+    </title>
+
+    <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon">
+    <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon"> 
+    <link rel="stylesheet" href="demo.css">
+
+    <script defer src="GlgDemo.js"></script>
+    <script defer src="GlgToolkitDemo.js"></script>
+    <script defer src="gunzip.min.js"></script>
+    <script defer src="electric_circuit_demo.js"></script>
+  </head>
+
+  <body>
+    <p>
+      <a href="http://www.genlogic.com">Home</a> |
+      <a href="http://www.genlogic.com/demos.html">Demos</a> |
+      <a href="http://www.genlogic.com/index.html#Products">Products</a>
+    </p>
+
+    <h4> GLG Electric Circuit Web Demo (HTML5 & JavaScript)</h4>
+
+    <p>This is a pure HTML5 and JavaScript example that loads a drawing created
+      with the <b>GLG Graphics Builder</b> into a JavaScript program and animates
+      it with real-time data using the GLG JavaScript Library API.
+
+      <a href="#info" >More information</a></p>
+
+    <button id="change_size" type="button" class="top_button"
+            onclick="SetDrawingSize( true )">Change Drawing Size</button>
+    <a href="electric_circuit_demo.js" target="_blank"
+       style="text-decoration: none;">
+      <button type="button" class="top_button">Source Code</button>
+    </a>
+
+    <br>
+    <div id="glg_area" class="glg_wrapper"
+         style="width: 100%; height: 300px; background-color: white; 
+                padding: 0px;"> 
+    </div>
+ 
+    <p><a id="info" />
+      The drawing containing an electrical circut diagram was created with the
+      <b>GLG Graphics Builder</b>, which allows a user to create graphical
+      objects and define their dynamic behavior using a point-and-click
+      interface, without the need to write graphics code by hand. The drawing
+      is saved into a file
+      <i>(electric_circuit.g)</i>.</p>
+
+    <p>The <b>GLG JavaScript Library</b> is used to deploy the drawing on a
+      web page. The library provides an API to load and display the drawing,
+      animate it with real-time data and handle user interaction.</p>
+    
+    <p>The GLG JavaScript Library implements full GLG run-time functionality
+      present in the GLG C/C++, C# and Java libraries, allowing the same
+      graphical page and programming logic to be shared between the desktop,
+      web and mobile versions of an application.</p>
+
+  </body>
+</html>

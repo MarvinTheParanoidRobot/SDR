@@ -1,0 +1,404 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>AJAX Mobile Dashboard: GLG Graphics Server Dashboard Demo</title>
+  <script src="glg_script.js" type="text/javascript"></script>
+  <script type="text/javascript">
+<!--
+
+// glg_script.js contains the JS source code of the GLG script object that
+// provides convenience methods for communicating with the GLG JSP servlet.
+
+// GLG script objects
+var gso_main = null;
+var gso_hist_chart = null;
+var gso_dial1 = null;
+var gso_dial2 = null;
+var gso_dial3 = null;
+var gso_dial4 = null;
+var small_size = false;
+
+function OnLoad()
+{
+   //////////////////////////////////////////////////////////
+   // Main gso: gso object for the current load chart
+   //////////////////////////////////////////////////////////
+   gso_main = new GlgSO();   // Create GLG script object.
+   
+   gso_main.SetImageID( "load_graph" );    // Image to receive servlet's output
+   gso_main.SetServletBase( "glg_graph" ); // Servlet URL's base
+
+   // Start/Stop Updates buttons whose state will be updated by the 
+   // StartUpdates() and StopUpdates() methods.
+   //
+   gso_main.SetStartButtonID( "start_updates" );
+   gso_main.SetStopButtonID( "stop_updates" );
+  
+   //////////////////////////////////////////////////////////
+   // gso object for the historical chart (packed bar graph)
+   //////////////////////////////////////////////////////////
+   gso_hist_chart = new GlgSO();   // Create GLG script object.
+   
+   gso_hist_chart.SetImageID( "packed_bar_graph" );        // Image to receive servlet's output
+   gso_hist_chart.SetServletBase( "glg_graph_selection" ); // Servlet URL's base
+   gso_hist_chart.SetUpdateInterval( 0 );  // Disable updates: it's a historical chart
+   
+   gso_hist_chart.SetTooltipID( "tooltip_div", "tooltip_data" ); // Tooltip elements
+   gso_hist_chart.SetDialogID( "dialog_div", "dialog_data" );    // MouseClick dialog elements
+
+   //////////////////////////////////////////////////////////
+   // gso objects for four dials
+   //////////////////////////////////////////////////////////
+   gso_dial1 = CreateDial( 1 );
+   gso_dial2 = CreateDial( 2 );
+   gso_dial3 = CreateDial( 3 );
+   gso_dial4 = CreateDial( 4 );
+
+   //////////////////////////////////////////////////////////
+
+   // Defines update callback used to update other gso objects 
+   // when the main gso is updated.
+   gso_main.SetAfterUpdateCB( UpdateCB );
+
+   // Starts updates with the selected update interval.
+   ChangeUpdateInterval( false );
+}
+
+function CreateDial( dial_index )
+{
+   var gso;
+
+   gso = new GlgSO();   // Create GLG script object.
+   
+   gso.SetImageID( "dial" + dial_index );  // Image to receive servlet's output
+   gso.SetServletBase( "glg_dial" );       // Servlet URL's base
+   gso.SetUpdateInterval( 0 ); // Disable updates: will be driven by the main gso
+
+   // Get a version of CustomDialParam callback depending on the dial type:
+   // find dial callback method by its name using the passed dial_index.
+   //
+   var dial_cb = window[ "CustomDialParam" + dial_index ];
+
+   // Defines method that provides custom parameters to be sent to the servlet.
+   gso.SetCustomRequestParam( dial_cb );
+   
+   return gso;
+}
+
+// Provides dial type and label parameters to be appended to the 
+// servlet request.
+//
+function CustomDialParam1()
+{
+   return "&dial_type=0&label=Server+1";   // Space is encoded in URLs with '+' 
+}
+
+function CustomDialParam2()
+{
+   return "&dial_type=1&label=Server+2";
+}
+
+function CustomDialParam3()
+{
+   return "&dial_type=3&label=Server+3";
+}
+
+function CustomDialParam4()
+{
+   return "&dial_type=2&label=Total";
+}
+
+// Invoked on each update of the main gso, is used to update the rest of
+// gso objects on the page.
+function UpdateCB()
+{
+   gso_dial1.UpdateImage();
+   gso_dial2.UpdateImage();
+   gso_dial3.UpdateImage();
+   gso_dial4.UpdateImage();
+}
+
+function ChangeUpdateInterval( update_now )
+{
+   var update_interval;
+
+   if( document.getElementById( "3sec" ).selected )
+      update_interval = 3000;
+   else if( document.getElementById( "5sec" ).selected )
+      update_interval = 5000;
+   else if( document.getElementById( "10sec" ).selected )
+      update_interval = 10000;
+   else if( document.getElementById( "1min" ).selected )
+      update_interval = 60000;
+   else
+      alert( "Invalid update interval!" );
+   
+   gso_main.SetUpdateInterval( update_interval );
+
+   // update_now is false on load: image has already been loaded.
+   // Updating the main gso will update the rest of gso objects via UpdateCB
+   gso_main.StartUpdates( update_now );
+}
+
+function ChangeImageSize()
+{
+   if( small_size )
+   {
+      gso_main.SetServletSize( 500, 312 );
+      gso_hist_chart.SetServletSize( 500, 312 );
+      gso_dial1.SetServletSize( 150, 150 );
+      gso_dial2.SetServletSize( 150, 150 );
+      gso_dial3.SetServletSize( 150, 150 );
+      gso_dial4.SetServletSize( 150, 150 );
+      small_size = false;
+   }
+   else
+   {
+      gso_main.SetServletSize( 400, 252 );
+      gso_hist_chart.SetServletSize( 400, 252 );
+      gso_dial1.SetServletSize( 120, 120 );
+      gso_dial2.SetServletSize( 120, 120 );
+      gso_dial3.SetServletSize( 120, 120 );
+      gso_dial4.SetServletSize( 120, 120 );
+      small_size = true;
+   }
+
+   // Updating the main gso will update the rest of gso objects via UpdateCB
+   gso_main.UpdateImage();
+
+   // History chart is not updated by the main gso - update it.
+   gso_hist_chart.UpdateImage();
+}
+
+function OnMove( event )
+{
+   // Processes tooltip events and displays a tooltip.
+   gso_hist_chart.ProcessTooltip( event );
+}
+
+function OnClick( event )
+{
+   // Processes mouse click events to find selected object and display a
+   // dialog with detailed information.
+   //
+   gso_hist_chart.ProcessClick( event );
+}
+
+
+function UpdateImages( update_first_graph_only )
+{
+   // Append current time to the URL prevent caching of the image.
+   var date = new Date();
+   var time_string = "&time=" + date.getTime()
+
+   if( update_first_graph_only )
+     UpdateGraph1( time_string );
+   else
+   {
+     UpdateDial( "dial1", 0, "Server+1", time_string );
+     UpdateDial( "dial2", 1, "Server+2", time_string );
+     UpdateDial( "dial3", 3, "Server+3", time_string );
+     UpdateDial( "dial4", 2, "Total", time_string );
+
+     UpdateGraph2( time_string );
+   }
+}
+
+function UpdateDial( dial_id, dial_type, label, time_string )
+{
+   // Form the URL string.
+   var url = "glg_dial?" + dial_size_string + "&dial_type=" + dial_type + 
+                 "&label=" + label + time_string;
+
+   // Reload dial image with new data.
+   document.getElementById( dial_id ).src = url;         
+}
+
+//-->
+  </script>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body onload="OnLoad()" style="font-family: Arial;" bgcolor="white">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+<h2> GLG Graphics Server: AJAX Dashboard Demo </h2>
+<hr style="width: 100%; height: 2px;">
+<input id="start_updates" value="Start Updates"
+ onclick="gso_main.StartUpdates( true )" type="button"><input
+ id="stop_updates" value="Stop Updates" onclick="gso_main.StopUpdates()"
+ type="button"><input value="Change Dashboard Size"
+ onclick="ChangeImageSize()" type="button">Update Interval:
+<select size="1" name="interval_menu"
+ onchange="ChangeUpdateInterval( true )">
+<option id="3sec" value="3" selected="selected">3 seconds</option>
+<option id="5sec" value="5">5 seconds</option>
+<option id="10sec" value="10">10 seconds</option>
+<option id="1min" value="60">1 minute</option>
+</select>
+<hr style="width: 100%; height: 2px;">
+Click on the top graph to <b>display selected values</b> or move the
+mouse over it for <b>tooltips</b>.
+<hr style="width: 100%; height: 2px;">
+<table id="main_table" style="text-align: left; width: 100%;" border="1"
+ cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; height: 100px; width: 100px;"> <img
+ id="dial1"
+ src="glg_dial?width=150&height=150&dial_type=0&label=Server+1"
+ alt="Loading Image..." title="Server 1 Load"
+ style="border: 1px solid grey;" hspace="3" vspace="3"> </td>
+      <td id="graph_td" style="vertical-align: top;" rowspan="4">
+      <table id="graph_table" style="text-align: left; width: 100%;"
+ border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top; height: 200px;"> <img
+ id="packed_bar_graph"
+ src="glg_graph_selection?width=500&height=312&title=Used+Bandwidth"
+ onclick="OnClick(event)" onmousemove="OnMove(event)"
+ onmouseout="OnMove(null)" alt="Loading Image..."
+ style="border: 1px solid grey;" hspace="3" vspace="3"> </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top; height: 200px;"> <img
+ id="load_graph"
+ src="glg_graph?width=500&height=312&graph_type=0&title=Server+Load"
+ alt="Loading Image..." title="Server Load"
+ style="border: 1px solid grey;" hspace="3" vspace="3"> </td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; height: 100px; width: 100px;"> <img
+ id="dial2"
+ src="glg_dial?width=150&height=150&dial_type=1&label=Server+2"
+ alt="Loading Image..." title="Server 2 Load"
+ style="border: 1px solid grey;" hspace="3" vspace="3"> </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; height: 100px; width: 100px;"> <img
+ id="dial3"
+ src="glg_dial?width=150&height=150&dial_type=3&label=Server+3"
+ alt="Loading Image..." title="Server 3 Load"
+ style="border: 1px solid grey;" hspace="3" vspace="3"> </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; height: 100px; width: 100px;"> <img
+ id="dial4" src="glg_dial?width=150&height=150&dial_type=2&label=Total"
+ alt="Loading Image..." title="Total Load"
+ style="border: 1px solid grey;" hspace="3" vspace="3"> </td>
+    </tr>
+  </tbody>
+</table>
+<div id="dialog_div" onclick="gso_hist_chart.EraseDataDialog()"
+ style="position: absolute; display: none; top: 200px; left: 200px; z-index: 10000;">
+<table style="background-color: black;" border="0" cellpadding="2"
+ cellspacing="1">
+  <tbody>
+    <tr>
+      <td border="1" style="background-color: white;"> <span
+ id="dialog_data"> No Data </span>
+      <hr style="width: 100%; height: 2px;"> <input value="Close"
+ onclick="gso_hist_chart.EraseDataDialog()" type="button"> </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div id="tooltip_div"
+ style="position: absolute; display: none; top: 0px; left: 0px; z-index: 10000;">
+<table style="background-color: black;" border="0" cellpadding="2"
+ cellspacing="1">
+  <tbody>
+    <tr>
+      <td id="tooltip_data" border="1"
+ style="background-color: rgb(255, 255, 204);"> Tooltip </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<hr style="width: 100%; height: 2px;">
+<p>This AJAX demo demonstrates the <b>thin-client server-side
+solution</b> for displaying dynamic real-time graphics on a web page
+using the <a href="http://www.genlogic.com/graphics_server.html">
+GLG Graphics Server</a>. It is <span style="font-weight: bold;">browser
+independent</span> and may be used on any <b>embedded </b>or <b>mobile
+device</b>. <br>
+</p>
+<p>The GLG Graphics Server is deployed on the server with either <span
+ style="font-weight: bold;">JSP</span> or <span
+ style="font-weight: bold;">ASP.NET</span>. The client side uses
+industry-standard
+<b>HTML</b> and <b>JavaScript</b> (including HTML5).</p>
+<p>The demo combines several individual dial and graph Servlets or
+Handlers to
+create a composite AJAX dashboard. Each Servlet or Handler uses its own
+real-time
+data feed and is updated independently.</p>
+<p></p>
+<p>Since each Servlet or Handler is self-contained, the same Servlet or
+Handler may be used on multiple web pages. Use the following links to
+see the individual demos demonstrating capabilities of each Servlet or
+Handler used in this dashboard:
+</p>
+<ul>
+  <li><a href="dial_demo.html">Dial<br>
+    </a></li>
+  <li><a href="graph_demo.html">Real-Time Graph<br>
+    </a></li>
+  <li><a href="graph_selection_demo.html">Graph Selection<br>
+    </a></li>
+</ul>
+<p></p>
+<p>The bar graph at the top of the dashboard demonstrates the Graphics
+Server's
+<b>object selection</b> capabilities. When a user moves the mouse over
+the graph's data sample, a <b>tooltip</b> showing a load of the
+selected server is displayed. When a user <b>clicks on the graph's
+data sample</b>, a dialog with the server load information for the
+selected month is activated.</p>
+<p>Since the object selection is processed on the server side, with
+<b>no image maps</b> defined in HTML on the client side, the object
+selection
+works when the graph image is resized or the graph is updated with new
+data. The server-side processing of the selection scales to accommodate
+a
+large number of objects with <b>no performance penalty</b> associated
+with defining a large number of image maps in the browser.</p>
+<p>The images of requested sizes are generated on the server side
+using the <a href="http://www.genlogic.com/graphics_server.html">
+GLG Graphics Server</a> in the form of a <b>JSP Servlet</b> or an <span
+ style="font-weight: bold;">ASP.NET Handler</span>. The Servlet or
+Handler loads drawings created using the <a
+ href="http://www.genlogic.com/toolkit.html#Graphics_Builder">
+GLG Graphics Builder</a> and uses the drawings to generate images.
+Prior to generating an image, the Servlet or Handler updates the
+drawings with real-time data.</p>
+<p>Each Servlet or Handler loads its drawing only once and reuses it
+between all Servlet or Handler instances and threads for increased
+performance.<br>
+</p>
+<hr style="width: 100%; height: 2px;">
+<p style="font-size: 80%; font-family: arial;"><a
+ href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,36 @@
+# the grid layer for the aircombat demo
+TYPE=GRID
+TRANS TYPE=OPAQUE
+#TRANS TYPE=XOR
+#ALPHA=0.6
+
+#GRID MIN LON=-180
+#GRID MAX LON=180
+#GRID MIN LAT=-90
+#GRID MAX LAT=90
+#GRID LON INTERVAL=15
+#GRID LAT INTERVAL=15
+ADAPTIVE=7.
+
+LABELS=2
+LAYOUT TYPE=LAYER
+# Allow grid labels to intersect just a bit
+LAYOUT MARGIN=-2
+
+EDGE COLOR=.31 .31 .31
+
+# LABEL STYLE may be used to draw text box or outline around labels
+LABEL STYLE="BG_FILL,BG_EDGE"
+LABEL STYLE="OUTLINE"
+LABEL OUTLINE COLOR=0. 0. 0.
+LABEL EDGE COLOR=.7 .7 .7
+
+# TrueType font sample
+FONT=roboto
+FONT SCALE=11
+
+# Vector font sample
+#FONT=roman
+#FONT SCALE=0.35
+
+DEFAULT ON=0

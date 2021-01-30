@@ -1,0 +1,10 @@
+# Selects color used for rendering depending on the zoom level.
+# May be used to change label color for better contrast when the
+# layers change as the map is zoomed in and the background color 
+# changes.
+
+INPUT DATA TYPE= GLM_D
+OUTPUT DATA TYPE= GLM_G
+
+0	1. 1. 0.
+40	0. 0. 0.

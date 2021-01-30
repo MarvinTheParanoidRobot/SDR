@@ -1,0 +1,271 @@
+﻿using System;
+using System.Globalization;
+using System.Web;
+using System.Drawing.Imaging;
+using GenLogic;
+
+namespace DialHandler
+{
+   public class DialHandler : IHttpHandler
+   {
+      private static Object init_lock = new Object();
+      private static GlgHttpRequestProcessor request_processor = null;
+
+      /* The handler handles several dial types, using a different drawing
+         for each dial.
+      */
+      const int NUM_DIAL_TYPES = 5;
+
+      // Drawing filenames.
+      static String [] drawing_names = 
+         { "dial1.g", "dial2.g", "dial3.g", "dial4.g", "dial5.g" };
+      static String app_path = "DialHandler";
+
+      // Array to keep loaded dial drawing objects.
+      static GlgObject [] dial_array = new GlgObject[ NUM_DIAL_TYPES ];
+
+      // The handler uses a separate datasource for each dial.
+      static GlgDemoDataSource [] datasource_array = 
+        new GlgDemoDataSource[ NUM_DIAL_TYPES ];
+
+      ///////////////////////////////////////////////////////////////////
+      public bool IsReusable
+      {
+         get { return false; }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      public void ProcessRequest( HttpContext context )
+      {
+         lock( init_lock )
+         {
+            /* First time only: create GlgHttpRequestProcessor that properly
+               handles ASP.NET synchronization context. ProcessRequestData is
+               registered as a custom application-specific method used by
+               the request processor to process HTTP requests.
+            */
+            if( request_processor == null )
+              request_processor = 
+                new GlgHttpRequestProcessor( ProcessRequestData );
+         }
+
+         /* Request processor will invoke ProcessRequestData method to
+            handle application-specific logic.
+         */
+         GlgHttpRequestData request_data = 
+           request_processor.ProcessRequest( context );
+
+         /* Returned data contains an image or HTML text response.
+            If there were request processing errors, the errors will be 
+            reported in the HTML output and returned data will be null.
+         */
+         if( request_data != null )
+         {
+            if( request_data.image != null )
+            {
+               // Save image.
+               context.Response.ContentType = "image/png";
+               request_data.image.Save( context.Response.OutputStream, 
+                                        ImageFormat.Png );
+            }
+            else
+              context.Response.Write( "Error: Unexpected response.<br>");
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // A custom method invoked to process HTTP context.
+      // 
+      // The HTTP context is passed in the request_data.context field.
+      // The generated image is assigned to the data.image field.
+      // The data.custom_data field may be used to pass additional 
+      //     custom data to the ProcessRequest method.
+      //
+      // The GlgObject.Error method may be used in the code to flag errors.
+      // Any errors will be reported in the generated HTML by the default
+      // GLG error handler. 
+      //
+      // A custom GLG error handler may be set using the 
+      // GlgObject.SetErrorHandler method inside this method. 
+      // The request_data.got_errors field may be set to true to flag errors 
+      // in case if a custom error handler is used.
+      ///////////////////////////////////////////////////////////////////
+      void ProcessRequestData( GlgHttpRequestData request_data )
+      {
+         HttpRequest request = request_data.context.Request;
+
+         // Get requested width/height of the image.
+         int width = GetIntegerParameter( request, "width", 200 );
+         int height = GetIntegerParameter( request, "height", 200 );
+         
+         // Limit max. size to avoid running out of heap space creating an image.
+         if( width > 1000 ) width = 1000;       
+         if( height > 1000 ) height = 1000;       
+
+         // Get dial type.
+         int dial_type = GetIntegerParameter( request, "dial_type", 0 );
+         if( dial_type < 0 || dial_type >= NUM_DIAL_TYPES )
+         {
+            /* Uncomment error message to display an error instead of using
+               dial_type = 0.
+            */
+            // Error( "Invalid dial type." );
+            dial_type = 0;
+         }
+
+         GlgObject dial = dial_array[ dial_type ];
+
+         /* Load the drawing just once and share it between all instances of
+            this HTTP handler.
+         */
+         if( dial == null )
+         {
+            GlgObject.Init();
+
+            String drawing_name = drawing_names[ dial_type ];
+
+            String path;
+            String dir = request_data.context.Server.MapPath( "~" );
+            if( dir.IndexOf( app_path ) == -1 )
+              path = dir + app_path + "\\" + drawing_name;
+            else
+              path = dir + "\\" + drawing_name;
+
+            dial = LoadDrawing( path );
+            dial.SetImageSize( width, height );
+            dial.SetupHierarchy();    // Setup to prepare to receive data
+
+            dial_array[ dial_type ] = dial;   // Store the drawing for reuse.
+         }
+         else   // Already loaded, reuse the drawing.
+           dial.SetImageSize( width, height );
+         
+         // Get data to be displayed in the dial.
+         double value = GetData( request, dial, dial_type );
+
+         // Check value range
+         value = CheckRange( dial, value );
+
+         // Updates dial with current data.
+         dial.SetDResource( "Value", value );
+
+         // Use label from the request if supplied as a parameter.
+         String label = request.QueryString[ "label" ];
+         if( label == null )
+           label = "Load";   // Default
+         dial.SetSResource( "Units", label );      
+
+         // Setup after data update to prepare to generate image.
+         dial.SetupHierarchy();
+
+         // Generate Image.
+         request_data.image = dial.CreateImage( null );
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Helper methods
+      /////////////////////////////////////////////////////////////////
+      
+      /////////////////////////////////////////////////////////////////
+      int GetIntegerParameter( HttpRequest request, String name, 
+                               int default_value )
+      {
+         String parameter_string = request.QueryString[ name ];
+         if( parameter_string == null || parameter_string.Equals( "" ) )
+           return default_value;
+         
+         try
+         {
+            return int.Parse( parameter_string, CultureInfo.InvariantCulture );
+         }
+         catch( Exception )
+         {
+            Error( "Invalid parameter value for: " + name + 
+                   " = " + parameter_string );
+            return default_value;
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Can be used only in ProcessRequestData() or methods 
+      // originating from it.
+      /////////////////////////////////////////////////////////////////
+      void Error( String message )
+      {
+         GlgObject.Error( GlgErrorType.USER_ERROR, message, null );
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      GlgObject LoadDrawing( String drawing_path )
+      {
+         GlgObject drawing;
+         
+         drawing = GlgObject.LoadWidget( drawing_path, GlgMediumType.FILE );
+         if( drawing == null )
+         {
+            Error( "Can't load drawing: " + drawing_path );
+            return null;
+         }
+
+         // Disable drawing border in the image: let html define it if needed.
+         drawing.SetDResource( "LineWidth", 0.0 );
+
+         return drawing;
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Get data from the value parameter of the request if supplied,
+      // to demonstrate supplying data from html. If the value is not 
+      // supplied in the request, use a server-side datasource.
+      /////////////////////////////////////////////////////////////////     
+      double GetData( HttpRequest request, GlgObject dial, int dial_type )
+      {
+         // Use the value parameter if supplied.
+         String value_string = request.QueryString[ "value" ];
+         if( value_string != null )
+         {
+            try
+            {
+               return double.Parse( value_string, CultureInfo.InvariantCulture );
+            }
+            catch( Exception )
+            {
+               Error( "Invalid parameter value for: value = " + value_string );
+            }
+         }
+         
+         // If value was not supplied in the request, use demo data.
+         
+         // Each dial uses its own datasource.
+         GlgDemoDataSource datasource = datasource_array[ dial_type ];
+         if( datasource == null )   // First time: create.
+         {
+            // Get dial high and low ranges used to create demo datasource.
+            double low = dial.GetDResource( "Low" ).doubleValue();
+            double high = dial.GetDResource( "High" ).doubleValue();
+            
+            datasource = new GlgDemoDataSource( low, high, 1, 1000 );
+            datasource_array[ dial_type ] = datasource; // Store for reuse
+         }
+
+         datasource.UpdateData();  // Update data value.
+         return datasource.GetValue();
+      }
+
+      /////////////////////////////////////////////////////////////////     
+      // Sets the value to dial's max. value if it is too 
+      /////////////////////////////////////////////////////////////////     
+      double CheckRange( GlgObject dial, double value )
+      {
+         double low = dial.GetDResource( "Low" ).doubleValue();
+         double high = dial.GetDResource( "High" ).doubleValue();
+         
+         if( value < low )
+           value = low;
+         else if( value > high )
+           value = high + 0.05 * ( high - low );
+         
+         return value;
+      }
+   }
+}

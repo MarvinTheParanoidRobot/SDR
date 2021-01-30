@@ -1,0 +1,89 @@
+using System;
+using System.Collections.Generic;
+using GenLogic;
+
+//////////////////////////////////////////////////////////////////////////
+// DemoDataFeed provides simulated data for demo, as well as for testing 
+// with no LiveDataFeed.
+// In an application, data will be coming from LiveDataFeed.
+//////////////////////////////////////////////////////////////////////////
+
+public class DemoDataFeed : DataFeedInterface
+{
+   HandlerErrorInterface handler;
+
+   long counter = 0;
+   double High = 100.0;
+   double Low = 0.0;
+
+   public DemoDataFeed( HandlerErrorInterface handler ) 
+   {
+      this.handler = handler;
+   }
+
+   /////////////////////////////////////////////////////////////////////// 
+   // Fill values of the provided tag list in one batch.
+   /////////////////////////////////////////////////////////////////////// 
+   public void ReadValues( List<GlgTagRecord> tag_records )
+   {
+      int size = tag_records.Count;
+      for( int i=0; i<size; ++i )
+      {
+         GlgTagRecord tag_record = tag_records[i];
+         switch( tag_record.data_type )
+         {
+            /* In the demo mode, just invoke methods that fill individial
+               tag records. In a real application, the code can issue a single
+               query to a database to get data for filling all tags in the list.
+            */
+          case GlgDataType.D: ReadDValue( tag_record ); break;
+          case GlgDataType.S: ReadSValue( tag_record ); break;
+          default: handler.Error( "Unsupported tag type." ); break;
+         }
+      }
+   }
+
+   /////////////////////////////////////////////////////////////////////// 
+   // Generate demo data value of type D (double)
+   ///////////////////////////////////////////////////////////////////////
+   public bool ReadDValue( GlgTagRecord tag_record )
+   {
+      double 
+        half_amplitude, center,
+        period = 100.0,
+        alpha;
+      
+      half_amplitude = ( High - Low ) / 2.0;
+      center = Low + half_amplitude;
+      
+      alpha = 2.0 * Math.PI * counter / period;
+      
+      tag_record.d_value = center + 
+        half_amplitude * Math.Sin( alpha ) * Math.Sin( alpha / 30.0 );
+      tag_record.data_filled = true;
+      
+      ++counter;
+      return tag_record.data_filled;
+   }
+
+   /////////////////////////////////////////////////////////////////////// 
+   public bool ReadSValue( GlgTagRecord tag_record )
+   {
+      tag_record.s_value = "";
+      tag_record.data_filled = true;
+
+      return tag_record.data_filled;
+   }
+
+   /////////////////////////////////////////////////////////////////////// 
+   public bool WriteDValue( String tag_source, double d_value )
+   {
+      return true;
+   }
+
+   /////////////////////////////////////////////////////////////////////// 
+   public bool WriteSValue( String tag_source, String s_value )
+   {
+      return true;
+   }
+}

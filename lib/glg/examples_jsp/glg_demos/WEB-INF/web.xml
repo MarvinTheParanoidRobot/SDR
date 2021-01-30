@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+    <display-name>GLG AJAX Demos</display-name>
+    <description>
+	This is a collection of sample web application that use 
+        GLG servlet to generate an image and handle user interaction 
+        using AJAX.
+    </description>
+
+    <servlet>
+        <servlet-name>GlgProcessServlet</servlet-name>
+        <servlet-class>glg_demos.GlgProcessServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GlgProcessServletSimple</servlet-name>
+        <servlet-class>glg_demos.GlgProcessServletSimple</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GlgDialServlet</servlet-name>
+        <servlet-class>glg_demos.GlgDialServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GlgGraphServlet</servlet-name>
+        <servlet-class>glg_demos.GlgGraphServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GlgGraphSelectionServlet</servlet-name>
+        <servlet-class>glg_demos.GlgGraphSelectionServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GlgAvionicsServlet</servlet-name>
+        <servlet-class>glg_demos.GlgAvionicsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GlgCircuitServlet</servlet-name>
+        <servlet-class>glg_demos.GlgCircuitServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GlgGISServlet</servlet-name>
+        <servlet-class>glg_demos.GlgGISServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GlgSimpleViewerServlet</servlet-name>
+        <servlet-class>glg_demos.GlgSimpleViewerServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GlgProcessServlet</servlet-name>
+        <url-pattern>/glg_process</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GlgProcessServletSimple</servlet-name>
+        <url-pattern>/glg_process_simple</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GlgDialServlet</servlet-name>
+        <url-pattern>/glg_dial</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GlgGraphServlet</servlet-name>
+        <url-pattern>/glg_graph</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GlgGraphSelectionServlet</servlet-name>
+        <url-pattern>/glg_graph_selection</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GlgAvionicsServlet</servlet-name>
+        <url-pattern>/glg_avionics</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GlgCircuitServlet</servlet-name>
+        <url-pattern>/glg_circuit</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GlgGISServlet</servlet-name>
+        <url-pattern>/glg_gis</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GlgSimpleViewerServlet</servlet-name>
+        <url-pattern>/glg_simple_viewer</url-pattern>
+    </servlet-mapping>
+
+</web-app>

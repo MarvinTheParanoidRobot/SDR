@@ -1,0 +1,38 @@
+# the grid layer
+TYPE=GRID
+TRANS TYPE=OPAQUE
+#TRANS TYPE=XOR
+ALPHA=0.6
+
+#GRID MIN LON=-180
+#GRID MAX LON=180
+#GRID MIN LAT=-90
+#GRID MAX LAT=90
+GRID LON INTERVAL=2
+GRID LAT INTERVAL=3
+#ADAPTIVE=60.
+
+GRID LABELS=4
+LAYOUT TYPE=LAYER
+# Allow grid labels to intersect just a bit
+#LAYOUT MARGIN=-2
+
+ROTATE LON LABELS=1
+
+EDGE COLOR=.4 .4 .4
+LABEL EDGE COLOR=1. 1. 1.
+
+# LABEL STYLE may be used to draw text box or outline around labels
+#LABEL STYLE="BG_FILL,BG_EDGE"
+#LABEL STYLE="OUTLINE"
+#LABEL OUTLINE COLOR=0. 0. 0.
+
+# TrueType font sample
+FONT=roboto_m
+FONT SCALE=11
+
+# Vector font sample
+#FONT=roman
+#FONT SCALE=0.35
+
+DEFAULT ON=0

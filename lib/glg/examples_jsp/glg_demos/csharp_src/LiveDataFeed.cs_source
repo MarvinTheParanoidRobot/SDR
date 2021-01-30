@@ -1,0 +1,90 @@
+using System;
+using System.Collections.Generic;
+using GenLogic;
+
+//////////////////////////////////////////////////////////////////////////
+// Provide custom code to read and write real-time data values.
+//////////////////////////////////////////////////////////////////////////
+
+public class LiveDataFeed : DataFeedInterface
+{
+   HandlerErrorInterface handler;
+   
+   // Constructor.
+   public LiveDataFeed( HandlerErrorInterface handler ) 
+   {
+      this.handler = handler;
+   }
+
+   public void ReadValues( List<GlgTagRecord> tag_records )
+   {
+      int size = tag_records.Count;
+      for( int i = 0; i < size; ++i )
+      {
+         GlgTagRecord tag_record = tag_records[i];
+         switch( tag_record.data_type )
+         {
+            /* In the demo mode, just invoke methods that fill individial
+               tag records. In a real application, the code can issue a single
+               query to a database to get data for filling all tags in the list.
+            */
+          case GlgDataType.D: ReadDValue( tag_record ); break;
+          case GlgDataType.S: ReadSValue( tag_record ); break;
+          default: handler.Error( "Unsupported tag type." ); break;
+         }
+       }
+   }
+
+#pragma warning disable 0219     // Disable "not used" warning for tag_source.
+
+   // Obtain data value of D type (double)
+   public bool ReadDValue( GlgTagRecord tag_record )
+   {
+      string tag_source = tag_record.tag_source;       
+
+      /* Place custom code here to obtain a real-time data value 
+         of D type from the database variable defined by tag_source.
+      */
+      tag_record.d_value = 0.0;
+
+      tag_record.data_filled = true;
+      return tag_record.data_filled;
+   }
+   
+   public bool ReadSValue( GlgTagRecord tag_record )
+   {
+      string tag_source = tag_record.tag_source;
+
+      /* place custom code here to obtain a real-time data value 
+         of S type from the database variable defined by tag_source.
+      */
+      tag_record.s_value = "";
+
+      tag_record.data_filled = true;
+      return tag_record.data_filled;
+   }
+
+#pragma warning restore 0219
+
+   public bool WriteDValue( string tag_source, double d_value  )
+   {
+      bool result = true;
+      
+      /* Place custom code here to write d_value into the database 
+         variable defined by tag_source.
+      */
+
+      return result;
+    }
+
+   public bool WriteSValue( string tag_source, string s_value  )
+   {
+      bool result = true;
+      
+      /* Place custom code here to write d_value into the database 
+         variable defined by tag_source.
+      */
+
+      return result;
+   }
+}

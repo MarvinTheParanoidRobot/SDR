@@ -1,0 +1,232 @@
+﻿using System;
+using System.Globalization;
+using System.Web;
+using System.Drawing.Imaging;
+using GenLogic;
+
+namespace AvionicsHandler
+{
+   public class AvionicsHandler : IHttpHandler
+   {
+      private static Object init_lock = new Object();
+      private static GlgHttpRequestProcessor request_processor = null;
+      private static GlgObject drawing = null;
+
+      static String drawing_name = "avionics.g";
+      static String app_path = "AvionicsHandler";
+
+      // Array of demo datasources to animate drawing's 15 dynamic resources.
+      static GlgDemoDataSource[] datasource_array = new GlgDemoDataSource[ 15 ];
+
+      ///////////////////////////////////////////////////////////////////
+      public bool IsReusable
+      {
+         get { return false; }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      public void ProcessRequest( HttpContext context )
+      {
+         lock( init_lock )
+         {
+            /* First time only: create GlgHttpRequestProcessor that properly
+               handles ASP.NET synchronization context. ProcessRequestData is
+               registered as a custom application-specific method used by
+               the request processor to process HTTP requests.
+            */
+            if( request_processor == null )
+              request_processor = 
+                new GlgHttpRequestProcessor( ProcessRequestData );
+         }
+
+         /* Request processor will invoke ProcessRequestData method to
+            handle application-specific logic.
+         */
+         GlgHttpRequestData request_data = 
+           request_processor.ProcessRequest( context );
+
+         /* Returned data contains an image or HTML text response.
+            If there were request processing errors, the errors will be 
+            reported in the HTML output and returned data will be null.
+         */
+         if( request_data != null )
+         {
+            if( request_data.image != null )
+            {
+               // Save image.
+               context.Response.ContentType = "image/png";
+               request_data.image.Save( context.Response.OutputStream, 
+                                        ImageFormat.Png );
+            }
+            else
+              context.Response.Write( "Error: Unexpected response.<br>");
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // A custom method invoked to process HTTP context.
+      // 
+      // The HTTP context is passed in the request_data.context field.
+      // The generated image is assigned to the data.image field.
+      // The data.custom_data field may be used to pass additional 
+      //     custom data to the ProcessRequest method.
+      //
+      // The GlgObject.Error method may be used in the code to flag errors.
+      // Any errors will be reported in the generated HTML by the default
+      // GLG error handler. 
+      //
+      // A custom GLG error handler may be set using the 
+      // GlgObject.SetErrorHandler method inside this method. 
+      // The request_data.got_errors field may be set to true to flag errors 
+      // in case if a custom error handler is used.
+      ///////////////////////////////////////////////////////////////////
+      void ProcessRequestData( GlgHttpRequestData request_data )
+      {
+         HttpRequest request = request_data.context.Request;
+
+         // Get requested width/height of the image.
+         int width = GetIntegerParameter( request, "width", 500 );
+         int height = GetIntegerParameter( request, "height", 400 );
+         
+         // Limit max. size to avoid running out of heap space creating an image.
+         if( width > 1000 ) width = 1000;       
+         if( height > 1000 ) height = 1000;       
+
+         /* Load the drawing just once and share it between all instances of
+            this HTTP handler.
+         */
+         if( drawing == null )
+         {
+            GlgObject.Init();
+
+            String path;
+            String dir = request_data.context.Server.MapPath( "~" );
+            if( dir.IndexOf( app_path ) == -1 )
+              path = dir + app_path + "\\" + drawing_name;
+            else
+              path = dir + "\\" + drawing_name;
+
+            drawing = LoadDrawing( path );
+            drawing.SetImageSize( width, height );
+            drawing.SetupHierarchy();    // Setup to prepare to receive data
+
+            CreateDemoData();
+         }
+         else   // Already loaded, reuse the drawing.
+           drawing.SetImageSize( width, height );
+ 
+         UpdateDrawingWithData();
+
+         // Setup after data update to prepare to generate image.
+         drawing.SetupHierarchy();
+
+         // Generate Image.
+         request_data.image = drawing.CreateImage( null );
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Helper methods
+      /////////////////////////////////////////////////////////////////
+      
+      /////////////////////////////////////////////////////////////////
+      int GetIntegerParameter( HttpRequest request, String name, 
+                               int default_value )
+      {
+         String parameter_string = request.QueryString[ name ];
+         if( parameter_string == null || parameter_string.Equals( "" ) )
+           return default_value;
+         
+         try
+         {
+            return int.Parse( parameter_string, CultureInfo.InvariantCulture );
+         }
+         catch( Exception )
+         {
+            Error( "Invalid parameter value for: " + name + 
+                   " = " + parameter_string );
+            return default_value;
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Can be used only in ProcessRequestData() or methods 
+      // originating from it.
+      /////////////////////////////////////////////////////////////////
+      void Error( String message )
+      {
+         GlgObject.Error( GlgErrorType.USER_ERROR, message, null );
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      GlgObject LoadDrawing( String drawing_path )
+      {
+         GlgObject drawing;
+         
+         drawing = GlgObject.LoadWidget( drawing_path, GlgMediumType.FILE );
+         if( drawing == null )
+         {
+            Error( "Can't load drawing: " + drawing_path );
+            return null;
+         }
+
+         // Disable drawing border in the image: let html define it if needed.
+         drawing.SetDResource( "LineWidth", 0.0 );
+
+         return drawing;
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Create demo datasources for animation. In the application, any
+      // custom source of data may be used.
+      /////////////////////////////////////////////////////////////////
+      void CreateDemoData()
+      {
+         datasource_array[ 0 ] = new GlgDemoDataSource( 20.0, 80.0, 1, 1000 );
+         datasource_array[ 1 ] = new GlgDemoDataSource( 30.0, 85.0, 1, 1000 );
+         datasource_array[ 2 ] = new GlgDemoDataSource( 3.5, 7.5, 1, 1000 );
+         datasource_array[ 3 ] = new GlgDemoDataSource( 4.5, 7.8, 1, 1000 );
+         datasource_array[ 4 ] = new GlgDemoDataSource( 2000.0, 8000.0, 1, 1000 );
+         datasource_array[ 5 ] = new GlgDemoDataSource( 0.6, 1.0, 1, 1000 );
+         datasource_array[ 6 ] = new GlgDemoDataSource( 0.7, 1.2, 1, 1000 );
+         datasource_array[ 7 ] = new GlgDemoDataSource( 0.0, 20.0, 1, 1000 );
+         datasource_array[ 8 ] = new GlgDemoDataSource( 0.0, 1.0, 1, 1000 );
+         datasource_array[ 9 ] = new GlgDemoDataSource( 0.0, 1.0, 1, 1000 );
+         datasource_array[ 10 ] = new GlgDemoDataSource( -10.0, 10.0, 1, 1000 );
+         datasource_array[ 11 ] = new GlgDemoDataSource( -10.0, 10.0, 1, 1000 );
+         datasource_array[ 12 ] = new GlgDemoDataSource( -20.0, 20.0, 1, 1000 );
+         datasource_array[ 13 ] = new GlgDemoDataSource( -10.0, 10.0, 1, 1000 );
+         datasource_array[ 14 ] = new GlgDemoDataSource( 30.0, 160.0, 1, 1000 );
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      // Create demo datasources for animation. In the application, any
+      // custom source of data may be used.
+      /////////////////////////////////////////////////////////////////
+      void UpdateDrawingWithData()
+      {
+         for( int i=0; i<15; ++i )
+           datasource_array[i].UpdateData();   // Get new data for all variables.
+         
+         drawing.SetDResource( "RPM/Value",   datasource_array[0].GetValue() );
+         drawing.SetDResource( "RPM/Value2",  datasource_array[1].GetValue() );
+         drawing.SetDResource( "EGT/Value",   datasource_array[2].GetValue() );
+         drawing.SetDResource( "EGT/Value2",  datasource_array[3].GetValue() );
+         drawing.SetDResource( "FUEL/Value",  datasource_array[4].GetValue() );
+         drawing.SetDResource( "MACH/Value",  datasource_array[5].GetValue() );
+         drawing.SetDResource( "MACH/Value2", datasource_array[6].GetValue() );
+         drawing.SetDResource( "ADA/Value",   datasource_array[7].GetValue() );
+         drawing.SetDResource( "NOZ/Value",   datasource_array[8].GetValue() );
+         drawing.SetDResource( "NOZ/Value2",  datasource_array[9].GetValue() );
+         drawing.SetDResource( "HORIZON/Pitch", 
+                               datasource_array[10].GetValue() );
+         drawing.SetDResource( "HORIZON/Roll",
+                               datasource_array[11].GetValue() );
+         drawing.SetDResource( "HORIZON/LeftRudder", 
+                               datasource_array[12].GetValue() );
+         drawing.SetDResource( "HORIZON/RightRudder", 
+                               datasource_array[13].GetValue() );
+         drawing.SetDResource( "COMPASS/Value", 
+                               datasource_array[14].GetValue() );
+      }
+   }
+}

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+echo  Edit location of the MAP_SERVER executable before running the script.
+
+curr_path=`dirname $0`
+
+GLG_DIR=${curr_path}/..
+
+#############################################################################
+# Define image viewer tool used to view generated image - IMAGE_VIEWER.
+#############################################################################
+IMAGE_VIEWER=firefox
+
+#############################################################################
+# Select location of the map server executable
+#############################################################################
+#MAP_SERVER=${GLG_DIR}/eval/bin/GlmMap
+#MAP_SERVER=${GLG_DIR}/map_server/bin/GlmMap
+MAP_SERVER=${GLG_DIR}/bin/GlmMap
+
+DATASET_DIR=${GLG_DIR}/map_data
+
+OUT_FILE=output.jpg
+
+echo Rectangular projection example
+
+${MAP_SERVER} -generate -dataset ${DATASET_DIR}/sample.sdf -output ${OUT_FILE} -oGISreq "VERSION=1.3.0&REQUEST=GetMap&SRS=EPSG:4326&WIDTH=800&HEIGHT=600&BBOX=-180,-90,180,90&BGCOLOR=0x0&STYLES=default&FORMAT=image/jpeg&LAYERS=earth,shadow,political&STRETCH=1"
+
+echo To view the output, open output.jpg in any image viewing tool
+echo
+
+    ${IMAGE_VIEWER} ${OUT_FILE}

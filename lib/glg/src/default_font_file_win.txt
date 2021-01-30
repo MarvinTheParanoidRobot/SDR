@@ -1,0 +1,98 @@
+# Empty lines and comment lines starting with '#' are ignored
+# Default font table: NumFontSizes = 7, NumFonTypes = 12
+
+Courier New Bold 6
+Courier New Bold 8
+Courier New Bold 10
+Courier New Bold 12
+Courier New Bold 14
+Courier New Bold 18
+Courier New Bold 24
+
+Courier New Bold Italic 6
+Courier New Bold Italic 8
+Courier New Bold Italic 10
+Courier New Bold Italic 12
+Courier New Bold Italic 14
+Courier New Bold Italic 18
+Courier New Bold Italic 24
+
+Courier New 6
+Courier New 8
+Courier New 10
+Courier New 12
+Courier New 14
+Courier New 18
+Courier New 24
+
+Courier New Italic 6
+Courier New Italic 8
+Courier New Italic 10
+Courier New Italic 12
+Courier New Italic 14
+Courier New Italic 18
+Courier New Italic 24
+
+Arial Bold 6
+Arial Bold 8
+Arial Bold 10
+Arial Bold 12
+Arial Bold 14
+Arial Bold 18
+Arial Bold 24
+
+Arial Bold Italic 6
+Arial Bold Italic 8
+Arial Bold Italic 10
+Arial Bold Italic 12
+Arial Bold Italic 14
+Arial Bold Italic 18
+Arial Bold Italic 24
+
+Arial 6
+Arial 8
+Arial 10
+Arial 12
+Arial 14
+Arial 18
+Arial 24
+
+Arial Italic 6
+Arial Italic 8
+Arial Italic 10
+Arial Italic 12
+Arial Italic 14
+Arial Italic 18
+Arial Italic 24
+
+Times New Roman Bold 6
+Times New Roman Bold 8
+Times New Roman Bold 10
+Times New Roman Bold 12
+Times New Roman Bold 14
+Times New Roman Bold 18
+Times New Roman Bold 24
+
+Times New Roman Bold Italic 6
+Times New Roman Bold Italic 8
+Times New Roman Bold Italic 10
+Times New Roman Bold Italic 12
+Times New Roman Bold Italic 14
+Times New Roman Bold Italic 18
+Times New Roman Bold Italic 24
+
+Times New Roman 6
+Times New Roman 8
+Times New Roman 10
+Times New Roman 12
+Times New Roman 14
+Times New Roman 18
+Times New Roman 24
+
+Times New Roman Italic 6
+Times New Roman Italic 8
+Times New Roman Italic 10
+Times New Roman Italic 12
+Times New Roman Italic 14
+Times New Roman Italic 18
+Times New Roman Italic 24

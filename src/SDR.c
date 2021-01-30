@@ -137,9 +137,9 @@ int writetextf(float data[],int N,char *name, bool normalised){
     int i;
     for (i=0;i<=N;i++){
         if (normalised==0)
-            fprintf(f,"%f, ", data[i]/N);
+            fprintf(f,"%f\n", data[i]/N);
         else{
-            fprintf(f,"%f, ", data[i]);
+            fprintf(f,"%f\n", data[i]);
         }
      
         
@@ -157,7 +157,7 @@ int writetextc(float data[][2],int N,char *name){
     }
     int i;
     for (i=0;i<=N;i++){
-        fprintf(f,"%f, ", data[i][0]); 
+        fprintf(f,"%f\n ", data[i][0]); 
     }
     
     fclose(f);

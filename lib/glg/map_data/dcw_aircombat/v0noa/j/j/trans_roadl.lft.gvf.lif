@@ -1,0 +1,9 @@
+TYPE=VECTOR
+TRANS TYPE=OPAQUE
+FILENAME=trans_roadl.lft.gvf
+INCLUDE=trans_roadl.lft.gvf.slf
+EDGE COLOR=0.6,0.,0.
+LINE WIDTH=1
+ALPHA=1.
+MIN ZOOM=50
+DEFAULT ON=1

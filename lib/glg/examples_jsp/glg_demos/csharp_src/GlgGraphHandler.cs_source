@@ -1,0 +1,468 @@
+﻿using System;
+using System.Globalization;
+using System.Web;
+using System.Drawing.Imaging;
+using GenLogic;
+
+namespace GraphHandler
+{
+   public class GraphHandler : IHttpHandler
+   {
+      private static Object init_lock = new Object();
+      private static GlgHttpRequestProcessor request_processor = null;
+
+      // GLG graph types used in the demo.
+      const int BAR_GRAPH = 0;
+      const int LINE_GRAPH = 1;
+      const int FILLED_LINE_GRAPH = 2;
+      const int MULTI_LINE_GRAPH = 3;
+      const int STACKED_BAR_GRAPH = 4;
+
+      // Inner class to keep all properties of the loaded graph object.
+      class GraphData
+      {
+         internal GlgObject graph;      // Drawing
+         internal int glg_graph_type;   // GLG graph type
+         internal char graph_time_axis; // 'X' for horiz. graphs or 'Y' for vert.
+         internal int num_values;   // Number of values in a multi-value graphs.
+         internal GlgDemoDataSource datasource;   // Graph's datasource.
+      }
+
+      /* The servlet handles several graph types, using a different drawing
+         for each graph.
+      */
+      const int NUM_GRAPHS = 5;
+
+      // Drawing filenames.
+      static String [] drawing_names = 
+        { "graph1.g", "graph2.g", "graph3.g", "graph4.g", "graph5.g" };
+      static String app_path = "GraphHandler";
+      
+      // Arrays to keep loaded graph drawing objects and their properties.
+      static GraphData [] graph_array = new GraphData[ NUM_GRAPHS ];
+      
+      // Legend labels for multi-value graphs.
+      static String [] multi_line_labels = { "server1", "server2", "server3" };
+      static String [] stacked_bar_labels = { ".com", ".net", "other" };
+
+      ///////////////////////////////////////////////////////////////////
+      public bool IsReusable
+      {
+         get { return false; }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      public void ProcessRequest( HttpContext context )
+      {
+         lock( init_lock )
+         {
+            /* First time only: create GlgHttpRequestProcessor that properly
+               handles ASP.NET synchronization context. ProcessRequestData is
+               registered as a custom application-specific method used by
+               the request processor to process HTTP requests.
+            */
+            if( request_processor == null )
+              request_processor = 
+                new GlgHttpRequestProcessor( ProcessRequestData );
+         }
+
+         /* Request processor will invoke ProcessRequestData method to
+            handle application-specific logic.
+         */
+         GlgHttpRequestData request_data = 
+           request_processor.ProcessRequest( context );
+
+         /* Returned data contains an image or HTML text response.
+            If there were request processing errors, the errors will be 
+            reported in the HTML output and returned data will be null.
+         */
+         if( request_data != null )
+         {
+            if( request_data.image != null )
+            {
+               // Save image.
+               context.Response.ContentType = "image/png";
+               request_data.image.Save( context.Response.OutputStream, 
+                                        ImageFormat.Png );
+            }
+            else
+              context.Response.Write( "Error: Unexpected response.<br>");
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // A custom method invoked to process HTTP context.
+      // 
+      // The HTTP context is passed in the request_data.context field.
+      // The generated image is assigned to the data.image field.
+      // The data.custom_data field may be used to pass additional 
+      //     custom data to the ProcessRequest method.
+      //
+      // The GlgObject.Error method may be used in the code to flag errors.
+      // Any errors will be reported in the generated HTML by the default
+      // GLG error handler. 
+      //
+      // A custom GLG error handler may be set using the 
+      // GlgObject.SetErrorHandler method inside this method. 
+      // The request_data.got_errors field may be set to true to flag errors 
+      // in case if a custom error handler is used.
+      ///////////////////////////////////////////////////////////////////
+      void ProcessRequestData( GlgHttpRequestData request_data )
+      {
+         HttpRequest request = request_data.context.Request;
+
+         // Get requested width/height of the image.
+         int width = GetIntegerParameter( request, "width", 500 );
+         int height = GetIntegerParameter( request, "height", 300 );
+         
+         // Limit max. size to avoid running out of heap space creating an image.
+         if( width > 1000 ) width = 1000;       
+         if( height > 1000 ) height = 1000;       
+
+         // Get graph type.
+         int graph_type = GetIntegerParameter( request, "graph_type", 0 );
+         if( graph_type < 0 || graph_type >= NUM_GRAPHS )
+         {
+            /* Uncomment error message to display an error instead of using
+               graph_type = 0.
+            */
+            //Error( "Invalid graph type." );
+            graph_type = 0;
+         }
+
+         GlgObject graph;      
+         GraphData graph_data = graph_array[ graph_type ];
+         
+         /* Load the drawing just once and share it between all instances of
+            this HTTP handler.
+         */
+         if( graph_data == null )    // First time: load the drawing.
+         {
+            GlgObject.Init();
+            
+            String drawing_name = drawing_names[ graph_type ];
+            
+            String path;
+            String dir = request_data.context.Server.MapPath( "~" );
+            if( dir.IndexOf( app_path ) == -1 )
+              path = dir + app_path + "\\" + drawing_name;
+            else
+              path = dir + "\\" + drawing_name;
+            
+            graph = LoadDrawing( path );
+            graph.SetImageSize( width, height );
+            
+            // Set graph's properties and create a demo datasource to update it.
+            graph_data = InitializeGraph( graph, graph_type );
+            
+            // Store the drawing and graph data for reuse.
+            graph_array[ graph_type ] = graph_data;         
+         }
+         else   // Already loaded, reuse the drawing.
+         {
+            graph = graph_data.graph;
+            graph.SetImageSize( width, height );
+         }
+         
+         // Use title from the request if supplied as a parameter.
+         String title = request.QueryString[ "title" ];
+         if( title != null )
+           graph.SetSResource( "Title/String", title );
+         else
+           graph.SetSResource( "Title/String", "Server Load" );
+         
+         // Push new data into the graph.
+         UpdateGraphData( graph_type );
+         
+         // Setup after data update to prepare to generate image.
+         graph.SetupHierarchy();
+
+         // Generate Image.
+         request_data.image = graph.CreateImage( null );
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Helper methods
+      /////////////////////////////////////////////////////////////////
+      
+      /////////////////////////////////////////////////////////////////
+      int GetIntegerParameter( HttpRequest request, String name, 
+                               int default_value )
+      {
+         String parameter_string = request.QueryString[ name ];
+         if( parameter_string == null || parameter_string.Equals( "" ) )
+           return default_value;
+         
+         try
+         {
+            return int.Parse( parameter_string, CultureInfo.InvariantCulture );
+         }
+         catch( Exception )
+         {
+            Error( "Invalid parameter value for: " + name + 
+                   " = " + parameter_string );
+            return default_value;
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Can be used only in ProcessRequestData() or methods 
+      // originating from it.
+      /////////////////////////////////////////////////////////////////
+      void Error( String message )
+      {
+         GlgObject.Error( GlgErrorType.USER_ERROR, message, null );
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      GlgObject LoadDrawing( String drawing_path )
+      {
+         GlgObject drawing;
+         
+         drawing = GlgObject.LoadWidget( drawing_path, GlgMediumType.FILE );
+         if( drawing == null )
+         {
+            Error( "Can't load drawing: " + drawing_path );
+            return null;
+         }
+
+         // Disable drawing border in the image: let html define it if needed.
+         drawing.SetDResource( "LineWidth", 0.0 );
+
+         return drawing;
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Demonstrates how to set various graph properties: 
+      // number of datasamples, labels, major and minor ticks, etc. 
+      // Alternatively, all graph properties other than the data may be 
+      // defined in the drawing.
+      /////////////////////////////////////////////////////////////////
+      GraphData InitializeGraph( GlgObject graph, int graph_index )
+      {
+         // Hardcoded data just to demo a graph
+         const int num_major_ticks = 5;
+         const int num_minor_ticks = 4;
+         const double low = 0.0;
+         const double high = 100.0;
+
+         GraphData graph_data = new GraphData();
+         graph_data.graph = graph;
+
+         DetermineGraphType( graph_data );
+
+         int num_datasamples = num_major_ticks * num_minor_ticks;
+
+         // Number of labels and major ticks.
+         graph.SetDResource( "XLabelGroup/Factor", num_major_ticks );
+
+         // Number of minor ticks.
+         graph.SetDResource( "XLabelGroup/MinorFactor", num_minor_ticks );
+
+         /* Set the number of datasamples, 
+            should match num_major_tick * num_minor_ticks.
+         */
+         switch( graph_data.glg_graph_type )
+         {
+          default:
+            graph.SetDResource( "DataGroup/Factor", num_datasamples );
+            break;
+
+          case MULTI_LINE_GRAPH:
+            graph.SetDResource( "DataGroupOne/DataGroup/Factor",
+                                num_datasamples );
+            break;
+         }
+
+         // Set the range of graph's value axis. 
+         if( graph_data.graph_time_axis == 'X' )   // Value axis is Y
+         {
+            graph.SetDResource( "YLabelGroup/YLabel/Low", low );
+            graph.SetDResource( "YLabelGroup/YLabel/High", high );
+         }
+         else   // Value axis is X
+         {
+            graph.SetDResource( "XLabelGroup/XLabel/Low", low );
+            graph.SetDResource( "XLabelGroup/XLabel/High", high );
+         }
+
+         /* For multi-line graph, the range each line may be different and
+            is set separately from the range of the value axis.
+         */
+         if( graph_data.glg_graph_type == MULTI_LINE_GRAPH )
+         {
+            graph.SetDResource( "DataGroupOne/DataGroup/Marker/DataSample/Low", 
+                                low );
+            graph.SetDResource( "DataGroupOne/DataGroup/Marker/DataSample/High", 
+                                high );
+         }
+
+         // Set initial labels to ""
+         if( graph_data.graph_time_axis == 'X' )
+           graph.SetSResource( "XLabelGroup/XLabel/String", "" );
+         else
+           graph.SetSResource( "YLabelGroup/YLabel/String", "" );
+
+         // A value outside the graph.
+         double out_value = low - ( high - low );
+
+         // Set initial values.
+         switch( graph_data.glg_graph_type )
+         {         
+          default:
+          case BAR_GRAPH:
+            graph.SetDResource( "DataGroup/DataSample/Value", low );
+            break;
+
+          case LINE_GRAPH:
+            graph.SetDResource( "DataGroup/Marker/DataSample/Value", out_value );
+            break;
+
+          case FILLED_LINE_GRAPH:
+            graph.SetDResource( "DataGroup/Marker/DataSample/Value", low );
+            break;
+
+          case MULTI_LINE_GRAPH:
+            graph.SetDResource( "DataGroupOne/DataGroup/Marker/DataSample/Value",
+                                out_value );
+            break;       
+
+          case STACKED_BAR_GRAPH:
+            graph.SetDResource( "DataGroup/Pack/DataSample/Low", low );
+            break;
+         }
+
+         // Set title and X/Y axis labels
+         graph.SetSResource( "Title/String", "Server Load" );
+      
+         if( graph_data.graph_time_axis == 'X' )
+         {
+            graph.SetSResource( "YAxisLabel/String", "Load, %" );
+            graph.SetSResource( "XAxisLabel/String", "Time" );
+         }
+         else
+         {
+            graph.SetSResource( "XAxisLabel/String", "Time" );
+            graph.SetSResource( "YAxisLabel/String", "Load, %" );
+         }
+
+         // Set legend for multi-value graphs (stacked bar and multi-line)
+         if( graph_data.num_values > 1 )        
+           for( int i=0; i<graph_data.num_values; ++i )
+             graph.SetSResource( "LegendObject/LegendGroup/Legend/Text" + i,
+                                 graph_data.glg_graph_type == STACKED_BAR_GRAPH ?
+                                 stacked_bar_labels[ i ] : multi_line_labels[ i ] );
+         // Enable display of one level line at 90% of max. value.
+         if( graph_data.glg_graph_type != STACKED_BAR_GRAPH )
+         {
+            graph.SetDResource( "LevelObjectGroup/Factor", 1.0 );
+            graph.SetDResource( "LevelObjectGroup/LevelObject/Low", low );
+            graph.SetDResource( "LevelObjectGroup/LevelObject/High", high );
+            graph.SetDResource( "LevelObjectGroup/LevelObject/Value", 
+                                low + 0.9 * ( high - low ) );
+
+            graph.SetDResource( "LevelObjectGroup/LevelObject/LineWidth",  1.0 );
+            graph.SetGResource( "LevelObjectGroup/LevelObject/EdgeColor", 
+                                0.7, 0.0, 0.0 );         
+            graph.SetDResource( "LevelObjectGroup/Visibility", 1.0 );
+         }
+
+         // Create datasource to fill graph with demo data.
+         graph_data.datasource = 
+           new GlgDemoDataSource( low, high, graph_data.num_values, 1000 );
+
+         graph.SetupHierarchy();    // Setup to prepare to receive data
+
+         return graph_data;
+      }
+
+      /////////////////////////////////////////////////////////////////
+      void UpdateGraphData( int graph_index )
+      {
+         int i;
+
+         GraphData graph_data = graph_array[ graph_index ];
+         GlgObject graph = graph_data.graph;
+         GlgDemoDataSource datasource = graph_data.datasource;
+
+         // If got a new data value, push it into the graph.
+         if( datasource.UpdateData() )
+         {
+            // Push data into the graph.
+            switch( graph_data.glg_graph_type )
+            {         
+             default:
+               graph.SetDResource( "DataGroup/EntryPoint",
+                                   datasource.GetValue() );
+               break;
+
+             case MULTI_LINE_GRAPH:   // Push several values (3)
+               for( i=0; i<graph_data.num_values; ++i )
+                 graph.SetDResource( "DataGroupOne/EntryPoint", 
+                                     datasource.GetValue( i ) );
+               break;
+
+             case STACKED_BAR_GRAPH:
+               for( i=0; i<graph_data.num_values; ++i )
+                 graph.SetDResource( "DataGroup/EntryPoint", 
+                                     datasource.GetValue( i ) / 3.0 );
+               break;
+            }
+
+            // Push graph label as well.
+            String label = "" + datasource.hour + ":" + 
+              GlgObject.Printf( "%02d", datasource.min ) + ":" +
+              GlgObject.Printf( "%02d", datasource.sec );
+
+            if( graph_data.graph_time_axis == 'X' )
+              graph.SetSResource( "XLabelGroup/EntryPoint", label );      
+            else
+              graph.SetSResource( "YLabelGroup/EntryPoint", label );      
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Determine the type of the graph depending on its resources.
+      // Alternatively, a custom "GraphType" property may be added to the 
+      // drawing of each graph and queried at run time.
+      /////////////////////////////////////////////////////////////////
+      void DetermineGraphType( GraphData graph_data )
+      {
+         GlgObject graph = graph_data.graph;
+
+         if( graph.HasResourceObject( "DataGroup/Marker" ) )
+         {
+            if( ( graph.GetDResource( "DataGroup/Polygon/FillType" ).IntValue()
+                  & (int) GlgFillType.FILL ) == 0 )
+              graph_data.glg_graph_type = LINE_GRAPH;
+            else
+              graph_data.glg_graph_type = FILLED_LINE_GRAPH;
+
+            graph_data.num_values = 1;
+         }
+         else if( graph.HasResourceObject( "DataGroupOne/DataGroup/Marker" ) )
+         {
+            graph_data.glg_graph_type = MULTI_LINE_GRAPH;
+            graph_data.num_values = 
+              graph.GetDResource( "DataGroupOne/Factor" ).IntValue();
+         }
+         else if( graph.HasResourceObject( "DataGroup/Pack" ) )
+         {
+            graph_data.glg_graph_type = STACKED_BAR_GRAPH;
+            graph_data.num_values = 
+              graph.GetDResource( "DataGroup/Pack/Factor" ).IntValue();
+         }
+         else
+         {
+            graph_data.glg_graph_type = BAR_GRAPH;
+            graph_data.num_values = 1;
+         }
+
+         // Determine graph's time axis.        
+         if( graph.HasResourceObject( "XLabelGroup/EntryPoint" ) )
+           graph_data.graph_time_axis = 'X';
+         else
+           graph_data.graph_time_axis = 'Y';
+      }
+   }
+}

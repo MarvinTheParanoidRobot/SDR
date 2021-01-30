@@ -1,0 +1,10 @@
+# Chooses marker size depending on city/town population
+
+INPUT DATA TYPE= GLM_D
+OUTPUT DATA TYPE= GLM_D
+
+0	3
+10000	3
+50000	5
+100000	7
+500000	7

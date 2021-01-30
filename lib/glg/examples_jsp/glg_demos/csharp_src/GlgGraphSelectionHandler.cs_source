@@ -1,0 +1,416 @@
+﻿using System;
+using System.Globalization;
+using System.Web;
+using System.Drawing.Imaging;
+using GenLogic;
+
+namespace GraphSelectionHandler
+{
+   public class GraphSelectionHandler : IHttpHandler
+   {
+      private static Object init_lock = new Object();
+      private static GlgHttpRequestProcessor request_processor = null;
+      private static GlgObject graph = null;
+      private static GlgDemoDataSource datasource;  // Graph's datasource.
+
+      static String drawing_name = "packed_bar_graph.g";
+      static String app_path = "GraphSelectionHandler";
+
+      static String [] legend_labels = { "server 1", "server 2", "server 3" };
+      static String [] axis_labels =
+        { "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+      
+      static String [] time_stamp_labels =
+        { "January", "February", "March", "April", "May", "June", 
+          "July", "August", "September", "October", "November", "December" };
+      
+      ///////////////////////////////////////////////////////////////////
+      public bool IsReusable
+      {
+         get { return false; }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      public void ProcessRequest( HttpContext context )
+      {
+         lock( init_lock )
+         {
+            /* First time only: create GlgHttpRequestProcessor that properly
+               handles ASP.NET synchronization context. ProcessRequestData is
+               registered as a custom application-specific method used by
+               the request processor to process HTTP requests.
+            */
+            if( request_processor == null )
+              request_processor = 
+                new GlgHttpRequestProcessor( ProcessRequestData );
+         }
+
+         /* Request processor will invoke ProcessRequestData method to
+            handle application-specific logic.
+         */
+         GlgHttpRequestData request_data = 
+           request_processor.ProcessRequest( context );
+
+         /* Returned data contains an image or HTML text response.
+            If there were request processing errors, the errors will be 
+            reported in the HTML output and returned data will be null.
+         */
+         if( request_data != null )
+         {
+            if( request_data.image != null )
+            {
+               // Save image.
+               context.Response.ContentType = "image/png";
+               request_data.image.Save( context.Response.OutputStream, 
+                                        ImageFormat.Png );
+            }
+            else if( request_data.html_response != null )
+              // Write html response for the tooltip.
+              context.Response.Write( request_data.html_response );
+            else
+              context.Response.Write( "Error: Unexpected response.<br>");
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // A custom method invoked to process HTTP context.
+      // 
+      // The HTTP context is passed in the request_data.context field.
+      // The generated image is assigned to the data.image field.
+      // The data.custom_data field may be used to pass additional 
+      //     custom data to the ProcessRequest method.
+      //
+      // The GlgObject.Error method may be used in the code to flag errors.
+      // Any errors will be reported in the generated HTML by the default
+      // GLG error handler. 
+      //
+      // A custom GLG error handler may be set using the 
+      // GlgObject.SetErrorHandler method inside this method. 
+      // The request_data.got_errors field may be set to true to flag errors 
+      // in case if a custom error handler is used.
+      ///////////////////////////////////////////////////////////////////
+      void ProcessRequestData( GlgHttpRequestData request_data )
+      {
+         HttpRequest request = request_data.context.Request;
+
+         // Get requested width/height of the image.
+         int width = GetIntegerParameter( request, "width", 500 );
+         int height = GetIntegerParameter( request, "height", 300 );
+         
+         // Limit max. size to avoid running out of heap space creating an image.
+         if( width > 1000 ) width = 1000;       
+         if( height > 1000 ) height = 1000;       
+
+         bool update_data;
+
+         /* Load the drawing just once and share it between all instances of
+            this HTTP handler.
+         */
+         if( graph == null )    // First time: load the drawing.
+         {
+            GlgObject.Init();
+            
+            String path;
+            String dir = request_data.context.Server.MapPath( "~" );
+            if( dir.IndexOf( app_path ) == -1 )
+              path = dir + app_path + "\\" + drawing_name;
+            else
+              path = dir + "\\" + drawing_name;
+            
+            graph = LoadDrawing( path );
+            graph.SetImageSize( width, height );
+            
+            // Set graph's properties and create a demo datasource to update it.
+            InitializeGraph( graph );
+            
+            update_data = true;   // Fill data just once
+         }
+         else   // Already loaded, reuse the drawing.
+         {
+             graph.SetImageSize( width, height );
+ 
+             /* Update data only if requested.
+                Don't update data when changing size.
+             */
+             update_data = 
+               ( GetIntegerParameter( request, "update_data", 0 ) != 0 );
+         }
+         
+         // Use title from the request if supplied as a parameter.
+         String title = request.QueryString[ "title" ];
+         if( title == null )
+           title = "Used Bandwidth";   // Default
+         graph.SetSResource( "Title/String", title );
+         
+         // Push new data into the graph.
+         if( update_data )
+           UpdateGraphData();
+         
+         // Setup after data update to prepare to generate image.
+         graph.SetupHierarchy();
+
+         String action = GetStringParameter( request, "action", "GetImage" );
+
+         // Main action: Generate Image.
+         if( action.Equals( "GetImage" ) )
+         {
+            request_data.image = graph.CreateImage( null );
+         }
+         // Secondary action: ProcessEvent.
+         else if( action.Equals( "ProcessEvent" ) )
+         {
+            // Get x and y coordinates of the mouse click.
+            int x = GetIntegerParameter( request, "x", -1 );
+            int y = GetIntegerParameter( request, "y", -1 );
+
+            // Selection rectangle around the mouse click.
+            GlgCube click_box = new GlgCube();
+            int selection_sensitivity = 0; // Extend by a few pixels if necessary.
+            click_box.p1.x = x - selection_sensitivity;
+            click_box.p1.y = y - selection_sensitivity;
+            click_box.p2.x = x + selection_sensitivity;
+            click_box.p2.y = y + selection_sensitivity;
+            
+            // Find selected object using named object selection.
+            String selection_info = null;
+            if( x > 0 && y > 0 )
+            {
+               // Query array of selected objects.
+               GlgObject selection = null;
+               selection = GlgObject.CreateSelection( graph, click_box, graph );
+               
+               // Get requested selection type, use Tooltip as default if omitted.
+               String event_type = 
+                 GetStringParameter( request, "event_type", "Tooltip" );
+               // Find selected bar and extract its value.
+               selection_info = GetSelectionInfo( selection, event_type );
+            }
+
+            request_data.html_response = 
+              ( selection_info == null ? "None" : selection_info );
+         }       
+         else
+           Error( "Unsupported action!" );
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Helper methods
+      /////////////////////////////////////////////////////////////////
+      
+      /////////////////////////////////////////////////////////////////
+      int GetIntegerParameter( HttpRequest request, String name, 
+                               int default_value )
+      {
+         String parameter_string = request.QueryString[ name ];
+         if( parameter_string == null || parameter_string.Equals( "" ) )
+           return default_value;
+         
+         try
+         {
+            return int.Parse( parameter_string, CultureInfo.InvariantCulture );
+         }
+         catch( Exception )
+         {
+            Error( "Invalid parameter value for: " + name + 
+                   " = " + parameter_string );
+            return default_value;
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////
+      String GetStringParameter( HttpRequest request, String name, 
+                                 String default_value )
+      {
+         String parameter_string = request.QueryString[ name ];
+         if( parameter_string == null )
+           return default_value;
+         else
+           return parameter_string;
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      // Can be used only in ProcessRequestData() or methods 
+      // originating from it.
+      /////////////////////////////////////////////////////////////////
+      void Error( String message )
+      {
+         GlgObject.Error( GlgErrorType.USER_ERROR, message, null );
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      GlgObject LoadDrawing( String drawing_path )
+      {
+         GlgObject drawing;
+         
+         drawing = GlgObject.LoadWidget( drawing_path, GlgMediumType.FILE );
+         if( drawing == null )
+         {
+            Error( "Can't load drawing: " + drawing_path );
+            return null;
+         }
+
+         // Disable drawing border in the image: let html define it if needed.
+         drawing.SetDResource( "LineWidth", 0.0 );
+
+         return drawing;
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Demonstrates how to set various graph properties: 
+      // number of datasamples, labels, major and minor ticks, etc. 
+      // Alternatively, all graph properties other than the data may be 
+      // defined in the drawing.
+      /////////////////////////////////////////////////////////////////
+      void InitializeGraph( GlgObject graph )
+      {
+         // Hardcoded data just to demo a graph
+         const double low = 0.0;
+         const double high = 10.0;
+         
+         // Use 12 labels and major ticks.
+         graph.SetDResource( "XLabelGroup/Factor", 12.0 );
+         
+         // Disable minor ticks
+         graph.SetDResource( "XLabelGroup/MinorFactor", 1.0 );
+         
+         // Set the number of datasamples to 12.
+         graph.SetDResource( "DataGroup/Factor", 12.0 );
+         
+         // Set the number of values in each pack of the packed bar graph to 3.
+         graph.SetDResource( "DataGroup/Pack/Factor", 3.0 );
+         
+         // Set the range of graph's value axis.
+         graph.SetDResource( "YLabelGroup/YLabel/Low", low );
+         graph.SetDResource( "YLabelGroup/YLabel/High", high );
+         
+         // Set value axis format
+         graph.SetSResource( "YLabelGroup/YLabel/Format", "%.0lf GB" );
+         
+         // Set title
+         graph.SetSResource( "Title/String", "Used Bandwidth" );
+         
+         // Disable axis labels and vertical grid.
+         graph.SetDResource( "YAxisLabel/Visibility", 0.0 );
+         graph.SetDResource( "XAxisLabel/Visibility", 0.0 );
+         graph.SetDResource( "XGridGroup/Visibility", 0.0 );
+         
+         // Set the packed bar graph's legend.
+         for( int i=0; i<3; ++i )
+           graph.SetSResource( "LegendObject/LegendGroup/Legend/Text" + i,
+                               legend_labels[ i ] );
+         
+         // Create datasource to fill graph with demo data.
+         datasource = 
+           new GlgDemoDataSource( low + 0.4 * ( high - low ), 
+                                  low + 0.7 * ( high - low ), 3, 0 );
+         
+         graph.SetupHierarchy();    // Setup to prepare to receive data
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      void UpdateGraphData()
+      {
+         int i, j;
+         
+         // Push data into the graph. The packed bar graph used in the demo
+         // displays 12 samples, each sample containing a pack of 3 values.
+         for( i=0; i<12; ++i )
+         {
+            datasource.UpdateData();
+            for( j=0; j<3; ++j )
+              graph.SetDResource( "DataGroup/EntryPoint", 
+                                  datasource.GetValue( j ) );
+
+            // For each datasample, fill the time stamp custom property
+            // For this demo, it matches the time axis labels.
+            graph.SetSResource( "DataGroup/Pack" + i + "/TimeStamp",
+                                time_stamp_labels[i] );
+         }
+
+         // Push graph labels as well.
+         for( i=0; i<12; ++i )
+           graph.SetSResource( "XLabelGroup/EntryPoint", axis_labels[i] );      
+      }
+
+      /////////////////////////////////////////////////////////////////
+      String GetSelectionInfo( GlgObject selection, String event_type )
+      {
+         if( selection == null )
+           return null;
+
+         // Process selection by requesting a list of all selected objects.
+         // This allows to use out of the box graph drawing, with no need
+         // to attach tooltip and mouse click actions to the chart's datasample
+         // template.
+      
+         int size = selection.GetSize();
+         for( int i=0; i<size; ++i )
+         {
+            GlgObject sel_obj = (GlgObject) selection.GetElement( i );
+            String name = sel_obj.GetSResource( "Name" );
+
+            // Accept selection of graph's datasamples only.
+            if( name == null || !name.StartsWith( "DataSample" ) )
+              continue;
+
+            // Get the month pack the datasample belongs too. 
+            // The pack of datasamples for each month has a "TimeStamp" custom
+            // property attached to it.
+            GlgObject parent = sel_obj.GetParent();
+            while( parent != null && !parent.HasResourceObject( "TimeStamp" ) )
+              parent = parent.GetParent();
+
+            String month;
+            if( parent != null )
+              month = parent.GetSResource( "TimeStamp" );
+            else
+              month = "Undefined";
+
+            // Tooltip: Display value of the selected server.
+            if( event_type.Equals( "Tooltip" ) )
+            {
+               // Extract datasample index from "DataSampleN" name.
+               int server_index;
+               String server_index_string = 
+                 name.Substring( "DataSample".Length );
+               try
+               {
+                  server_index = int.Parse( server_index_string,
+                                            CultureInfo.InvariantCulture );
+               }
+               catch( Exception )
+               {
+                  Error( "Can't parse server index: " + name );
+                  return null;
+               }
+            
+               double value = sel_obj.GetDResource( "Value" ).doubleValue();
+
+               return "<b>Server:</b> " + ( server_index + 1 ) + 
+                 "<br><b>Month:</b> " + month + 
+                 "<br><b>Bandwidth:</b> " + GlgObject.Printf( "%.2f GB", value );
+            }
+            // MouseClick: display values for all three servers.
+            else if( event_type.Equals( "MouseClick" ) )
+            {
+               double value0 = 
+                 parent.GetDResource( "DataSample0/Value" ).doubleValue();
+               double value1 = 
+                 parent.GetDResource( "DataSample1/Value" ).doubleValue();
+               double value2 = 
+                 parent.GetDResource( "DataSample2/Value" ).doubleValue();
+
+               return "<b>" + month + " Bandwidth</b>" +
+                 "<hr style=\"width: 100%; height: 2px;\">" +
+                 "<b>Server 1:</b> " + GlgObject.Printf( "%.2f GB", value0 ) +
+                 "<br><b>Server 2:</b> " + GlgObject.Printf( "%.2f GB", value1 ) +
+                 "<br><b>Server 3:</b> " + GlgObject.Printf( "%.2f GB", value2 );
+            }
+            else
+              return "Unsupported event_type";
+         }
+         return null;
+      }
+   }
+}

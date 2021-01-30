@@ -1,0 +1,96 @@
+############################################################################
+# Sample map server dataset file.
+############################################################################
+
+# May specify root directory explicitly if needed
+#GLM ROOT DIR=/usr/local/glg/map_data
+
+# Layer and font directories must be defined before layers or fonts are 
+# defined.
+LAYER DIR=layers
+FONT DIR=fonts
+
+# Calculate ZoomFactor based on the zoom extent and image width to
+# maintain constant per-pixel resolution when image size changes.
+ZOOM FACTOR TYPE="EXTENT AND WIDTH"
+
+# The BaseWidth default is 600 and defines the image size for which 
+# ZoomFactor will be 1 when the map is not zoomed (the whole world 
+# is displayed). It is a relative value that does not need to be changed.
+# If it is changed, it affects min/max zoom coefficients of all layers.
+#BASE WIDTH=600
+
+############################################################################
+# Layer string aliases used by gis and airtraffic control demos
+############################################################################
+ALIAS=default_gis   "earth,shadow"
+
+ALIAS=default_air   "political_filled,shadow,grid50,outline"
+
+############################################################################
+# Layers 
+############################################################################
+LAYER=earth earth.lif
+LAYER=earth_fallback earth_fallback.lif
+LAYER=states states.lif
+
+############################################################################
+# Sample DCW layers
+############################################################################
+LAYER=political polit_bound.lif
+LAYER=political_filled polbnd_polbnd.aft.gvf.lif
+LAYER=states_dcw states_dcw.lif
+LAYER=states_fill states_fill.lif
+
+############################################################################
+# Sample shaded relief elevation layer
+############################################################################
+LAYER=shadow dem_shadow.lif
+
+############################################################################
+# Sample grid layers with different colors
+############################################################################
+LAYER=grid grid.lif
+LAYER=grid30 grid30.lif
+LAYER=grid50 grid50.lif
+LAYER=grid70 grid70.lif
+
+# Grid for trajectory demo.
+LAYER=grid_fl grid_fl.lif
+
+# Outline of the whole globe
+LAYER=outline outline.lif
+
+# Gradient fill around the globe in orthographic projection
+LAYER=gradient_black gradient_black.lif
+LAYER=gradient_blue  gradient_blue.lif
+
+############################################################################
+# Sample us cities layer
+############################################################################
+LAYER=us_cities us_cities.lif
+
+# Fonts
+VECTOR FONT=roman romans.data
+VECTOR FONT=script scriptc.data
+
+IMAGE FONT=roboto     Roboto-Regular.ttf
+IMAGE FONT=roboto_i   Roboto-Italic.ttf
+IMAGE FONT=roboto_b   Roboto-Bold.ttf
+IMAGE FONT=roboto_bi  Roboto-BoldItalic.ttf
+IMAGE FONT=roboto_t   Roboto-Thin.ttf
+IMAGE FONT=roboto_ti  Roboto-ThinItalic.ttf
+IMAGE FONT=roboto_l   Roboto-Light.ttf
+IMAGE FONT=roboto_li  Roboto-LightItalic.ttf
+IMAGE FONT=roboto_m   Roboto-Medium.ttf
+IMAGE FONT=roboto_mi  Roboto-MediumItalic.ttf
+IMAGE FONT=roboto_k   Roboto-Black.ttf
+IMAGE FONT=roboto_ki  Roboto-BlackItalic.ttf
+
+IMAGE FONT=moderna    MgOpenModernaRegular.ttf
+IMAGE FONT=moderna_b  MgOpenModernaBold.ttf
+IMAGE FONT=moderna_i  MgOpenModernaOblique.ttf
+IMAGE FONT=moderna_ib MgOpenModernaBoldOblique.ttf
+
+DEFAULT FONT=roboto
+ERROR FONT=roboto

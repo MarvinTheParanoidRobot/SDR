@@ -1,0 +1,10 @@
+# Chooses place label depending on its population
+
+INPUT DATA TYPE= GLM_D
+OUTPUT DATA TYPE= GLM_S
+
+0	"Small town"
+10000	"Town"
+50000	"Big town"
+100000	"Small city"
+500000	"Big city"

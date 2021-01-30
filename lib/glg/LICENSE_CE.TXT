@@ -1,0 +1,55 @@
+NON-COMMERCIAL LICENSE 
+GLG Toolkit, Community Edition 
+
+This license applies to the Community Edition of the Generic Logic Inc.'s 
+Software and any of its derivatives. Any use of the Software and/or its 
+parts, or of the software items that link with the Software, signifies 
+acceptance of this license.
+
+COMPATIBILITY NOTE: Drawings created with the Community Edition should 
+not be used in the Production version of the Toolkit. To evaluate the 
+Production version, contact Generic Logic at sales@genlogic.com.
+
+GRANTED RIGHTS:
+1. Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation files
+(the "Software"), to use the software for non-commercial projects as
+defined below, free of charge and without modifications that would
+remove or hide the copyright notices.
+
+2. You can distribute any derivatives developed using the Software or
+in any way linked with it as long as these items are distributed for
+free and contain this license file.
+
+3. Any web-based services that use the Software in any form must be
+available to all users free of charge.
+
+A NON-COMMERCIAL PROJECT is an application or web service that
+developed for a non-commercial entity and is available to all users
+free of charge.
+
+A COMMERCIAL PROJECT is an application or web service that is
+developed or used by a commercial entity as part of its business
+activity, either for profit or for advertising, promotion and research
+purposes.
+
+WARRANTY DISCLAIMER: The Software is provided "AS-IS" and without
+warranty of any kind, express, implied or otherwise, including without
+limitation, any warranty of merchantability or fitness for a
+particular purpose. Except as specifically provided herein, Generic
+Logic, Inc. makes no warranty or representation, express or implied,
+with respect to software, including its quality, performance,
+merchantability or fitness for a particular purpose, title and against
+infringement.
+
+LIMITATIONS OF LIABILITY: In no event shall Generic Logic, Inc. be
+liable for any special, incidental, indirect or consequential damages
+of any kind, or any damages whatsoever resulting from loss of use,
+data or profits, whether or not advised of the possibility of damage,
+and on any theory of liability, arising out of or in connection with
+the use or performance of this software.
+
+GOVERNING LAW: This Agreement shall be governed by and construed in
+accordance with the laws of the Commonwealth of Massachusetts.
+
+Copyright (C) 1994-2019 Generic Logic, Inc.

@@ -1,0 +1,49 @@
+BUILDING GLG DEMOS AND EXAMPLES ON UNIX/LINUX
+
+The src directory of the GLG installation contains two sample gmake makefiles 
+for building GLG programs:
+
+   <glg_dir>/src/makefile
+   <glg_dir>/src/makefile2
+
+The first make file (makefile) builds an executable using all source files in 
+the current directory and can be used in directories that contain files of a 
+single demo or example.
+
+The second make file (makefile2) uses only the source files
+explicitely listed in the make file and may be used to build individual 
+examples in directories that contain source files of several examples.
+
+By default, makefiles assume that GLG is installed in /usr/local/glg and 
+build executables with the filename defined by the TARGET variable (set to 
+"demo" by default). The makefiles can be edited as needed to use different 
+paths for the include files and libraries, as well as to modify other settings.
+
+For the EVALUATION version of the GLG Toolkit, modify the GLG_LIB variable 
+in the makefile as described in the comments.
+
+To build a GLG executable, copy an appropriate makefile into the directory
+that contains source files, modify it as needed following the comments in
+the makefile, then build and run the project:
+
+      cd <project_dir>
+      # Copy either makefile or makefile2
+      cp <glg_dir>/src/makefile .
+      # Edit makefile as needed
+      make
+      ./demo
+
+ADDITIONAL LINUX PACKAGES
+
+To link GLG C/C++ programs on Linux, the following packages need to be installed:
+
+  libx11-dev libxt-dev libxext-dev libxmu-dev
+
+To link with the Motif-based GLG libraries, the following package is 
+also required:
+
+  libmotif-dev
+
+For the Raspberry Pi Linux, the Motif library (libXm.a) is supplied
+with the Toolkit in the GLG lib directory, and the libmotif-dev package
+is not required.

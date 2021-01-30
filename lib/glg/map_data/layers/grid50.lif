@@ -1,0 +1,31 @@
+# the grid layer
+TYPE=GRID
+TRANS TYPE=OPAQUE
+#TRANS TYPE=XOR
+#ALPHA=0.8
+
+#GRID MIN LON=-180
+#GRID MAX LON=180
+#GRID MIN LAT=-90
+#GRID MAX LAT=90
+#GRID LON INTERVAL=10
+#GRID LAT INTERVAL=10
+ADAPTIVE=12.
+
+GRID LABELS=2
+LAYOUT TYPE=LAYER
+# Allow grid labels to intersect just a bit
+LAYOUT MARGIN=-2
+
+EDGE COLOR=.4 .4 .4
+LABEL EDGE COLOR=.5 .5 .5
+
+# TrueType font sample
+FONT=roboto_m
+FONT SCALE=11
+
+# Vector font sample
+#FONT=roman
+#FONT SCALE=0.35
+
+DEFAULT ON=0

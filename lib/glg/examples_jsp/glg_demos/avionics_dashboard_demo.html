@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>AJAX Avionic Controls: Mobile Avionics Dashboard Demo</title>
+  <script src="glg_script.js" type="text/javascript"></script>
+  <script type="text/javascript">
+<!--
+
+// glg_script.js contains the JS source code of the GLG script object that
+// provides convenience methods for communicating with the GLG JSP servlet.
+
+var gso = null;        // GLG script object
+var small_size = false;
+
+function OnLoad()
+{
+   gso = new GlgSO();   // Create GLG script object.
+
+   gso.SetImageID( "avionics_image" );    // Image to receive servlet's output
+   gso.SetServletBase( "glg_avionics" );  // Servlet URL's base
+   gso.SetIdleTimeout( 600 );       // Stop updates after 10 mins of inactivity
+   
+   // Start/Stop Updates buttons whose state will be updated by the 
+   // StartUpdates() and StopUpdates() methods.
+   //
+   gso.SetStartButtonID( "start_updates" );
+   gso.SetStopButtonID( "stop_updates" );
+
+   // Starts updates with the selected update interval.
+   ChangeUpdateInterval( false );
+}
+
+function ChangeUpdateInterval( update_now )
+{
+   var update_interval;
+
+   if( document.getElementById( "3sec" ).selected )
+      update_interval = 3000;
+   else if( document.getElementById( "5sec" ).selected )
+      update_interval = 5000;
+   else if( document.getElementById( "10sec" ).selected )
+      update_interval = 10000;
+   else if( document.getElementById( "1min" ).selected )
+      update_interval = 60000;
+   else
+      alert( "Invalid update interval!" );   
+   
+   gso.SetUpdateInterval( update_interval );
+
+   // update_now is false on load: image has already been loaded.
+   gso.StartUpdates( update_now );
+}
+
+function ChangeImageSize()
+{
+   if( small_size )
+   {
+      gso.SetServletSize( 700, 600 );     // Set larger size
+      small_size = false;
+   }
+   else
+   {
+      gso.SetServletSize( 466, 400 );     // Set smaller size
+      small_size = true;
+   }
+   
+   gso.UpdateImage();
+}
+
+//-->
+  </script>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body onload="OnLoad()" style="font-family: Arial;" bgcolor="white">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+<h2> GLG Graphics Server: AJAX Avionics Dashboard Demo </h2>
+<input id="start_updates" value="Start Updates"
+ onclick="gso.StartUpdates( true )" type="button">
+<input id="stop_updates" value="Stop Updates"
+ onclick="gso.StopUpdates()" type="button"><input
+ value="Change Image Size" onclick="ChangeImageSize()" type="button">Update
+Interval:
+<select size="1" name="interval_menu"
+ onchange="ChangeUpdateInterval( true )">
+<option id="3sec" value="3" selected="selected">3 seconds</option>
+<option id="5sec" value="5">5 seconds</option>
+<option id="10sec" value="10">10 seconds</option>
+<option id="1min" value="60">1 minute</option>
+</select>
+<hr style="width: 100%; height: 2px;">
+<img id="avionics_image" src="glg_avionics?width=700&height=600"
+ alt="Loading Image..." title="Avionics Panel"><br>
+<hr style="width: 100%; height: 2px;">
+<a href="java_src/GlgAvionicsServlet.java">JSP Servlet Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="csharp_src/GlgAvionicsHandler.cs_source">ASP.NET Handler Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="glg_avionics?width=700&height=600">Dynamic Image URL</a>
+<hr style="width: 100%; height: 2px;">
+<p>This demo displays an avionics dashboard <b>updated with real-time
+data</b> using a JavaScript timer. </p>
+<p>The dashboard is implemented as a single GLG drawing containing
+several avionic gauges. The drawing was created with the <a
+ href="http://www.genlogic.com/toolkit.html#Graphics_Builder">
+GLG Graphics Builder</a>, an interactive graphical editor for creating
+real-time screens with dynamic graphics. The drawing is deployed on the
+web using the <a href="http://www.genlogic.com/graphics_server.html">
+GLG Graphics Server</a>.</p>
+<p></p>
+<p>The dashboard uses a few pre-built avionic gauges from the from the
+GLG's <a href="http://www.genlogic.com/widgets.html#Avionics">
+avionics widget set</a>. The Graphics Builder may be used to customize
+the gauges or to build custom gauges from scratch.</p>
+<p></p>
+<p>The dashboard image of the requested size is generated on the server
+side using the GLG Graphics Server in the form of a <b>JSP Servlet</b>
+or an <span style="font-weight: bold;">ASP.NET Handler</span>. The
+Servlet or Handler loads the drawing and uses it to generate an image.
+The <b>size of the image</b> is specified using the <i>width</i> and <i>height</i>
+parameters of the URL. <a href="glg_avionics?width=700&height=600">Click
+here</a> to display the dashboard's URL directly to see its parameters.</p>
+<p>The dashboard is updated with simulated real-time data provided by
+the Servlet or Handler on the server side. In an application, any
+custom data source may
+used. The same image URL may be used as a component in multiple web
+pages. <a href="java_src/GlgAvionicsServlet.java">JSP Servlet</a> and <a
+ href="csharp_src/GlgAvionicsHandler.cs_source">ASP.NET Handler</a> source
+code is
+provided and may be customized as required.</p>
+<p></p>
+<p>The Servlet or Handler loads the drawing just once and reuses it
+between all Servlet or Handler instances and threads. This increases
+performance and also ensures that all generated images display the same
+state of the monitored process.<br>
+</p>
+<hr style="width: 100%; height: 2px;">
+<p style="font-size: 80%; font-family: arial;"><a
+ href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+</body>
+</html>

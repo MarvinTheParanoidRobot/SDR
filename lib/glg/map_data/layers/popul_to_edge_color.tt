@@ -1,0 +1,9 @@
+# Chooses marker color depending on the city/town population
+
+INPUT DATA TYPE= GLM_D
+OUTPUT DATA TYPE= GLM_G
+
+0	1.  1.  1.
+50000	0.  0.  0.
+100000	0.  0.  0.
+500000	0.  0.  0.

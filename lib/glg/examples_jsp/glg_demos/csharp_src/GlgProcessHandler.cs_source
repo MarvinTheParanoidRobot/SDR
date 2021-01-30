@@ -1,0 +1,454 @@
+﻿using System;
+using System.Globalization;
+using System.Web;
+using System.Drawing.Imaging;
+using GenLogic;
+
+namespace ProcessHandler
+{
+   public class ProcessHandler : IHttpHandler
+   {
+      private static Object init_lock = new Object();
+      private static GlgHttpRequestProcessor request_processor = null;
+      private static GlgObject viewport = null;
+
+      /* Demonstrates updating the drawing using either tags (true) or 
+         resources (false).
+      */
+      static bool UseTags = true;
+
+      static String drawing_name = "process2.g";
+      static String app_path = "ProcessHandler";
+
+      // Global simulated data used by all handler instances.
+      static GlgProcessDemoData data = new GlgProcessDemoData();
+
+      ///////////////////////////////////////////////////////////////////
+      public bool IsReusable
+      {
+         get { return false; }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      public void ProcessRequest( HttpContext context )
+      {
+         lock( init_lock )
+         {
+            /* First time only: create GlgHttpRequestProcessor that properly
+               handles ASP.NET synchronization context. ProcessRequestData is
+               registered as a custom application-specific method used by
+               the request processor to process HTTP requests.
+            */
+            if( request_processor == null )
+              request_processor = 
+                new GlgHttpRequestProcessor( ProcessRequestData );
+         }
+
+         /* Request processor will invoke ProcessRequestData method to
+            handle application-specific logic.
+         */
+         GlgHttpRequestData request_data = 
+           request_processor.ProcessRequest( context );
+
+         /* Returned data contains an image or HTML text response.
+            If there were request processing errors, the errors will be 
+            reported in the HTML output and returned data will be null.
+         */
+         if( request_data != null )
+         {
+            if( request_data.image != null )
+            {
+               // Save image.
+               context.Response.ContentType = "image/png";
+               request_data.image.Save( context.Response.OutputStream, 
+                                        ImageFormat.Png );
+            }
+            else if( request_data.html_response != null )
+              // Write html response (tooltip or dialog data).
+              context.Response.Write( request_data.html_response );
+            else
+              context.Response.Write( "Error: Unexpected response.<br>");
+         }
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // A custom method invoked to process HTTP context.
+      // 
+      // The HTTP context is passed in the request_data.context field.
+      // The generated image is assigned to the data.image field.
+      // The data.custom_data field may be used to pass additional 
+      //     custom data to the ProcessRequest method.
+      //
+      // The GlgObject.Error method may be used in the code to flag errors.
+      // Any errors will be reported in the generated HTML by the default
+      // GLG error handler. 
+      //
+      // A custom GLG error handler may be set using the 
+      // GlgObject.SetErrorHandler method inside this method. 
+      // The request_data.got_errors field may be set to true to flag errors 
+      // in case if a custom error handler is used.
+      ///////////////////////////////////////////////////////////////////
+      void ProcessRequestData( GlgHttpRequestData request_data )
+      {
+         HttpRequest request = request_data.context.Request;
+
+         String action = GetStringParameter( request, "action", "GetImage" );
+         if( action.Equals( "GetDialogData" ) )
+         {
+            // Simply return requested dialog data: no drawing required.
+            ProcessDialogData( request_data );
+            return;
+         }
+
+         /* The rest of actions (GetImage, ProcessEvent) require a drawing -
+            load it (if first time) and update with data. */
+
+         // Get requested width/height of the image: need for all other actions.
+         int width = GetIntegerParameter( request, "width", 500 );
+         int height = GetIntegerParameter( request, "height", 400 );
+         
+         // Limit max. size to avoid running out of heap space creating an image.
+         if( width > 1000 ) width = 1000;       
+         if( height > 1000 ) height = 1000;       
+
+         /* Load the drawing just once and share it between all instances of
+            this HTTP handler.
+         */
+         if( viewport == null )
+         {
+            GlgObject.Init();
+
+            String path;
+            String dir = request_data.context.Server.MapPath( "~" );
+            if( dir.IndexOf( app_path ) == -1 )
+              path = dir + app_path + "\\" + drawing_name;
+            else
+              path = dir + "\\" + drawing_name;
+
+            viewport = LoadDrawing( path );
+            viewport.SetImageSize( width, height );
+            viewport.SetupHierarchy();    // Setup to prepare to receive data
+         }
+         else   // Already loaded, reuse the drawing.
+           viewport.SetImageSize( width, height );
+ 
+         ShowPipes( request );      // Show pipes and flow lines if requested.
+         
+         data.UpdateProcessData();  // Get the new data values.
+         
+         UpdateDrawingWithData();   // Updates drawing with current data.
+         
+         // Setup after data update to prepare to generate image.
+         viewport.SetupHierarchy();
+
+         // Main action: Generate Image.
+         if( action.Equals( "GetImage" ) )
+         {
+            request_data.image = viewport.CreateImage( null );
+         }
+         // Secondary action: ProcessEvent.
+         else if( action.Equals( "ProcessEvent" ) )
+         {
+            String event_type = GetStringParameter( request, "event_type", "" );
+
+            String selection_info = null;            
+            GlgSelectionEventType selection_type;
+
+            if( event_type.Equals( "MouseClick" ) )      // Get selected object
+            {
+               // Find object with the MouseClick custom event.
+               selection_type = GlgSelectionEventType.CLICK_SELECTION;
+            }
+            else if( event_type.Equals( "Tooltip" ) )    // Get object's tooltip
+            {
+               // Find object with the TooltipString property.
+               selection_type = GlgSelectionEventType.TOOLTIP_SELECTION;
+            }
+            else
+            {
+               selection_type = 0;
+               selection_info = "Unsupported event_type";
+            }
+            
+            if( selection_type != 0 )
+            {
+               // Get x and y coordinates of the mouse click.
+               int x = GetIntegerParameter( request, "x", -1 );
+               int y = GetIntegerParameter( request, "y", -1 );
+               
+               // Selection rectangle around the mouse click.
+               GlgCube click_box = new GlgCube();
+               int selection_sensitivity = 3;   // in pixels
+               click_box.p1.x = x - selection_sensitivity;
+               click_box.p1.y = y - selection_sensitivity;
+               click_box.p2.x = x + selection_sensitivity;
+               click_box.p2.y = y + selection_sensitivity;
+               
+               // Find selected object with MouseClick custom event attached.
+               if( x > 0 && y > 0 )
+               {
+                  // Select using MouseClick custom events.
+                  GlgObject selection_message = null;
+                  selection_message =
+                    GlgObject.CreateSelectionMessage( viewport, 
+                                                      click_box, viewport, 
+                                                      selection_type, 1 );
+                  
+                  if( selection_message != null )
+                    switch( selection_type )
+                    {
+                     default:
+                     case GlgSelectionEventType.CLICK_SELECTION:
+                       // Return object name.
+                       selection_info = 
+                         selection_message.GetSResource( "Object/Name" );
+                    break;
+                     
+                     case GlgSelectionEventType.TOOLTIP_SELECTION:
+                       /* Return tooltip string, which is an event label
+                          of the tooltip action message.
+                       */
+                       selection_info = 
+                         selection_message.GetSResource( "EventLabel" );
+                       break;
+                    }
+               }
+               else
+                 selection_info = "Invalid x/y coordinates.";
+            }
+         
+            request_data.html_response = 
+              ( selection_info == null ? "None" : selection_info );
+
+         }
+         else
+           Error( "Unsupported action!" );
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Helper methods
+      /////////////////////////////////////////////////////////////////
+      
+      /////////////////////////////////////////////////////////////////
+      int GetIntegerParameter( HttpRequest request, String name, 
+                               int default_value )
+      {
+         String parameter_string = request.QueryString[ name ];
+         if( parameter_string == null || parameter_string.Equals( "" ) )
+           return default_value;
+         
+         try
+         {
+            return int.Parse( parameter_string, CultureInfo.InvariantCulture );
+         }
+         catch( Exception )
+         {
+            Error( "Invalid parameter value for: " + name + 
+                   " = " + parameter_string );
+            return default_value;
+         }
+      }
+
+      /////////////////////////////////////////////////////////////////
+      String GetStringParameter( HttpRequest request, String name, 
+                                 String default_value )
+      {
+         String parameter_string = request.QueryString[ name ];
+         if( parameter_string == null )
+           return default_value;
+         else
+           return parameter_string;
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      // Can be used only in ProcessRequestData() or methods 
+      // originating from it.
+      /////////////////////////////////////////////////////////////////
+      void Error( String message )
+      {
+         GlgObject.Error( GlgErrorType.USER_ERROR, message, null );
+      }
+      
+      /////////////////////////////////////////////////////////////////
+      GlgObject LoadDrawing( String drawing_path )
+      {
+         GlgObject drawing;
+         
+         drawing = GlgObject.LoadWidget( drawing_path, GlgMediumType.FILE );
+         if( drawing == null )
+         {
+            Error( "Can't load drawing: " + drawing_path );
+            return null;
+         }
+
+         // Disable viewport border in the image: let html define it if needed.
+         drawing.SetDResource( "LineWidth", 0.0 );
+
+         return drawing;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // Updates drawing state with data.
+      //////////////////////////////////////////////////////////////////////////
+      void UpdateDrawingWithData()
+      {
+         // The drawing can be updated using either tags or resources.
+         if( UseTags )
+           UpdateProcessTags();
+         else
+           UpdateProcessResources();
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // Updates drawing using resources.
+      //////////////////////////////////////////////////////////////////////////
+      public void UpdateProcessTags()
+      {
+         viewport.SetDTag( "SolventValveValue", data.SolventValve, true );
+         viewport.SetDTag( "SteamValveValue", data.SteamValve, true );
+         viewport.SetDTag( "CoolingValveValue", data.CoolingValve, true );
+         viewport.SetDTag( "WaterValveValue", data.WaterValve, true );
+      
+         viewport.SetDTag( "SteamTemperature", data.SteamTemperature, true );
+         viewport.SetDTag( "HeaterTemperature", data.HeaterTemperature, true );
+         viewport.SetDTag( "BeforePreHeaterTemperature", 
+                           data.BeforePreHeaterTemperature, true );
+         viewport.SetDTag( "PreHeaterTemperature", 
+                           data.PreHeaterTemperature, true );
+         viewport.SetDTag( "AfterPreHeaterTemperature", 
+                           data.AfterPreHeaterTemperature, true );
+         viewport.SetDTag( "CoolingTemperature", data.CoolingTemperature, true );
+      
+         viewport.SetDTag( "HeaterLevel", data.HeaterLevel, true );
+         viewport.SetDTag( "WaterLevel", data.WaterLevel, true );
+      
+         viewport.SetDTag( "HeaterAlarm", data.HeaterAlarm ? 1.0 : 0.0, true );
+         viewport.SetDTag( "WaterAlarm", data.WaterAlarm ? 1.0 : 0.0, true );
+      
+         /* Pass if_changed=false to move the chart even if the value did not 
+            change. The rest of resources use true to update them only if their 
+            values changed.
+         */
+         viewport.SetDTag( "PlotValueEntryPoint", data.HeaterTemperature, false );
+      
+         viewport.SetDTag( "PressureValue", 5.0 * data.HeaterPressure, true );
+      }   
+   
+      //////////////////////////////////////////////////////////////////////////
+      // Updates drawing using resources.
+      //////////////////////////////////////////////////////////////////////////
+      public void UpdateProcessResources()
+      {
+         viewport.SetDResource( "SolventValve/Angle", data.SolventValve, true );
+         viewport.SetDResource( "SteamValve/Angle",   data.SteamValve, true );
+         viewport.SetDResource( "CoolingValve/Angle", data.CoolingValve, true );
+         viewport.SetDResource( "WaterValve/Angle",   data.WaterValve, true );
+      
+         viewport.SetDResource( "Heater/SteamTemperature", 
+                                data.SteamTemperature, true );
+         viewport.SetDResource( "Heater/HeaterTemperature",
+                                data.HeaterTemperature, true );
+         viewport.SetDResource( "BeforePreHeaterTemperature",
+                                data.BeforePreHeaterTemperature, true );
+         viewport.SetDResource( "PreHeaterTemperature",
+                                data.PreHeaterTemperature, true );
+         viewport.SetDResource( "AfterPreHeaterTemperature",
+                                data.AfterPreHeaterTemperature, true );
+         viewport.SetDResource( "CoolingTemperature", 
+                                data.CoolingTemperature, true );
+      
+         viewport.SetDResource( "Heater/HeaterLevel",
+                                data.HeaterLevel, true );
+         viewport.SetDResource( "WaterSeparator/WaterLevel",
+                                data.WaterLevel, true );
+      
+         viewport.SetDResource( "HeaterAlarm", data.HeaterAlarm ? 1.0 : 0.0,
+                                true );
+         viewport.SetDResource( "WaterAlarm", data.WaterAlarm ? 1.0 : 0.0, 
+                                true );
+      
+         /* Pass if_changed=false to move the chart even if the value did not 
+            change. The rest of resources use true to update them only if their 
+            values changed.
+         */
+         viewport.SetDResource( "ChartVP/Chart/Plots/Plot#0/ValueEntryPoint",
+                                data.HeaterTemperature, false );
+
+         viewport.SetDResource( "PressureGauge/Value", 
+                                5.0 * data.HeaterPressure, true );
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Shows pipes and flow lines if requested.
+      // Constraints in the drawing take care of updating associated
+      // toggle buttons when the pipe or flow line display state is 
+      // changed. The last parameter of SetDResource() is set to true
+      // to update the drawing only if the resource value gets changed.
+      /////////////////////////////////////////////////////////////////
+      void ShowPipes( HttpRequest request )
+      {
+         // Show pipes if requested, default 0.
+         int show_pipes = GetIntegerParameter( request, "show_pipes", 0 );
+         viewport.SetDResource( "3DPipes/Visibility", (double)show_pipes, true );
+
+         // Show flow if requested, default 1.
+         int show_flow = GetIntegerParameter( request, "show_flow", 1 );
+         viewport.SetDResource( "FlowGroup/Visibility", (double)show_flow, 
+                                true );
+      }
+
+      /////////////////////////////////////////////////////////////////
+      // Returns data for a requested dialog.
+      /////////////////////////////////////////////////////////////////
+      void ProcessDialogData( GlgHttpRequestData request_data )
+      {
+         HttpRequest request = request_data.context.Request;
+
+         String dialog_type = 
+           GetStringParameter( request, "dialog_type", "None" );
+
+         if( dialog_type.Equals( "Heater" ) )
+         {
+            request_data.html_response = "<b>Solvent Heater</b><br>" +
+              "Level: " + Format( data.HeaterLevel * 100.0 ) + " %<br>" +
+              "Pressure: " + Format( data.HeaterPressure * 5.0 ) + " ATM.<br>" +
+              "Temperature: " + Format( 50.0 + data.HeaterTemperature * 100.0 ) +
+              " C\u00B0";
+         }
+         else if( dialog_type.Equals( "WaterSeparator" ) )
+         {
+            request_data.html_response = "<b>Water Heater</b><br>" +
+              "Level: " + Format( data.WaterLevel * 100.0 ) + " %<br>" +
+              "Temperature: " + Format( 50 + data.CoolingTemperature * 30.0 ) +
+              " C\u00B0";
+         }
+         else if( dialog_type.Equals( "SolventValve" ) )
+         {
+            request_data.html_response = "<b>Solvent Valve</b><br>" +
+              "Open: " + Format( data.SolventValve * 100.0 ) + " %";
+         }
+         else if( dialog_type.Equals( "SteamValve" ) )
+         {
+            request_data.html_response = "<b>Steam Valve</b><br>" +
+              "Open: " + Format( data.SteamValve * 100.0 ) + " %";
+         }
+         else if( dialog_type.Equals( "CoolingValve" ) )
+         {
+            request_data.html_response = "<b>Cooling Valve</b><br>" +
+              "Open: " + Format( data.CoolingValve * 100.0 ) + " %";
+         }
+         else if( dialog_type.Equals( "WaterValve" ) )
+         {
+            request_data.html_response = "<b>Water Valve</b><br>" +
+              "Open: " + Format( data.WaterValve * 100.0 ) + " %";
+         }
+         else
+           request_data.html_response = "None";
+      }
+
+      String Format( double value )
+      {
+         return GlgObject.Printf( "%.2f", value );
+      }
+   }
+}

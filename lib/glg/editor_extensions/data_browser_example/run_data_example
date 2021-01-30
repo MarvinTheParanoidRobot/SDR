@@ -1,0 +1,42 @@
+#!/bin/sh
+
+echo  Edit location of the executable before running the script.
+echo  Demo Builder is used by default.
+echo   
+echo  To bring the custom data browser implemented by this module 
+echo  in the Builder, add a tag to any object attribute and press 
+echo  the tag\'s Browse button.
+echo
+
+curr_path=`dirname $0`
+
+GLG_DIR=${curr_path}/../..
+
+##########################################################################
+# This script uses the demo version of the GLG Builder by default.
+#
+# Uncomment one of the lines for setting GLG_EXE below to select the 
+# DEMO, EVAL or PRODUCTION version of the GLG Builder or 
+# the HMI Configurator.
+##########################################################################
+
+# The Demo Version of the Builder or the HMI Configurator.
+GLG_EXE="${GLG_DIR}/DEMOS/main_demo/GlgDemo -editor"
+#GLG_EXE="${GLG_DIR}/DEMOS/main_demo/GlgDemo -hmi-editor"
+
+# The Community Edition version of the Builder or the HMI Configurator.
+#GLG_EXE=${GLG_DIR}/bin/GlgBuilderCE
+#GLG_EXE=${GLG_DIR}/bin/GlgHMIEditorCE
+
+# The Evaluation Version of the Builder or the HMI Configurator.
+#GLG_EXE=${GLG_DIR}/eval/bin/GlgBuilder
+#GLG_EXE=${GLG_DIR}/eval/bin/GlgHMIEditor
+
+# The Purchased Version of the Builder or the HMI Configurator.
+#GLG_EXE=${GLG_DIR}/bin/GlgBuilder
+#GLG_EXE=${GLG_DIR}/bin/GlgHMIEditor
+
+##########################################################################
+
+# Start the selected executable with the custom library.
+${GLG_EXE} -data-lib ${curr_path}/libglg_custom_data.so

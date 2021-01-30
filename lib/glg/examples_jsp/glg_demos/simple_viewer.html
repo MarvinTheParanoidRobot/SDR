@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <title>Mobile Process Control and SCADA: AJAX Simple Viewer Example</title>
+  <script src="glg_script.js" type="text/javascript"></script>
+  <script type="text/javascript">
+<!--
+
+// glg_script.js contains the JS source code of the GLG script object that
+// provides convenience methods for communicating with the GLG JSP servlet.
+
+var gso = null;        // GLG script object
+var small_size = false;
+var show_pipes = 0;
+var show_flow = 1;
+
+function GetDrawingName()
+{
+   return "&drawing=plant_ajax.g";
+}
+
+function OnLoad()
+{
+   gso = new GlgSO();   // Create GLG script object.
+
+   gso.SetImageID( "viewer_image" );    // Image to receive servlet's output
+   gso.SetServletBase( "glg_simple_viewer" );   // Servlet URL's base
+
+   // Defines method that provides custom parameters to be sent to the servlet.
+   gso.SetCustomRequestParam( GetDrawingName );
+   gso.SetIdleTimeout( 600 );      // Stop updates after 10 mins of inactivity
+   
+   gso.SetTooltipID( "tooltip_div", "tooltip_data" ); // Tooltip elements
+   gso.SetDialogID( "dialog_div", "dialog_data" ); // MouseClick dialog elements
+
+   // Two-stage dialog: the name of the object selected by MouseClick will 
+   // be used to request dialog data.
+   gso.SetTwoStageDialog( true );
+
+   // Specify a custom method for pre-processing returned click data
+   // before they are displayed in a dialog.
+   gso.SetClickDataCB( ProcessClickData );
+
+   // Start/Stop Updates buttons whose state will be updated by the 
+   // StartUpdates() and StopUpdates() methods.
+   //
+   gso.SetStartButtonID( "start_updates" );
+   gso.SetStopButtonID( "stop_updates" );
+
+   // Starts updates with the selected update interval.
+   ChangeUpdateInterval( false );
+}
+
+function ChangeUpdateInterval( update_now )
+{
+   var update_interval;
+
+   if( document.getElementById( "3sec" ).selected )
+      update_interval = 3000;
+   else if( document.getElementById( "5sec" ).selected )
+      update_interval = 5000;
+   else if( document.getElementById( "10sec" ).selected )
+      update_interval = 10000;
+   else if( document.getElementById( "1min" ).selected )
+      update_interval = 60000;
+   else
+      alert( "Invalid update interval!" );
+
+   gso.SetUpdateInterval( update_interval );
+
+   // update_now is false on load: image has already been loaded.
+   gso.StartUpdates( update_now );
+}
+
+function ChangeImageSize()
+{
+   if( small_size )
+   {
+      gso.SetServletSize( 900, 700 );     // Set larger size
+      small_size = false;
+   }
+   else
+   {
+      gso.SetServletSize( 1000, 800 );     // Set smaller size
+      small_size = true;
+   }
+   
+   gso.UpdateImage();
+}
+
+function OnMove( event )
+{
+   // Processes tooltip events and displays a tooltip.
+   gso.ProcessTooltip( event );
+}
+
+function OnClick( event )
+{
+   // Processes mouse click events to find selected object and display a
+   // dialog with detailed information.
+   //
+   gso.ProcessClick( event );
+}
+
+function ProcessClickData( responseText )
+{
+   // Display selected object name
+   document.getElementById( "selected_div" ).innerHTML =
+     "<b>Selected Object:</b> " + responseText;
+
+   // Check if user clicked on a button: if true, don't proceed to display 
+   // a dialog.
+   if( ProcessButtons( responseText ) )
+     return false;
+      
+   return true;
+}
+
+function ProcessButtons( selected_name )
+{
+   return false;   // Not a button.
+}
+
+//-->
+  </script>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body onload="OnLoad()" style="font-family: Arial;" bgcolor="white">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/graphics_server.html">AJAX Graphics
+Server</a> |
+<a href="http://www.genlogic.com/index.html#Products">Products</a>
+</p>
+<h2> GLG Graphics Server: AJAX Simple Viewer Example </h2>
+<input id="start_updates" value="Start Updates"
+ onclick="gso.StartUpdates( true )" type="button">
+<input id="stop_updates" value="Stop Updates"
+ onclick="gso.StopUpdates()" type="button">Update Interval:
+<select size="1" name="interval_menu"
+ onchange="ChangeUpdateInterval( true )">
+<option id="3sec" value="3" selected="selected">3 seconds</option>
+<option id="5sec" value="5">5 seconds</option>
+<option id="10sec" value="10">10 seconds</option>
+<option id="1min" value="60">1 minute</option>
+</select>
+<input value="Change Image Size" onclick="ChangeImageSize()"
+ type="button">
+<hr style="width: 100%; height: 2px;">
+<div id="selected_div"> <b>Selected Object:</b> Click on tanks or
+valves to select and display values, hover over for a tooltip </div>
+<hr style="width: 100%; height: 2px;">
+<img id="viewer_image"
+ src="glg_simple_viewer?drawing=plant_ajax.g&width=900&height=700"
+ onclick="OnClick(event)" onmousemove="OnMove(event)"
+ onmouseout="OnMove(null)" alt="Loading Image...">
+<div id="dialog_div" onclick="gso.EraseDataDialog()"
+ style="position: absolute; display: none; top: 200px; left: 200px; z-index: 10000;">
+<table style="background-color: black;" border="0" cellpadding="2"
+ cellspacing="1">
+  <tbody>
+    <tr>
+      <td border="1" style="background-color: white;"> <span
+ id="dialog_data"> No Data </span>
+      <hr style="width: 100%; height: 2px;"> <input value="Close"
+ onclick="gso.EraseDataDialog()" type="button"> </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div id="tooltip_div"
+ style="position: absolute; display: none; top: 0px; left: 0px; z-index: 10000;">
+<table style="background-color: black;" border="0" cellpadding="2"
+ cellspacing="1">
+  <tbody>
+    <tr>
+      <td id="tooltip_data" border="1"
+ style="background-color: rgb(255, 255, 204);"> Tooltip </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br>
+<hr style="width: 100%; height: 2px;">
+<a href="java_src/GlgSimpleViewerServlet.java">JSP Servlet Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="csharp_src/GlgSimpleViewerHandler.cs_source">ASP.NET Handler Source Code</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="glg_simple_viewer?drawing=plant_ajax.g&width=900&height=700">Dynamic
+Image URL</a>
+<hr style="width: 100%; height: 2px;">
+</body>
+</html>

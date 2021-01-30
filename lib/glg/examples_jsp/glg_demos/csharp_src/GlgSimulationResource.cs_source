@@ -1,0 +1,11 @@
+using System;
+using GenLogic;
+
+public class GlgSimulationResource    // Keeps info of a resource to update
+{
+   public GlgObject obj;
+   public GlgDataType type;
+   public String resource_path;
+   public double range;   
+   public double value;
+}

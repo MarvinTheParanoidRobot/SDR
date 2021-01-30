@@ -1,0 +1,5 @@
+#!/bin/sh
+
+curr_path=`dirname $0`
+
+${curr_path}/../DEMOS/main_demo/GlgDemo -editor -glg-disable-opengl $*

@@ -1,0 +1,43 @@
+# The indexed color list can be defined via a GLG drawing (see
+# indexed_color_palette.g for an example) or an ASCII file.
+#
+# FILE FORMAT:
+# The first line of each example lists the version number and the file format:
+# HEX, DECIMAL or NORMALIZED. The following lines list colors, one color per 
+# line. The # character at the beginning of a line may be used to comment 
+# the line.
+#
+# The following are examples of various formats of the indexed color list file.
+# To try one of the format examples, uncomment one example and comment all 
+# others (the HEXADECIMAL format is uncommented below by default).
+# 
+
+#########################################################################
+# HEXADECIMAL FORMAT
+#########################################################################
+1 HEX
+000000
+FFFFFF
+FF0000
+00FF00
+0000FF
+
+#########################################################################
+# DECIMAL FORMAT
+#########################################################################
+#1 DECIMAL
+#0 0 0
+#255 255 255
+#255 0   0
+#0   255 0
+#0   0   255
+
+#########################################################################
+# NORMALIZED FORMAT
+#########################################################################
+#1 NORMALIZED
+#0. 0. 0.
+#1. 1. 1.
+#1. 0. 0.
+#0. 1. 0.
+#0. 0. 1.
