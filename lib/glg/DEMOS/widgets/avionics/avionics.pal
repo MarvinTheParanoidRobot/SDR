@@ -1,0 +1,27 @@
+title=Avionics Controls
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+# Controls
+avio1.g
+avio2.g
+avio13.g
+avio16.g
+#
+avio4.g
+avio6.g
+avio9.g
+avio12.g
+#
+avio10.g
+avio11.g
+avio8.g
+avio3.g
+#
+avio5.g
+avio7.g
+avio14.g
+avio15.g

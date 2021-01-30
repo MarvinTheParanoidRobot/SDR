@@ -1,0 +1,40 @@
+title=Value and State Display Widgets
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+indicator2.g
+indicator7.g
+indicator9.g
+indicator8.g
+#
+indicator1.g
+indicator12.g
+indicator4.g
+indicator14.g
+#
+indicator11.g
+indicator13.g
+indicator10.g
+indicator15.g
+#
+label1.g
+indicator3.g
+indicator16.g
+indicator17.g
+#
+lat1.g
+lon1.g
+latlon1.g
+latlon2.g
+#
+led1.g
+led3.g
+led5.g
+date_time.g
+#
+led2.g
+led4.g
+led6.g

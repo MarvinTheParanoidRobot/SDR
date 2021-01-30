@@ -1,0 +1,39 @@
+title=Push Buttons
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+button45.g
+button44.g
+button19.g
+button1.g
+#
+button21.g
+button13.g
+button20.g
+button4.g
+#
+button5.g
+button6.g
+button14.g
+button15.g
+#
+button7.g
+button8.g
+button16.g
+button17.g
+#
+button34.g
+button35.g
+button36.g
+button37.g
+#
+button38.g
+button39.g
+button3.g
+button10.g
+#
+button18.g
+button12.g

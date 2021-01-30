@@ -1,0 +1,50 @@
+title=Pipes and Lines
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+pipe1.g
+pipe2.g
+pipe3.g
+pipe4.g
+#
+pipe5.g
+pipe6.g
+pipe7.g
+pipe8.g
+#
+pipe9.g
+pipe10.g
+pipe13.g
+pipe12.g
+#
+pipe14.g
+pipe15.g
+pipe16.g
+pipe17.g
+#
+pipe19.g
+pipe27.g
+pipe11.g
+pipe18.g
+#
+pipe20.g
+pipe21.g
+pipe22.g
+pipe23.g
+#
+pipe25.g
+pipe26.g
+pipe28.g
+pipe29.g
+#
+pipe30.g
+pipe31.g
+pipe32.g
+pipe33.g
+#
+pipe34.g
+pipe35.g
+pipe24.g

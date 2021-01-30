@@ -1,0 +1,27 @@
+title=Knobs
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+knob16.g
+knob19.g
+knob17.g
+knob18.g
+#
+knob2.g
+knob20.g
+knob12.g
+knob21.g
+knob15.g
+#
+knob5.g
+knob3.g
+knob4.g
+knob14.g
+#
+knob6.g
+knob11.g
+knob1.g
+knob8.g

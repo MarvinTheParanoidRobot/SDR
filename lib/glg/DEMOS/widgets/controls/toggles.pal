@@ -1,0 +1,33 @@
+title=Toggle Buttons
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+button31.g
+button24.g
+button22.g
+button23.g
+#
+button32.g
+button25.g
+button26.g
+button29.g
+#
+button46.g
+button47.g
+button48.g
+button11.g
+#
+button33.g
+button28.g
+button27.g
+button30.g
+#
+button40.g
+button42.g
+button41.g
+button43.g
+#
+button9.g

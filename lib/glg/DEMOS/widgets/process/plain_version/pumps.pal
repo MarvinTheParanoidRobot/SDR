@@ -1,0 +1,25 @@
+title=Motors, Pumps and Fans
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+motor1.g
+motor2.g
+motor3.g
+motor4.g
+motor5.g
+#
+pump1.g
+pump2.g
+pump3.g
+pump4.g
+pump5.g
+pump6.g
+pump7.g
+pump8.g
+#
+fan1.g
+fan2.g
+fan3.g

@@ -1,0 +1,29 @@
+title=Layout Templates
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+layout1.g
+layout2.g
+layout3.g
+layout4.g
+#
+layout5.g
+layout6.g
+layout7.g
+layout8.g
+#
+layout9.g
+layout10.g
+layout11.g
+layout12.g
+#
+layout13.g
+layout14.g
+layout15.g
+layout16.g
+#
+fixed_size1.g
+fixed_size2.g

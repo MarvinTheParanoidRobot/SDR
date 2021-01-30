@@ -1,0 +1,55 @@
+title=Dials and Meters
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+meter27.g
+meter26.g
+meter10.g
+meter39.g
+#
+meter37.g
+meter35.g
+meter38.g
+meter36.g
+#
+meter33.g
+meter32.g
+meter34.g
+meter11.g
+#
+meter40.g
+meter41.g
+meter42.g
+meter43.g
+#
+meter45.g
+meter44.g
+meter46.g
+meter47.g
+#
+meter15.g
+meter17.g
+meter13.g
+meter4.g
+#
+meter14.g
+meter1.g
+meter12.g
+meter3.g
+#
+meter5.g
+meter6.g
+meter7.g
+meter16.g
+#
+meter2.g
+meter8.g
+meter9.g
+gauge4.g
+#
+time1.g
+time2.g
+time2.g

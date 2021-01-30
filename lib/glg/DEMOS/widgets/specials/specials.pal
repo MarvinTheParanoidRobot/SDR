@@ -1,0 +1,45 @@
+title=Special Widgets
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+axis17.g
+axis18.g
+axis19.g
+axis20.g
+#
+axis13.g
+axis15.g
+axis21.g
+axis10.g
+#
+axis14.g
+axis16.g
+axis22.g
+axis9.g
+#
+axis5.g
+axis11.g
+axis6.g
+flow_line.g
+#
+palette1.g
+palette2.g
+palette3.g
+palette4.g
+#
+browser1.g
+browser3.g
+browser4.g
+scroll1.g
+#
+legend1.g
+legend2.g
+legend3.g
+legend4.g
+#
+browser2.g
+browser5.g
+dialog1.g

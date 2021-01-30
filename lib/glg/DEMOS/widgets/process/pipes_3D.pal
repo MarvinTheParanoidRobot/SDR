@@ -1,0 +1,41 @@
+title=3D Pipes
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+pipe37.g
+pipe41.g
+pipe46.g
+flange3.g
+#
+pipe44.g
+pipe45.g
+pipe47.g
+flange4.g
+#
+elbow9.g
+elbow10.g
+elbow11.g
+flange5.g
+#
+elbow5.g
+elbow6.g
+elbow7.g
+elbow8.g
+#
+pipe38.g
+pipe42.g
+pipe39.g
+pipe43.g
+#
+elbow1.g
+flange1.g
+flange6.g
+flange8.g
+#
+elbow2.g
+flange2.g
+flange7.g
+flange9.g

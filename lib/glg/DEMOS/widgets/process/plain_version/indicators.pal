@@ -1,0 +1,20 @@
+title=Process Control Gauges and Indicators
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+instr1.g
+instr2.g
+instr3.g
+instr5.g
+instr12.g
+instr4.g
+instr8.g
+instr9.g
+instr10.g
+instr11.g
+instr6.g
+instr7.g
+instr13.g

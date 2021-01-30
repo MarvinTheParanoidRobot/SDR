@@ -1,0 +1,37 @@
+title=3D Graphs
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+bar101.g
+bar109.g
+bar119.g
+bar102.g
+#
+bar112.g
+bar103.g
+bar104.g
+bar105.g
+#
+bar106.g
+bar107.g
+bar108.g
+bar110.g
+#
+bar111.g
+bar113.g
+bar114.g
+bar115.g
+#
+bar116.g
+bar117.g
+bar118.g
+line101.g
+#
+line102.g
+step101.g
+step102.g
+surface101.g
+#
+surface102.g

@@ -1,0 +1,9 @@
+title=Custom Widget Samples
+#directory=hmi_widgets
+num columns=4
+#
+entries=
+#
+tank_hmi.g
+valve1_hmi.g
+valve2_hmi.g

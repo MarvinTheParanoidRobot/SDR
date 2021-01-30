@@ -1,0 +1,30 @@
+title=Tanks, Columns, Heat Exchangers
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+tank1.g
+tank2.g
+tank3.g
+tank4.g
+#
+tank5.g
+tank6.g
+column1.g
+column2.g
+#
+column3.g
+column4.g
+column5.g
+heat1.g
+#
+heat2.g
+heat3.g
+heat4.g
+heat5.g
+#
+heat6.g
+heat7.g
+heat8.g

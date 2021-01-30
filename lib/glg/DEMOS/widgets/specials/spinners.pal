@@ -1,0 +1,31 @@
+title=Spinners and Misc. Input Widgets
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+text1.g
+text2.g
+text3.g
+text5.g
+#
+spinner6.g
+spinner8.g
+spinner7.g
+spinner9.g
+#
+spinner10.g
+spinner4.g
+spinner5.g
+spinner11.g
+#
+spinner1.g
+spinner2.g
+spinner3.g
+option1.g
+#
+list1.g
+list2.g
+list3.g
+text4.g

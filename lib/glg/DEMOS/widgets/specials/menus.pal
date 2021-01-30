@@ -1,0 +1,40 @@
+title=Menus and CheckBoxes
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+menu5.g
+menu16.g
+menu17.g
+menu18.g
+#
+menu7.g
+menu21.g
+menu6.g
+menu20.g
+#
+menu4.g
+menu15.g
+menu14.g
+menu13.g
+#
+menu22.g
+menu23.g
+menu24.g
+menu25.g
+#
+menu26.g
+menu27.g
+menu12.g
+menu3.g
+#
+menu8.g
+menu9.g
+menu11.g
+menu19.g
+#
+menu1.g
+menu2.g
+menu10.g

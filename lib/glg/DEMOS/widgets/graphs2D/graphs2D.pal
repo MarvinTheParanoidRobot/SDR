@@ -1,0 +1,55 @@
+title=2D Graphs
+num columns=5
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+bar1.g
+bar2.g
+bar3.g
+bar4.g
+bar8.g
+#
+line1.g
+line2.g
+line8.g
+line7.g
+bar9.g
+#
+line5.g
+line6.g
+step1.g
+step2.g
+step3.g
+#
+line3.g
+line4.g
+step4.g
+step5.g
+step6.g
+#
+scatter1.g
+scatter2.g
+scatter5.g
+scatter3.g
+scatter4.g
+#
+point1.g
+point2.g
+stock1.g
+stock2.g
+stock3.g
+#
+polar1.g
+polar2.g
+polar6.g
+polar4.g
+polar7.g
+#
+polar3.g
+polar5.g
+pie1.g
+bar7.g
+combo1.g
+#
+gantt1.g

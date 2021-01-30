@@ -1,0 +1,44 @@
+title=Real-Time Charts
+num columns=3
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+chart1.g
+chart2.g
+chart3.g
+#
+chart4.g
+chart5.g
+chart6.g
+#
+chart7.g
+chart8.g
+chart9.g
+#
+chart10.g
+chart11.g
+chart12.g
+#
+chart13.g
+chart14.g
+chart15.g
+#
+chart23.g
+chart24.g
+chart25.g
+#
+chart16.g
+chart17.g
+chart18.g
+#
+chart26.g
+chart27.g
+chart28.g
+#
+chart19.g
+chart20.g
+chart21.g
+#
+chart22.g

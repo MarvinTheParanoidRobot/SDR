@@ -1,0 +1,38 @@
+title=Switches and Toggles
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+# Toggles
+switch16.g
+switch6.g
+switch17.g
+switch3.g
+#
+switch15.g
+switch22.g
+switch21.g
+switch11.g
+#
+switch19.g
+switch20.g
+switch14.g
+switch18.g
+#
+switch2.g
+switch12.g
+switch1.g
+switch5.g
+#
+# Switches
+switch10.g
+switch9.g
+switch7.g
+switch4.g
+#
+knob10.g
+knob9.g
+knob13.g
+switch8.g

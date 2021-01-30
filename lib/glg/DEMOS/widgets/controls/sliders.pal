@@ -1,0 +1,59 @@
+title=Sliders and Joysticks
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+slider3.g
+slider10.g
+slider28.g
+slider26.g
+#
+slider6.g
+slider7.g
+slider29.g
+slider25.g
+#
+slider2.g
+slider1.g
+slider11.g
+slider4.g
+#
+slider13.g
+slider23.g
+slider22.g
+slider24.g
+#
+slider30.g
+slider31.g
+slider32.g
+slider33.g
+#
+# Slider/spinner combos/misc
+slider34.g
+slider35.g
+slider27.g
+slider40.g
+#
+slider19.g
+slider12.g
+slider17.g
+slider9.g
+#
+slider18.g
+slider14.g
+slider5.g
+slider8.g
+#
+slider21.g
+slider15.g
+slider20.g
+slider16.g
+#
+# 2D sliders
+joystick1.g
+joystick4.g
+joystick2.g
+joystick3.g
+#
