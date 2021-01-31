@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <title>GLG Toolkit: Java Graph Layout Demo</title>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico" type="image/x-icon"> 
+</head>
+<body alink="#ff0000" bgcolor="#ffffff" link="#0000ee" text="#000000"
+ vlink="#551a8b" style="font-family:Arial;">
+<p style="font-size:80%; font-family:arial;">
+<a href="http://www.genlogic.com">Home</a> | 
+<a href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | 
+<a href="http://www.genlogic.com/demos.html">Java Demos</a> | 
+<a href="http://www.genlogic.com/products.html">Products</a>
+</p>
+
+<h2><font face="Arial">GLG Graph Layout Demo</font></h2>
+
+<p><font face="Arial">
+An interactive graph layout demo using spring-based layout algorithm. 
+<br>
+<b>Drag the graph nodes with the mouse</b> to help or distract the 
+layout process.
+</font></p>
+
+<font face="Arial">
+<li><a href="#overview">Overview</a></li>
+<li><a href="#user_interface">User Interface</a></li>
+</font>
+
+<hr size="2">
+
+<applet code="GlgGraphLayoutDemo.class"
+ archive="GlgDemo.jar,GlgGraphLayout.jar,GlgCE.jar"
+ name="graph_layout" mayscript="true" border="1" height="700"
+ width="700">
+<param name="DrawingURL" value="graph.g">
+</applet>
+
+
+<p><font face="Arial">
+<b><a href="GlgGraphLayoutDemo.java">Applet Source Code</a></b>
+</font></p>
+
+<h6><font face="Arial"><a name="overview"></a>OVERVIEW</font></h6>
+
+<p><font face="Arial">
+This demo demonstrates the use of a spring-based graph layout algorithm 
+to position nodes of a given arbitrary graph. The demo is an example 
+of how dynamic GLG objects may be used to visualize nodes of a graph, 
+display additional node-related information and a node's dynamic properties. 
+The Graph Layout component is a part of the GLG Extended API.
+</font></p>
+
+<p><font face="Arial">
+Changing the UpdateRate option may be used to show the layout progress 
+either in slow motion, or to show just the final result of the layout.
+</font></p>
+
+<p><font face="Arial">
+The demo also allows the user to interact with the layout algorithm.
+You can move graph nodes with the mouse to help find the best layout, 
+or just disturb the layout and see how it responds.
+</font></p>
+
+<p><font face="Arial">
+The demo provides options for creating graphs of two different types 
+as well as changing the number of nodes in the graph.
+</font></p>
+
+<h6><font face="Arial">
+<a name="user_interface"></a><b>USER INTERFACE</b>
+</font></h6>
+
+<h6><font face="Arial">BUTTONS</font></h6>
+
+<ul><font face="Arial">
+
+  <li><b>New</b></li>
+  <br>Creates a new graph with the number of nodes defined by the 
+  NumNodes slider and of the type defined by the Star toggle 
+  (Star or Circular).
+  <br>
+
+  <li><b>Scramble</b></li>
+  <br>Randomly scrambles the graph's nodes.
+  <br>
+
+  <li><b>Untangle</b></li>
+  <br>Enables using additional graph untangling heuristics.
+  <br>
+
+  <li><b>Star</b></li>
+  <br>
+  Controls the type of graph (Star or Circular) to be created with 
+  the New button.
+  <br>
+
+</font></ul>
+
+<h6><font face="Arial">SLIDERS</font></h6>
+
+<ul><font face="Arial">
+  <li><b>UpdateRate</b></li>
+  <br>
+  Controls the update frequency. In the Min position, the demo shows
+  just the resulting layout. In the Max position, each iteration of 
+  the layout is shown (slowing down the layout progress).
+
+  <li><b>NumNodes</b></li>
+  <br>
+  Controls the number of nodes in the graph created with the New button.
+
+  <li><b>IconSize</b></li>
+  <br>
+  Controls the size of a node
+</font></ul>
+
+<h6><font face="Arial">MOUSE</font></h6>
+
+<p><font face="Arial">
+The layout process is interactive and allows the movement of nodes with the
+mouse to help it find a better layout when the algorithm gets stuck in a 
+local extrema, resulting in a semi-optimal layout for some graph chains.
+The mouse may also be used to disturb the algorithm to see how it reacts.
+</font></p>
+
+<p><font face="Arial">
+To move the node with the mouse, click on it with the left mouse button and 
+drag. The selected node will be highlighted using the dynamic properties 
+of the node, and the layout algorithm will adjust the graph to accomodate
+the new node position.
+</font></p>
+
+</body>
+</html>

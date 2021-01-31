@@ -142,7 +142,7 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       /* Handle selection in the CreatePolyButton button. */
       if( strcmp( origin , "CreatePolyButton" ) == 0 )
       {
-	 /* Turn ON ObjectCreation mode. */
+	 // Turn On ObjectCreation mode.
 	 Mode = CREATE;
       }
    }

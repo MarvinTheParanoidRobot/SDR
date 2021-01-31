@@ -10,7 +10,7 @@ class DemoDataFeed : public DataFeedC
 {
  public:
    DemoDataFeed( GlgMapViewer * viewer );
-   ~DemoDataFeed( void );
+   ~DemoDataFeed();
 
    virtual GlgBoolean GetIconData( IconData * icon );
 

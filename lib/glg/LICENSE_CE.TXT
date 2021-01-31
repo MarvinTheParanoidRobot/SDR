@@ -52,4 +52,4 @@ the use or performance of this software.
 GOVERNING LAW: This Agreement shall be governed by and construed in
 accordance with the laws of the Commonwealth of Massachusetts.
 
-Copyright (C) 1994-2019 Generic Logic, Inc.
+Copyright (C) 1994-2018 Generic Logic, Inc.

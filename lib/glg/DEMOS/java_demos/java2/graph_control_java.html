@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Real-Time Java Graphics: Java Graph Control Demo</title>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body style="font-family: Arial;" link="#0000ee" text="#000000"
+ vlink="#551a8b" alink="#ff0000" bgcolor="#ffffff">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/products.html">Products</a>
+</p>
+<h2><font face="Arial">GLG Java Graph Control Demo</font></h2>
+<p><font face="Arial">
+This demo demonstrates the use of resources to customize GLG 2D and 3D
+Graphs.<br>
+</font></p>
+<p><font face="Arial">Examples of <span style="font-weight: bold;">real-time
+charts
+with integrated scrolling and cursor feedback</span> may be
+found in the <a href="realtime_stripchart.html">Real-Time Strip-Chart
+Demo</a>.<br>
+</font></p>
+<p><font face="Arial">This example uses only some of the resources
+available in any GLG
+graph and only a small number of possible settings for these
+resources. This demo applet generates simulated data for updating the
+graph. In an
+application, the data can be obtained from any Web data source.</font></p>
+<p><font face="Arial">
+The <b><a href="GlgGraphDemo.java">Applet Source Code</a></b> may be
+used as an example of using resources of GLG 2D and 3D graph widgets.<br>
+</font></p>
+<hr size="2">
+<form name="input_form">
+  <p><span style="color: rgb(153, 0, 0); font-weight: bold;">Notice:
+Script buttons may not work in some browsers due to the LiveConnect's
+new security settings.</span><br>
+  <input value="Start Update"
+ onclick="document.graph.SendRequest( 'StartUpdate', 0 )" type="button">
+  <input value="Stop Update"
+ onclick="document.graph.SendRequest( 'StopUpdate', 0 )" type="button">
+  <input value="Bars"
+ onclick="document.graph.SendRequest( 'SetGraphType', 0 )" type="button">
+  <input value="3D Bars"
+ onclick="document.graph.SendRequest( 'SetGraphType', 1 )" type="button">
+  <input value="Line"
+ onclick="document.graph.SendRequest( 'SetGraphType', 2 )" type="button">
+  <input value="3D Line"
+ onclick="document.graph.SendRequest( 'SetGraphType', 3 )" type="button"></p>
+  <p> <input value="Change Number of Samples"
+ onclick="document.graph.SendRequest( 'NumberOfSamples', 0 )"
+ type="button"> <input value="Change Number of Y Labels"
+ onclick="document.graph.SendRequest( 'ChangeYLabels', 0 )"
+ type="button"> <input value="Change Number of X Labels"
+ onclick="document.graph.SendRequest( 'ChangeXLabels', 1 )"
+ type="button"></p>
+  <p> <input value="Change Scroll Type"
+ onclick="document.graph.SendRequest( 'ScrollType', 0 )" type="button">
+  <input value="Reverse"
+ onclick="document.graph.SendRequest( 'Reverse', 0 )" type="button"> <input
+ value="Change Range"
+ onclick="document.graph.SendRequest( 'ChangeRange', 0 )" type="button">
+  <input value="Change Y Label Format"
+ onclick="document.graph.SendRequest( 'ChangeYFormat', 0 )"
+ type="button"></p>
+  <p> <input value="Update Whole Frame"
+ onclick="document.graph.SendRequest( 'WholeFrame', 0 )" type="button">
+  <input value="Update By 1 Sample"
+ onclick="document.graph.SendRequest( 'OneSample', 0 )" type="button"> <input
+ value="Change X Grid" onclick="document.graph.SendRequest( 'Grid', 1 )"
+ type="button"> <input value="Change Y Grid"
+ onclick="document.graph.SendRequest( 'Grid', 0 )" type="button"></p>
+  <p><font face="Arial"> <b>Enter new text for graph annotations,
+press &lt;Enter&gt; when
+done:</b> </font></p>
+  <p> <input name="title" value="Bar Graph"
+ onchange="document.graph.SendRequestStrings( 'SetTitles',
+                document.input_form.title.value,
+                document.input_form.titleX.value,
+                document.input_form.titleY.value )"
+ type="textinput"> <input name="titleY" value="Text_Y"
+ onchange="document.graph.SendRequestStrings( 'SetTitles',
+                document.input_form.title.value,
+                document.input_form.titleX.value,
+                document.input_form.titleY.value )"
+ type="textinput"> <input name="titleX" value="Text_X"
+ onchange="document.graph.SendRequestStrings( 'SetTitles',
+                document.input_form.title.value,
+                document.input_form.titleX.value,
+                document.input_form.titleY.value )"
+ type="textinput"> </p>
+</form>
+<applet code="GlgGraphDemo.class" archive="GlgDemo.jar,GlgCE.jar"
+ name="graph" mayscript="true" height="300" width="500">
+<param name="DrawingURL" value="bar1.glg"></applet>
+<hr size="2">
+<form name="input_form1">
+  <p><font face="Arial"><b>Title Font Type:&nbsp;</b></font> <input
+ value="Font 1" onclick="document.graph.SendRequest( 'TitleFont', 8 )"
+ type="button"> <input value="Font 2"
+ onclick="document.graph.SendRequest( 'TitleFont', 9 )" type="button"> <input
+ value="Font 3" onclick="document.graph.SendRequest( 'TitleFont', 4 )"
+ type="button"> <input value="Font 4"
+ onclick="document.graph.SendRequest( 'TitleFont', 5 )" type="button"> </p>
+  <p><font face="Arial"><b>Title Font Size:&nbsp;</b></font> <input
+ value="Size 1" onclick="document.graph.SendRequest( 'TitleSize', 2 )"
+ type="button"> <input value="Size 2"
+ onclick="document.graph.SendRequest( 'TitleSize', 3 )" type="button"> <input
+ value="Size 3" onclick="document.graph.SendRequest( 'TitleSize', 4 )"
+ type="button"> </p>
+  <p><font face="Arial"><b>Change Title Position:&nbsp;</b></font> <input
+ value="Left" onclick="document.graph.SendRequest( 'MoveTitleLeft', 0 )"
+ type="button"> <input value="Right"
+ onclick="document.graph.SendRequest( 'MoveTitleRight', 0 )"
+ type="button"> <input value="Up"
+ onclick="document.graph.SendRequest( 'MoveTitleUp', 0 )" type="button">
+  <input value="Down"
+ onclick="document.graph.SendRequest( 'MoveTitleDown', 0 )"
+ type="button"> </p>
+  <p><font face="Arial"><b>Title Color:&nbsp;</b></font> <input
+ value="Color 1"
+ onclick="document.graph.SendRequestColor( 'TitleColor', 0,0.447,0.632 )"
+ type="button"><input value="Color 2"
+ onclick="document.graph.SendRequestColor( 'TitleColor', 0,0,1 )"
+ type="button"> <input value="Color 3"
+ onclick="document.graph.SendRequestColor( 'TitleColor', 0,0.632,0 )"
+ type="button"><input value="Color 4"
+ onclick="document.graph.SendRequestColor( 'TitleColor', 0.894,0,0 )"
+ type="button"> <input value="Color 5"
+ onclick="document.graph.SendRequestColor( 'TitleColor', 1,1,0 )"
+ type="button"><input value="Color 6"
+ onclick="document.graph.SendRequestColor( 'TitleColor', 0,0,0 )"
+ type="button"> </p>
+  <p><font face="Arial"><b>Background Color:&nbsp;</b></font> <input
+ value="Color 1"
+ onclick="document.graph.SendRequestColor( 'BackColor', 0.548,0.775,0.776 )"
+ type="button"><input value="Color 2"
+ onclick="document.graph.SendRequestColor( 'BackColor', 0.775,0.775,0.548 )"
+ type="button"> <input value="Color 3"
+ onclick="document.graph.SendRequestColor( 'BackColor', 0.548,0.775,0.548 )"
+ type="button"><input value="Color 4"
+ onclick="document.graph.SendRequestColor( 'BackColor', 0.895,0.895,0.895 )"
+ type="button"> <input value="Color 5"
+ onclick="document.graph.SendRequestColor( 'BackColor', 1.,1.,1. )"
+ type="button"></p>
+  <p><font face="Arial"><b>Graph Color:&nbsp;</b></font> <input
+ value="Color 1"
+ onclick="document.graph.SendRequestColor( 'GraphColor', 0.548,0.775,0.775 )"
+ type="button"><input value="Color 2"
+ onclick="document.graph.SendRequestColor( 'GraphColor', 0.775,0.775,0.548 )"
+ type="button"> <input value="Color 3"
+ onclick="document.graph.SendRequestColor( 'GraphColor', 0.548,0.775,0.548 )"
+ type="button"><input value="Color 4"
+ onclick="document.graph.SendRequestColor( 'GraphColor', 0.895,0.895,0.895 )"
+ type="button"> <input value="Color 5"
+ onclick="document.graph.SendRequestColor( 'GraphColor', 1.,1.,1. )"
+ type="button"></p>
+  <p><font face="Arial"><b>Data Color:&nbsp;</b></font> <input
+ value="Color 1"
+ onclick="document.graph.SendRequestColor( 'DataColor', 0,0.548,0.775 )"
+ type="button"><input value="Color 2"
+ onclick="document.graph.SendRequestColor( 'DataColor', 0.775,0,0 )"
+ type="button"> <input value="Color 3"
+ onclick="document.graph.SendRequestColor( 'DataColor', 0,0.775,0 )"
+ type="button"><input value="Color 4"
+ onclick="document.graph.SendRequestColor( 'DataColor', 0,0.775,0.775 )"
+ type="button"> <input value="Color 5"
+ onclick="document.graph.SendRequestColor( 'DataColor', 0.447,0.632,0.632 )"
+ type="button"></p>
+  <p><font face="Arial"><b>Fifth Sample's Color:&nbsp;</b></font> <input
+ value="Color 1"
+ onclick="document.graph.SendRequestColor( 'Data5Color', 0,0.548,0.775 )"
+ type="button"><input value="Color 2"
+ onclick="document.graph.SendRequestColor( 'Data5Color', 0.775,0,0 )"
+ type="button"> <input value="Color 3"
+ onclick="document.graph.SendRequestColor( 'Data5Color', 0,0.775,0 )"
+ type="button"><input value="Color 4"
+ onclick="document.graph.SendRequestColor( 'Data5Color', 0,0.775,0.775 )"
+ type="button"> <input value="Color 5"
+ onclick="document.graph.SendRequestColor( 'Data5Color', 0.447,0.632,0.632 )"
+ type="button"></p>
+  <p><b><font face="Arial">Label Color:&nbsp;</font></b> <input
+ value="Color 1"
+ onclick="document.graph.SendRequestColor( 'LabelColor', 0,0.447,0.632 )"
+ type="button"><input value="Color 2"
+ onclick="document.graph.SendRequestColor( 'LabelColor', 0,0,1 )"
+ type="button"> <input value="Color 3"
+ onclick="document.graph.SendRequestColor( 'LabelColor', 0,0.632,0 )"
+ type="button"><input value="Color 4"
+ onclick="document.graph.SendRequestColor( 'LabelColor', 0.894,0,0 )"
+ type="button"> <input value="Color 5"
+ onclick="document.graph.SendRequestColor( 'LabelColor', 1,1,0 )"
+ type="button"><input value="Color 6"
+ onclick="document.graph.SendRequestColor( 'LabelColor', 0,0,0 )"
+ type="button"> </p>
+</form>
+</body>
+</html>

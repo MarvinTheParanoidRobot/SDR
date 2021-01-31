@@ -15,7 +15,7 @@
 #include "GlgViewer.h"
 
 /* Set to False to provide live application data. May be overriden via command
-   line option -random-data or -live-data.
+   line option -ran-data or -live-data.
 */
 GlgBoolean RANDOM_DATA=True;
 
@@ -217,11 +217,12 @@ void CreateTagRecords( GlgObject viewport )
 
       /* For further performance optimization, set if_changed=true which will
          push the value into the tag only if the value has changed.
-         The if_changed flag is ignored for tags attached to the plots 
-         in a real time chart, and the new value is always pushed to the 
-         chart even if it is the same.
+         Set if_changed = false for the tags assigned to the charts.
       */
-      TagRecordArray[ NumTagRecords ].if_changed = True;        
+      if( tag_comment && strstr( tag_comment, "Chart" ) )
+        TagRecordArray[ NumTagRecords ].if_changed = False;
+      else
+        TagRecordArray[ NumTagRecords ].if_changed = True;        
 
       ++NumTagRecords;    /* Number of used tag records */
    }
@@ -355,7 +356,6 @@ void UpdateDrawing( GlgAnyType data, GlgLong * timer_id )
    /* Restart the timer. */
    TimerID = GlgAddTimeOut( AppContext, UpdateInterval, (GlgTimerProc)UpdateDrawing, NULL );
 }
-
 /*----------------------------------------------------------------------
 | Start dynamic updates.
 */
@@ -365,6 +365,7 @@ void StartUpdates()
    TimerID = GlgAddTimeOut( AppContext, UpdateInterval, 
                            (GlgTimerProc)UpdateDrawing, NULL );
 }
+
 
 /*----------------------------------------------------------------------
 | Stop dynamic updates.

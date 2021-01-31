@@ -39,7 +39,7 @@ GlgNativeEventFilter::GlgNativeEventFilter()
 /*----------------------------------------------------------------------*/
 bool GlgNativeEventFilter::nativeEventFilter( const QByteArray &eventType, 
                                               void *message, 
-                                              long *result )
+                                              long *result ) Q_DECL_OVERRIDE
 {
    Q_UNUSED(eventType);
    Q_UNUSED(result);

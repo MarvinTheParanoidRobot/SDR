@@ -753,7 +753,7 @@ GlgDataSample * GetDataSample( double x, double y )
       }
    } 
    
-   return NULL;     /* No matching samples found. */
+   return NULL;     // No matching samples found.
 }
 
 /*----------------------------------------------------------------------

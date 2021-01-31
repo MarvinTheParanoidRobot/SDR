@@ -134,10 +134,7 @@ GlgBoolean DemoDataFeed::GetDemoValue( SCONST char * tag_source,
    switch( Viewer->PageType )
    {
     case AERATION_PAGE:
-      if( strstr( tag_source, "Speed" ) )
-        *out_value = GlgRand( 300., 1500. );
-      else
-        *out_value = GlgRand( 0., 5. );
+      *out_value = GlgRand( 0., 5. );
       return GlgTrue;
 
     case CIRCUIT_PAGE:

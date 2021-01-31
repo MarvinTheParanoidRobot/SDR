@@ -137,8 +137,7 @@ static void AdjustMenuArraySize( MenuRecord ** menu_array,
       if( menu_array_old )     
       {
          /* Copy the old content if there was any. */
-         memmove( menu_array_new, menu_array_old,
-                  old_size * sizeof( MenuRecord ) );
+         memmove( menu_array_new, menu_array_old, old_size );
          GlgFree( menu_array_old );
       }
 

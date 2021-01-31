@@ -13,14 +13,9 @@ controls/buttons.pal
 controls/toggles.pal
 controls/switches.pal
 controls/dials.pal
-controls/linear_gauges.pal
 controls/knobs.pal
 controls/sliders.pal
 avionics/avionics.pal
-
-# Deprecated, Use the Palettes, Transparent Viewport Background option instead.
-# Uncomment next line to enable.
-#controls/windowless_dials.pal
 -
 process/tanks.pal
 process/valves.pal

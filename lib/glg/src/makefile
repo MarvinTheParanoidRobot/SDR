@@ -25,7 +25,7 @@ OPTS = -g
 ######################################################################
 
 # Linking with the GLG Intermediate API.
-#GLG_EXT_LIB = -lglg_int
+GLG_EXT_LIB = -lglg_int
 
 # Linking with the GLG Extended API.
 #GLG_EXT_LIB = -lglg_ext
@@ -35,8 +35,9 @@ OPTS = -g
 # to match the GLG library used for linking (Standard, Intermediate or 
 # Extended).
 ######################################################################
-GLG_CPP_API_OPTS = -DGLG_CPP_STANDARD_API
-#GLG_CPP_API_OPTS = -DGLG_CPP_INTERMEDIATE_API
+GLG_CPP_API_OPTS = -DGLG_CPP_INTERMEDIATE_API
+
+#GLG_CPP_API_OPTS = -DGLG_CPP_STANDARD_API
 #GLG_CPP_API_OPTS = -DGLG_CPP_EXTENDED_API
 
 ######################################################################
@@ -44,18 +45,11 @@ GLG_CPP_API_OPTS = -DGLG_CPP_STANDARD_API
 # a map server.
 ######################################################################
 
-# When linking with the map server on Linux, uncomment one of the lines
-#   below depending on the libtiff configuration. In Debian Buster,
-#   static libtiff needs additional -lwebp and -lzstd libraries.
-# On non-Linux Unix platforms, comment out both lines.
-#EXTRA_TIFF_LIBS = -llzma -ljbig
-#EXTRA_TIFF_LIBS = -llzma -ljbig -lwebp -lzstd
-
-# Linking without the map server.
+# Linking without map server.
 GLG_MAP_LIBS = -lglg_map_stub 
 
 # Linking with the map server.
-#GLG_MAP_LIBS = -lglg_map -ltiff $(EXTRA_TIFF_LIBS)
+#GLG_MAP_LIBS = -lglg_map -ltiff
 
 ######################################################################
 # Uncomment OPENGL_LIBS line for linking with OpenGL libraries
@@ -69,8 +63,7 @@ GLG_MAP_LIBS = -lglg_map_stub
 #X_INC=-I/usr/include
 #X_LIB=-L/usr/lib
 
-# Edit the next line to specify location of the GLG installation directory.
-GLG_DIR=..
+GLG_DIR=/usr/local/glg
 GLG_INC=-I$(GLG_DIR)/include
 
 ######################################################################
@@ -86,17 +79,17 @@ GLG_LIB=-L$(GLG_DIR)/lib
  
 # On Linux, uncomment the line below for additional libraries.
 # Due to a known bug in ldd/dlopen, -lpthread is required to avoid a crash 
-#   when OpenGL is used.
-EXTRA_LIBS = -lpthread -lpthread
+# when OpenGL is used.
+EXTRA_LIBS = -lpthread
 
-# On Solaris, uncomment the next line for additional libraries.
+# On Solaris, uncomment the next line for additional libraries
 #EXTRA_LIBS = -lnsl -lsocket
 
-# On AIX, uncomment the next line for additional libraries.
+# On AIX, uncomment the next line for additional libraries
 #EXTRA_LIBS = -liconv
 
 # To use static Motif library (libXm.a), uncomment the next line for 
-#   additional libraries.
+# additional libraries
 #EXTRA_LIBS_STATIC = -lXmu -lXext -lXp 
 
 # Name of the main file to compile and link
@@ -105,7 +98,7 @@ TARGET = demo
 ######## Don't edit below ############################################
 
 # Grab all .c and .cpp source files in the directory and use them to build 
-#   the target executable.
+# the target executable.
 
 INCLUDES := $(sort $(wildcard *.h))
 SRCS_C	 := $(sort $(wildcard *.c))

@@ -1,0 +1,58 @@
+<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <title>Java Meters and Dials Library: Java Controls Online Demo</title>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico" type="image/x-icon"> 
+</head>
+<body style="color: rgb(0, 0, 0); bgcolor="#ffffff"
+ alink="#000099" link="#000099" vlink="#990099" style="font-family:arial;">
+
+<p style="font-size:80%; font-family:arial;">
+<a href="http://www.genlogic.com">Home</a> | 
+<a href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | 
+<a href="http://www.genlogic.com/demos.html">Java Demos</a> | 
+<a href="http://www.genlogic.com/products.html">Products</a>
+</p>
+
+<h2><font face="Arial">GLG Java Controls Demo</font></h2>
+
+<p><font face="Arial">
+This demo shows an example of GLG controls. All these control were be 
+built with the GLG Graphics Builder and are included in the Controls
+Widget Set, which also includes many other dials, meters and gauges.
+</font></p>
+
+<h4><font face="Arial">User Interaction</font></h4>
+
+<p><font face="Arial">
+All controls may accept user input. Press the <b>Stop</b> button to 
+stop the supply of the simulated data and try moving controls with the mouse.
+</font></p>
+
+<hr size="2">
+
+<form name="demo">
+<input value="Start" 
+ onclick="document.controls.SendRequest( 'Start', 0 )" type="button">
+<input value="Stop" 
+ onclick="document.controls.SendRequest( 'Stop', 0 )" type="button">
+<input value="Toggle AntiAliasing" 
+ onclick="document.controls.SendRequest( 'ToggleAntiAliasing', 0 )"
+ type="button">
+</form>
+
+<applet code="GlgControlsDemo.class" archive="GlgDemo.jar,GlgCE.jar"
+ name="controls" mayscript="true" height="600" width="680">
+<param name="DrawingURL" value="controls.g">
+</applet>
+
+<p><font face="Arial">
+<b><a href="GlgControlsDemo.java">Applet Source Code</a></b>
+</font></p>
+<hr size="2">
+<br>
+</body>
+</html>

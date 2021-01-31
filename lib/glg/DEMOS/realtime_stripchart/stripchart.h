@@ -14,7 +14,6 @@ void InitChart( void );
 void StartUpdate( void );
 void UpdateChart( GlgAnyType data, GlgIntervalID * id );
 void PushPlotPoint( GlgLong plot_index, DataPoint * data_point );
-void PushPlotPointDirect( GlgLong plot_index, DataPoint * data_point );
 void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data );
 void Trace( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data );
 void Trace2( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data );

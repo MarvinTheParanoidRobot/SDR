@@ -86,7 +86,6 @@ long
   NumDistancePoints,
   CityLabels = True,
   StateDisplay = True,
-  DraggingFromButton = False,
   OpenGLEnabled;
 
 PlaneData PlaneArray[ MAX_NUM_PLANES ];
@@ -354,8 +353,6 @@ void Init()
 
    /* Set Florida zooming message to OFF initially. */
    GlgSetDResource( Drawing, "Map/FloridaZoomingMessage/Visibility", 0. );
-
-   GlgSetDResource( Drawing, "Map/LoadingMessage/Visibility", 0. );
 }
 
 /*----------------------------------------------------------------------
@@ -575,17 +572,8 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
 	return;
 
       PanMode = False;    /* Abort Pan mode */
+      AbortDistanceMode();
 
-      if( DistanceMode )
-      {
-         AbortDistanceMode();
-
-         /* Second click on the Distance button: cancel DistanceMode in progress.
-          */
-         if( strcmp( origin, "Distance" ) == 0 )
-           return;
-      }
-      
       if( strcmp( origin, "CloseDialog" ) == 0 )
       {
 	 GlgSetDResource( Drawing, "SelectionDialog/Visibility", 0. );
@@ -650,12 +638,9 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
          /* Activate dragging mode. Dragging will start on the mouse click. 
             If no object of interest is selected by the mouse click, 
             dragging will be started by the code in the Trace callback 
-            anyway, but only if no object of interest was selected. 
-            The "Drag" button demostrates an alternative way to start dragging 
-            from a button which starts dragging even if an object of interest
-            is selected by the mouse click.
+            anyway. The "Drag" button demostrates an alternative way 
+            to start dragging from a button.
             */
-         DraggingFromButton = True;
 	 GlgSetZoom( Map, NULL, 's', 0. );
 	 SetStatus( "Click and drag the map with the mouse." );
 	 GlgUpdate( Drawing );
@@ -717,11 +702,13 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       }	
       else if( strcmp( origin, "Distance" ) == 0 )
       {
-         DistanceMode = True;
-         SetStatus( "Click on the map to define distance to measure, "
+	 AbortDistanceMode();  /* Abort prev. distance mode if any */
+
+	 DistanceMode = True;
+	 SetStatus( "Click on the map to define distance to measure, "
                     "right click to finish." );
-         GlgUpdate( Drawing );
-      }
+	 GlgUpdate( Drawing );
+      }	
    }
    /* Process mouse clicks on plane icons, implemented as an Action with
       the Plane label attached to an icon and activated on a mouse click. 
@@ -740,17 +727,14 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
          GlgZoomState zoom_mode;
 	 double plane_index;
          
-         /* Map dragging mode is activated either on a mouse click in the trace 
-            callback, or with the Drag toolbar button. Abort the dragging mode
-            if an object with custom event was selected and the dragging
-            was activated on a mouse click. This gives custom events a higher
-            priority compared to the dragging mode. If it's a ZoomTo mode 
-            activated by a button or dragging activated from the Drag button,
-            don't abort and ignore object selection.
+         /* Map dragging mode is activated on a mouse click in the trace 
+            callback. Abort the dragging mode if an object with custom event
+            was selected. This gives custom events a higher priority compared 
+            to the dragging mode. If it's a ZoomTo mode activated by a button,
+            don't abort and ignore the object selection.
          */
          zoom_mode = ZoomToMode();
-         if( !zoom_mode || 
-             ( zoom_mode & GLG_PAN_DRAG_STATE ) && !DraggingFromButton )
+         if( !zoom_mode || ( zoom_mode & GLG_PAN_DRAG_STATE ) )
          {
             if( zoom_mode )
               GlgSetZoom( Map, NULL, 'e', 0. );  /* Abort zoom mode */
@@ -785,8 +769,6 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       }
       else if( strcmp( subaction, "Drag" ) == 0 )    /* Dragging */
       {
-         DraggingFromButton = False;
-
 	 /* Update icon positions when scrolling. */
 	 RedoIcons = True;
          UpdateObjectsOnMap( "Dragging the map with the mouse...." );
@@ -806,8 +788,7 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       else if( strcmp( subaction, "End" ) == 0 ||
               strcmp( subaction, "Abort" ) == 0 )
       {
-         DraggingFromButton = False;
-         SetStatus( "" );   /* Reset prompt when dragging ends. */
+         SetStatus( "" );   /* Reset prompt dragging ends. */
       }     
    }   
 }
@@ -2172,8 +2153,6 @@ char * CreateLocationString( double lon, double lat, double z )
 void ZoomToFloridaStart( GlgAnyType data, GlgIntervalID * id )
 {
    GlgObject florida_message;
-
-   AbortDistanceMode();
 
    GlgSetDResource( Drawing, "Map/FloridaZoomingMessage/Visibility", 1. );
    GlgUpdate( Drawing );

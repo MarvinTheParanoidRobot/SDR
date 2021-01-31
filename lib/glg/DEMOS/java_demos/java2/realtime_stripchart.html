@@ -1,0 +1,434 @@
+<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Real-Time Java Chart: Java Strip Chart with Cursor Feedback
+and Tooltips Online Demo</title>
+  <script type="text/javascript">
+<!--
+function SetChartSize( width, height )
+{
+   document.getElementById( "chart" ).width = width;
+   document.getElementById( "chart" ).height = height;
+}
+
+//-->
+  </script>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body style="font-family: Arial;" link="#0000ee" text="#000000"
+ vlink="#551a8b" alink="#ff0000" bgcolor="#ffffff">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/products.html">Products</a>
+</p>
+<h2><font face="Arial">Real-Time Java Chart: Java Real-Time Strip-Chart
+with
+Cursor
+Feedback <br>
+</font></h2>
+<p><font face="Arial">This Java demo demonstrates real-time and
+cursor feedback capabilities of the GLG Strip Chart. The Strip Chart is
+capable of handling <span style="font-weight: bold;">real-time updates</span>
+of hundreds of thousands of data points with <span
+ style="font-weight: bold;">interactive
+zooming</span>, <span style="font-weight: bold;">scrolling</span>,
+data point selection and <span style="font-weight: bold;">tooltips</span>.
+<br>
+</font></p>
+<p><font face="Arial">Other features include </font><font face="Arial"><span
+ style="font-weight: bold;">scrolling the chart by
+dragging it with the mouse</span>, integrated scrollbars, multiple Y
+axes, per-plot range locking, <span style="font-weight: bold;">zooming
+to an area</span> selected with the mouse and many other features. <br>
+</font></p>
+<p><font face="Arial"><a href="#Details">Click here</a> for a detailed
+description of the real-time strip chart's <span
+ style="font-weight: bold;">usage and features</span>.<br>
+<span style="font-weight: bold;"></span></font></p>
+<hr size="2"><applet id="chart" code="GlgRealTimeChart.class"
+ archive="GlgDemo.jar,GlgCE.jar" name="graph" mayscript="true"
+ height="450" width="800">
+<param name="DrawingURL" value="stripchart.g"></applet>
+<p></p>
+<form name="input_form"><input value="Set Small Size"
+ onclick="SetChartSize( 600, 350 )" type="button"> <input
+ value="Set Medium Size" onclick="SetChartSize( 800, 450 )"
+ type="button"><input value="Set Large Size"
+ onclick="SetChartSize( 1000, 600 )" type="button"></form>
+<p></p>
+<p><font face="Arial"><a href="GlgRTChartSimple.java">Click here</a>
+to see the <b>source code of a simple real-time chart applet</b>.
+</font></p>
+<p><font face="Arial"><a href="GlgRealTimeChart.java">Click here</a> to
+see the complete <b>source code of this applet</b> (including the
+logic for handling all buttons and user interaction).
+</font></p>
+<hr size="2">
+<p></p>
+<a name="Details"></a> <a href="#Usage">Using the Demo</a><br>
+<a href="#Features">Features Overview</a><br>
+<a href="#Supported_Platforms">Supported Platforms</a><br>
+<a href="http://www.genlogic.com/glg_list.html#Pricing_Information">Pricing
+Information</a><br>
+<h3><a name="Usage"></a>Using the Demo</h3>
+<ul>
+  <li><a href="#Real_Time">Real Time Updates and History Buffer</a><br>
+  </li>
+  <li><a href="#Scrolling">Scrolling the Chart: Dragging, Scrollbars
+and Rewind Buttons</a></li>
+  <li><a href="#EnablingScroll">Enabling or Disabling Chart Scrolling</a>
+  </li>
+  <li><a href="#Zooming">Zooming and Range Lock<br>
+    </a></li>
+  <li><a href="#ChangingSpan">Changing Displayed Time Span and Custom
+Label Formatting<br>
+    </a></li>
+  <li><a href="#Tooltips">Tooltips, Data Point Selection and Cursor
+Feedback</a></li>
+  <li><a href="#Historical">Real-Time, Historical and Calendar Demo
+Modes</a></li>
+  <li><a href="#TimeStamps">Time Stamps and Handling of Invalid Data
+Points</a><br>
+  </li>
+  <li><a href="#Erasing">Erasing and Showing a Plot</a><br>
+  </li>
+  <li><a href="#MultipleAxes">Multiple Y Axes and Axis Label Layout</a><br>
+  </li>
+</ul>
+<h4><a name="Real_Time"></a>Real Time Updates and History Buffer</h4>
+The chart keeps an <span style="font-weight: bold;">integrated history
+buffer</span> (with the size of 150000 data points in the online
+demo) and displays either all accumulated data or only the data points
+in the currently selected time span. The number of data points per
+line,
+the total number of points and the number of points visible in the
+currently selected time span is displayed at the bottom of the chart
+for demo purposes.<br>
+<br>
+In the real-time mode, the chart is updated with data, discarding the
+old data as necessary to maintain the requested size of the history
+buffer.
+The <span style="font-weight: bold;">buffer size can be increased or
+decreased at run time</span> without losing accumulated data. The size
+of the history buffer can be defined in terms of either a <span
+ style="font-weight: bold;">time span</span> or a <span
+ style="font-weight: bold;">number of data points</span>.<br>
+<br>
+On start up, the demo prefills the chart's history buffer with 150K
+data
+samples to demonstrate the chart's scrolling capabilities.<br>
+<h4><a name="Scrolling"></a>Scrolling the Chart: Dragging, Scrollbars
+and Scroll Buttons<br>
+</h4>
+The chart can be scrolled in any direction (left, right, up or down) by
+<span style="font-weight: bold;">simply dragging it with the mouse</span>.
+To
+scroll
+the chart in only one direction (Time or Value), drag the
+Time or Value axis with the mouse. Dragging the chart data area scrolls
+the chart in
+both directions.<br>
+<br>
+Alternatively, the chart can be scrolled left or right via the <span
+ style="font-style: italic;">Scroll Forward</span>&nbsp; <span
+ style="font-style: italic;">/ Backward</span> toolbar buttons. <br>
+<br>
+If the chart's <span style="font-style: italic;">AutoScroll</span>
+mode is off, a horizontal <span style="font-weight: bold;">scrollbar</span>
+at
+the bottom of the chart can also be used to scroll the chart along the
+Time axis. If the plots extend outside of the data area, the chart can
+be
+scrolled along the Value axis with the vertical scrollbar that
+automatically
+appears on the right side of the chart.<br>
+<ul style="list-style-type: circle;">
+  <li>Scrolling or dragging the chart disables automatic
+scrolling and activates <span style="font-weight: bold;">X or Y
+scrollbars</span> as necessary. <br>
+  </li>
+  <li>To <span style="font-weight: bold;">scroll to the most recent
+data</span>, use the <span style="font-style: italic;">Scroll to the
+Most Recent Data</span> toolbar
+button.&nbsp;</li>
+  <li>The chart <span style="font-weight: bold;">keeps updating with
+new data</span> even if automatic scrolling is turned off. </li>
+  <li>To <span style="font-weight: bold;">resume automatic scrolling</span>,
+click
+on
+the <span style="font-style: italic;">Toggle AutoScroll</span>
+toolbar button.</li>
+</ul>
+<h4><a name="EnablingScroll"></a>Enabling or Disabling Chart Scrolling</h4>
+The <span style="font-style: italic; font-weight: bold;">ToggleAutoScroll</span>
+toolbar
+button enables or disables the chart's scrolling. The chart continues
+to accumulate new data even when scrolling is disabled. To see the most
+recent data, click on the <span
+ style="font-style: italic; font-weight: bold;">Show the
+Most Recent Data</span> button (move the
+mouse over a button to see a tooltip describing its function).<br>
+<br>
+The <span style="font-style: italic;">ToggleAutoScroll</span> button
+is
+disabled in the Historical and Calendar demo modes, as these modes do
+not update the chart with real-time data.<br>
+<h4><a name="Zooming"></a>Zooming and Range Lock<br>
+</h4>
+To zoom to an area, click on the <span style="font-style: italic;">ZoomTo</span>
+toolbar button, then click and drag the mouse to define the area to
+zoom
+to. Use the <span style="font-style: italic;">Reset Zoom</span> button
+(1:1) to reset the chart to the original state.<br>
+<br>
+The <span style="font-style: italic;">Var2</span> plot displays binary
+<span style="font-style: italic;">On/Off</span> data. The plot
+uses a <span style="font-weight: bold;">range lock</span> to prevent
+it from zooming in the vertical direction. The
+range lock allows the binary plot to keep its Y position, so that the
+user can zoom to an area of interest and view the other plots' data
+in the context of the binary <span style="font-style: italic;">On/Off</span>
+data.<br>
+<h4><a name="ChangingSpan"></a>Changing Displayed Time Span and Custom
+Label Formatting<br>
+</h4>
+The&nbsp;<span style="font-style: italic;"></span>toolbar buttons
+in the <span style="font-weight: bold; font-style: italic;">Span</span>
+selector demonstrate examples of various time span intervals. The major
+and minor tick intervals of the time axis are changed dynamically to
+match the selected time span.<br>
+<br>
+In the <span style="font-style: italic;">Calendar</span> demo mode,
+changing the
+displayed time span also changes the <span style="font-weight: bold;">format
+of
+the
+time axis labels</span>,
+demonstrating just a few of all possible label customization options.
+An
+application can also define <span style="font-weight: bold;">label and
+tooltip formatters</span> that will supply custom strings for axis
+labels and tooltips.<br>
+<h4><a name="Tooltips"></a>Tooltips, Data Point Selection and Cursor
+Feedback</h4>
+When the cursor hovers over the data area, a <span
+ style="font-weight: bold;">tooltip displaying the value and the time
+stamp</span> of a data sample under the cursor automatically pops up.
+When a tooltip is displayed, the <span style="font-weight: bold;">selected
+data
+sample
+is highlighted in the
+chart</span>.<br>
+<br>
+In addition to a tooltip, information about a point under the cursor is
+displayed at the top of the chart on every mouse move, demonstrating
+the <span style="font-weight: bold;">chart selection API</span>.<br>
+<br>
+The <span style="font-style: italic;">ToggleAutoScroll</span> button
+may be used to disable the chart's <span style="font-style: italic;">AutoScroll</span>
+while using the tooltips. If <span style="font-style: italic;">AutoScroll</span>
+is not disabled, the selected sample will scroll out of view as the
+chart receives new data.<br>
+<br>
+When the cursor hovers over the Time or Value axis, the <span
+ style="font-weight: bold;">axis tooltip</span> displays the time stamp
+or
+the Y value corresponding to the cursor position on the selected axis. <br>
+<br>
+An <span style="font-weight: bold;">integrated cross-hair</span> is
+displayed when the cursor is inside the data area. The cross-hair
+feedback can be turned on or off, as well as changed to show only a
+horizontal or vertical line.<br>
+<br>
+Tooltips can be configured to define the content and the format of the
+tooltip. An API for selecting and querying data points at run
+time is also available.<br>
+<h4><a name="Historical"></a>Real-Time, Historical and Calendar Demo
+Modes</h4>
+<h4><span style="font-weight: normal;">The first toolbar button changes
+the demo mode:</span></h4>
+<ul style="list-style-type: circle;">
+  <li><span style="font-weight: bold;">RealTime</span> mode
+updates the chart with a continuous data stream. In the
+demo, the chart receives new data every 30 milliseconds and scrolls to
+display new data if <span style="font-style: italic;">AutoScroll</span>
+is <span style="font-style: italic;">ON</span>.</li>
+  <li><span style="font-weight: bold;">Historical</span> mode
+scrolls through a large array of logged data accumulated at 1 minute
+intervals.</li>
+  <li><span style="font-weight: bold;">Calendar</span> mode displays
+daily data accumulated over a period of many years.<br>
+  </li>
+</ul>
+The total time extent of data in the chart's history buffer depends on
+the
+size of the history buffer and the update interval between data samples.<br>
+<h4><a name="TimeStamps"></a>Time Stamps and Handling of Invalid Data
+Points<br>
+</h4>
+The chart can display data points positioned at uneven time intervals.
+When displaying real-time or historical data, each data point is <span
+ style="font-weight: bold;">positioned according to its time stamp</span>.
+If
+no
+time stamp is provided, the current time is used by the chart to
+position the data point. An option to display evenly distributed data
+points is also available.<br>
+<br>
+The chart handles invalid data points and displays them as <span
+ style="font-weight: bold;">gaps in the plots</span>.&nbsp; A data
+point may be tagged as invalid by setting its <span
+ style="font-style: italic;">Valid</span> flag to <span
+ style="font-style: italic;">False.</span><br>
+<br>
+In the demo, the <span style="font-style: italic;">Var1</span> plot
+contains invalid data points which are shown as gaps in the plot.<br>
+<h4><a name="Erasing"></a>Erasing and Showing a Plot</h4>
+Any plot in a chart can be <span style="font-weight: bold;">dynamically
+switched
+on
+or off </span>at run time without losing accumulated data.
+When a plot is turned off, it is automatically removed from the chart's
+legend. The Y axis associated with the plot can be turned on or off as
+well. A plot keeps accumulating new data in its history buffer even
+if it is turned off. <br>
+<br>
+In the demo, the <span style="font-style: italic;">Var2</span> plot
+displays binary data
+which do not have much meaning in the <span style="font-style: italic;">Calendar</span>
+demo mode. The plot and the Y axis associated with it are
+erased in the <span style="font-style: italic;">Calendar</span> mode
+and shown again when the demo is switched to other
+modes. <br>
+<h4><a name="MultipleAxes"></a>Multiple Y Axes and Axis Label Layout</h4>
+The chart can display multiple Y axes and provides multiple options for
+positioning a label that annotates each axis. The <span
+ style="font-style: italic;">Toggle Labels</span> button at the bottom
+of the chart toggles through several options of Y axis
+label positioning.<br>
+<br>
+The number of Y axes and visibility of each axis can be changed at
+run-time as well.<br>
+<h3><a name="Features"></a>Overview of the Strip Chart's Features</h3>
+<ul>
+  <li>Cross-Platform deployment: C / C++ / .NET / Java / AJAX on
+Linux/Unix or Windows.<br>
+  </li>
+  <li>Real-time updates of hundreds of thousands data points.</li>
+  <li>Variable history buffer: the size of the buffer can be changed
+dynamically at
+run time without losing the data already accumulated in the buffer.
+The size of the buffer can be defined in terms of the time span or the
+number of data points.</li>
+  <li>Integrated zooming and scrolling, accumulating new data while
+the chart is being scrolled.<br>
+  </li>
+  <li>Dragging the chart with the mouse.</li>
+  <li>Integrated chart and axis tooltips, configurable tooltip content
+and format.<br>
+  </li>
+  <li>Data point selection with a configurable highlight marker.<br>
+  </li>
+  <li>Integrated cross-hair feedback.</li>
+  <li><span style="color: rgb(153, 0, 0); font-weight: bold;">New in
+3.5:</span> Direct access to the data samples in the history buffer
+makes it possible to <span style="font-weight: bold;">place markers by
+double-clicking on the chart</span>, as shown in the
+RTChartMarkerFeedback example.<br>
+  </li>
+  <li>Display of data points at uneven intervals using time stamps,
+handling of invalid data points.<br>
+  </li>
+  <li>Multiple Plots: any plot can be turned on or off without losing
+data, new plots can be added or deleted at run time.<br>
+  </li>
+  <li>Multiple Y axes, the number of axes can be changed dynamically at
+run time.</li>
+  <li><span style="color: rgb(153, 0, 0); font-weight: bold;">New in
+3.5:</span> AutoScaling: The chart automatically changes ranges of
+plots and associated Y axes when receiving an out-or-range data sample.<br>
+  </li>
+  <li>Configurable major and minor ticks intervals, tick/label
+position and appearance.<br>
+  </li>
+  <li>Configurable formats of the Time and Value axis labels.<br>
+  </li>
+  <li>Choices of plot types and time axis types (with variable of fixed
+slot size).<br>
+  </li>
+  <li>Complete control over the chart appearance and layout.</li>
+  <li>An API for chart and data point selection queries.<br>
+  </li>
+  <li>Custom formatters for axis labels and tooltips.<br>
+  </li>
+  <li>Per-plot and per-axis Range Locks.</li>
+  <li>Integrated Legend with configurable layout options.<br>
+  </li>
+  <li>Grid and level lines for annotating value thresholds.</li>
+  <li>Direct or inversed plotting in both X and Y directions.</li>
+  <li>Control over the X and Y axis position: on either side of the
+chart or in the middle.</li>
+</ul>
+<h3><a name="Supported_Platforms"></a>Supported Platforms</h3>
+<p>The strip chart is available for all supported GLG platforms:</p>
+<ul>
+  <li><span style="font-weight: bold;">C/C++ libraries</span> for <a
+ href="http://www.genlogic.com/glg_list.html#Supported_Platforms">Linux,
+Unix
+and
+Windows platforms</a>, both 32 and 64 bit</li>
+  <li>Qt and Gnome widget wrappers are included</li>
+  <li><span style="font-weight: bold;">Java Class Library</span> for
+standalone or web deployment</li>
+  <li><span style="font-weight: bold;">Java Servlet</span> for JSP and
+JavaEE<br>
+  </li>
+  <li>ActiveX for <span style="font-weight: bold;">C#</span> and <span
+ style="font-weight: bold;">.NET</span> on Windows</li>
+</ul>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

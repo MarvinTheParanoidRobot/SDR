@@ -82,18 +82,18 @@ int GlgMain( int argc, char *argv[], GlgAppContext app_context )
 
    GlgSetDResource( (GlgObject)0, "$config/GlgMouseTooltipTimeout", 0.05 );
 
-   /* Process command line arguments. */
+   // Process command line arguments.   
    for( skip = 1; skip < argc; ++skip )
    {
       if( strcmp( argv[ skip ], "-random-data" ) == 0 )
       {
-         /* Use simulated demo data for animation. */
+         // Use simulated demo data for animation.
          RandomData = True;
          GlgError( GLG_INFO, (char *) "Using simulated data for animation." );
       }
       else if( strcmp( argv[ skip ], "-live-data" ) == 0 )
       {
-         /* Use live application data for animation. */
+         // Use live application data for animation.
          RandomData = False;
          GlgError( GLG_INFO, 
               (char *) "Using live application data for animation." );
@@ -102,7 +102,7 @@ int GlgMain( int argc, char *argv[], GlgAppContext app_context )
         continue;
       else
       {
-         /* Use the drawing file from the command line, if any. */
+         // Use the drawing file from the command line, if any.
          drawing_filename = argv[ skip ];
       }
    }
@@ -144,7 +144,7 @@ int GlgMain( int argc, char *argv[], GlgAppContext app_context )
    GlgSetupHierarchy( Drawing );
 
    /* Initialize the drawing after hierarchy setup. */
-   InitAfterH();
+   InitBeforeH();
 
    /* Display the drawing. */
    GlgUpdate( Drawing );
@@ -242,11 +242,11 @@ void StopUpdates()
 */
 void UpdateDrawing( GlgAnyType client_data, GlgLong * timer_id )
 {
-   GetIconData( &Icon );       /* Get new position */
-   PositionIcon( &Icon );      /* Set new icon position */
+   GetIconData( &Icon );       // Get new position
+   PositionIcon( &Icon );      // Set new icon position
    
-   GlgUpdate( Drawing );       /* Refresh display */
-   GlgSync( Drawing );         /* Improves interactive response */
+   GlgUpdate( Drawing );       // Refresh display
+   GlgSync( Drawing );    /* Improves interactive response */
 
    /* Reinstall the timer. */
    GlgAddTimeOut( AppContext, UPDATE_INTERVAL,
@@ -499,8 +499,8 @@ void Trace( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       switch( trace_data->event->wParam )
       {
        default: break;
-       case VK_ESCAPE:    /* ESC key - 0x1B */
-         /* Erase text information displayed at the bottom of the drawing. */
+       case VK_ESCAPE: // ESC key  0x1B
+         // Erase text information displayed at the bottom of the drawing.
          ShowInfoDisplay( GlgFalse, NULL );
          GlgUpdate( Drawing );
          break;
@@ -513,9 +513,9 @@ void Trace( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       int zDelta;
       zDelta = GET_WHEEL_DELTA_WPARAM( trace_data->event->wParam );
 
-      if( zDelta > 0 )   /* Mousewheel is moved up. */
+      if( zDelta > 0 ) // Mousewheel is moved up.
         button = 4;
-      else               /* Mousewheel is moved down. */
+      else // Mousewheel is moved down.
         button = 5;
 
       event_type = MOUSE_WHEEL_EVENT;      
@@ -530,7 +530,7 @@ void Trace( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
    {
     case BUTTON_PRESS_EVENT:
       if( ZoomToMode() != 0 )
-        return;   /* ZoomTo or dragging mode in progress: pass it through. */
+        return; // ZoomTo or dragging mode in progress: pass it through.
 
       /* GLG_COORD_MAPPING_ADJ is added to the cursor coordinates for precise
          pixel mapping.
@@ -541,7 +541,7 @@ void Trace( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       switch( button )
       {
        case 1:  
-         /* Start dragging the map with the mouse on a left mouse click. */
+         // Start dragging the map with the mouse on a left mouse click.
          GlgSetZoom( MapVp, NULL, 's', 0.0 );
          GlgUpdate( MapVp );
          break;
@@ -622,7 +622,7 @@ void SetIconVisibility( GlgObject icon, GlgBoolean show )
       return;
    }
 
-   /* Show/hide the icon. */
+   // Show/hide the icon.
    GlgSetDResource( icon, "Visibility", show ? 1. : 0. );
 }
 
@@ -651,7 +651,7 @@ void ShowInfoDisplay( GlgBoolean show, GlgPoint * lat_lon )
    
    if( !lat_lon )
    {
-      /* Initialize LAT/LON to an undefined value (such as -1000). */
+      // Initialize LAT/LON to an undefined value (such as -1000). 
       GlgSetDResource( Drawing, "InfoObject/LAT", -1000. );
       GlgSetDResource( Drawing, "InfoObject/LON", -1000. );
    }

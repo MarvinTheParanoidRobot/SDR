@@ -1,51 +1,41 @@
 <!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html;
-      charset=windows-1252">
-     <title>AJAX Server-Side HMI and SCADA Web Demos : ASP.NET and JSP</title>
-    <link rel="icon" href="http://www.genlogic.com/favicon.ico"
-      type="image/x-icon">
-    <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
-      type="image/x-icon">
-    <link rel="stylesheet" href="main.css">
-<meta name="viewport" content="width=820">
-<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Mobile HMI and SCADA Web Demos</title>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
 <style type="text/css">
 <!--
 
-a:link     {color:#005aa8;text-decoration:none;}
-a:visited  {color:#003664;text-decoration:none;}
-a:active   {color:#003664;text-decoration:none;}
-a:hover    {color:darkred;text-decoration:underline;}
-a          {color:#005aa8;text-decoration:none;font-weight:bold} 
+a:link     {color:#005aa8;text-decoration:none;font-weight : bold}
+a:visited  {color:#003664;text-decoration:none;font-weight : bold}
+a:active   {color:#003664;text-decoration:none;font-weight : bold}
+a:hover    {color:darkred;text-decoration:underline;font-weight : bold}
+a          {color:#005aa8;text-decoration:none;font-weight : bold} 
 
-a.rlink:link     {color:#9900000;text-decoration:none;}
-a.rlink:visited  {color:#990000;text-decoration:none;}
-a.rlink:active   {color:#990000;text-decoration:none;}
-a.rlink:hover    {color:#e10000;text-decoration:underline;}
-a.rlink          {color:#990000;text-decoration:none;font-weight:bold} 
-
-p          {color:#212529;}
-body       {color:#212529;}
+p {color:#151515;}
+body {color:#151515;}
 
 .menu_table  td {background-color:#407399}
+/* vertical-align:top; is used to avoid gaps between img and ul in IE */
 .menu_table img {margin:0; vertical-align:top;}
 
-/* margins and padding are inlined in ul below to work on mobile */
-.menu ul {float:left; width:100%; list-style-type:none;}
-.menu li {display:inline;
-          font-family:"Roboto", sans-serif, Arial, Helvetica; font-weight:bold;}
-.menu a:link    {text-decoration:none; color:white; }
+/* padding:0; margin:0; don't work in css class in IE: inlined in ul below. */
+.menu ul {float:left; width:100%; list-style-type:none; }
+.menu li {display:inline; font-family:Arial;}
+.menu a:link    {text-decoration:none; color:white; 
+                 font-size:smaller; font-weight:bold;}
 .menu a:visited {text-decoration:none; color:white;}
 .menu a:active  {text-decoration:none; color:white;}
 .menu a:hover   {text-decoration:none; color:#ffffb4; background-color:#4c8ab8}
 .menu a         {float:left; padding:0.2em 0.6em; text-decoration:none; 
-                 border-right:1px solid white; color:white;}
-@media screen and (min-resolution: 200dpi){
-       .menu a { font-size: 28px; padding:0.4em 0.6em; border-right: 0px; }
-       }
+                 border-right:1px solid white;  
+                 color:white; font-size:smaller; font-weight:bold;}
+
 /* Don't define bg color for low-level buttons: they get color from their 
    table cells so that the whole cell is always displayed in one color
    when the cell is entered (highlighted) but the list item is not. */
@@ -57,18 +47,15 @@ body       {color:#212529;}
 
 .menu_popup td        {border-top:1px solid #4c8ab8; background-color:#cee7f1;}
 .menu_popup ul        {float:left; width:100%; list-style-type:none;}
-.menu_popup li        {display:inline;
-                       font-family:"Roboto", sans-serif, Arial, Helvetica;
-                       font-weight:bold;}
-.menu_popup a:link    {text-decoration:none; color:#25465c;}
+.menu_popup li        {display:inline; font-family:Arial;}
+.menu_popup a:link    {text-decoration:none; color:#25465c; 
+                       font-size:smaller; font-weight:bold;}
 .menu_popup a:visited {text-decoration:none; color:#25465c;}
 .menu_popup a:active  {text-decoration:none; color:#25465c;}
 .menu_popup a:hover   {text-decoration:none; color:#ffffb4;}
 .menu_popup a         {text-decoration:none; color:#00415b;
-                       float:left; padding:0.2em 0.6em;}
-@media screen and (min-resolution: 200dpi){
-       .menu_popup a { font-size: 28px; padding:0.4em 0.6em; border-right: 0px; }
-       }
+                       float:left; padding:0.2em 0.6em; 
+                       font-size:smaller; font-weight:bold; }
 
 //-->
 </style>
@@ -83,21 +70,6 @@ var menu_object = null;
 var timer_id = 0;
 var menu_color="#cee7f1";
 var menu_sel_color="#4c8ab8";
-var is_touch_device = false;
-
-function onFirstTouch()
-{
-  is_touch_device = true;
-  window.removeEventListener( 'touchstart', onFirstTouch );
-}
-
-window.addEventListener( 'touchstart', onFirstTouch );
-
-function ClickCheck()
-{
-  if( is_touch_device )
-    event.preventDefault();
-}
 
 function LeaveButton()
 {
@@ -213,29 +185,29 @@ function PopupMenu()
 <li><a href="http://www.genlogic.com">Home</a></li>
 <li><a href="http://www.genlogic.com/index.html#Products" id="button_products" 
      onmouseover='PopupNamedMenu( "products" )' onmouseout='LeaveButton()'
-     onclick='ClickCheck()'>Products</a></li>
+     >Products</a></li>
 <li><a href="http://www.genlogic.com/demos.html" id="button_demos"
      onmouseover='PopupNamedMenu( "demos" )' onmouseout='LeaveButton()'
-     onclick='ClickCheck()'>Demos</a></li>
+     >Demos</a></li>
 <li><a href="http://www.genlogic.com/generic_logic.html#Industry_Partners" 
      id="button_customers"
      onmouseover='PopupNamedMenu( "customers" )' onmouseout='LeaveButton()'
-     onclick='ClickCheck()'>Customers</a></li>
+     >Customers</a></li>
 <li><a href="http://www.genlogic.com/download.html" id="button_download"
      onmouseover='PopupNamedMenu( "download" )' onmouseout='LeaveButton()'
-     onclick='ClickCheck()'>Download</a></li>
+     >Download</a></li>
 <li><a href="http://www.genlogic.com/doc_html/start.html" 
      id="button_documentation"
      onmouseover='PopupNamedMenu( "documentation" )' onmouseout='LeaveButton()'
-     onclick='ClickCheck()'>Documentation</a></li>
+     >Documentation</a></li>
 <li><a href="http://www.genlogic.com/services.html" 
      id="button_services"
      onmouseover='PopupNamedMenu( "services" )' onmouseout='LeaveButton()'
-     onclick='ClickCheck()'>Services</a></li>
+     >Services</a></li>
 <li><a href="http://www.genlogic.com/contact.html" 
      id="button_company"
      onmouseover='PopupNamedMenu( "company" )' onmouseout='LeaveButton()'
-     onclick='ClickCheck()'>Company</a></li>
+     >Company</a></li>
 </ul>
 
 <td>
@@ -261,26 +233,20 @@ function PopupMenu()
        <li><a href="http://www.genlogic.com/products.html#Components">
        &nbsp;&nbsp;&nbsp;Avionics Gauges</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/web_dashboard.html">
-       &nbsp;&nbsp;&nbsp;Web/Mobile Dashboards</a></li></td></tr>
-   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/products.html#Toolkit">
        GLG Toolkit: Cross-Platform Visualization and HMI Framework</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/hmi_toolkit.html">
        &nbsp;&nbsp;&nbsp;C/C++ Edition for Windows or Linux/Unix</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/web_hmi_toolkit.html">
-       &nbsp;&nbsp;&nbsp;Web/Mobile Edition: HTML5 &amp; JavaScript</a></li></td></tr>
-   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/java_hmi_toolkit.html">
-       &nbsp;&nbsp;&nbsp;Java Edition: Java HMI and Visualization</a></li></td></tr>
+       &nbsp;&nbsp;&nbsp;Web and Java Edition: Java HMI and Visualization</a></li></td></tr>
+   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
+       <li><a href="http://www.genlogic.com/mobile_hmi_toolkit.html">
+       &nbsp;&nbsp;&nbsp;Mobile Edition: GLG Graphics Server for Mobile Deployment</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/dotnet_hmi_toolkit.html">
        &nbsp;&nbsp;&nbsp;.NET Edition: C#, VB and .NET</a></li></td></tr>
-   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/web_hmi_toolkit.html">
-       &nbsp;&nbsp;&nbsp;Web ASP/JSP Edition: GLG Graphics Server</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/products.html#HMI_Configurator">
        &nbsp;&nbsp;&nbsp;HMI Configurator for End Users</a></li></td></tr>
@@ -317,25 +283,19 @@ function PopupMenu()
 <table class="menu_popup" cellspacing=0 cellpadding=0>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/demos.html">
-       Run Web Demos Online</a></li></td></tr>
+       Run Java Demos Online</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/ajax_demos.html">
-       Run AJAX ASP / JSP Demos Online</a></li></td></tr>
+       Run AJAX Demos Online</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/download.html#Demo">
-       Download Demos for C/C++/C#/.NET/Java</a></li></td></tr>
+       Download Demos for C/C++/C#/VB.NET</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/demos.html#Process_Control">
-       Process Control</a></li></td></tr>
-   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/demos.html#SCADA_Viewer">
-       SCADA Viewer</a></li></td></tr>
-   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/demos.html#Dashboard_Demo">
-       Web/Mobile Dashboard</a></li></td></tr>
+       Process Control (AJAX or Java)</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/demos.html#Avionics_Display">
-       Avionics Dashboard</a></li></td></tr>
+       Avionics Dashboard (AJAX or Java)</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/demos.html#RealTimeChart">
        Real-Time Strip-Chart with Cursor Feedback</a></li></td></tr>
@@ -357,9 +317,6 @@ function PopupMenu()
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/demos.html#Diagram_Editor">
        Diagram Editor</a></li></td></tr>
-   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/demos.html#Robot_Arm">
-       3D Robot Arm</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/demos.html#Aircombat_Simulation">
        Aircombat Simulation</a></li></td></tr>
@@ -415,7 +372,7 @@ function PopupMenu()
        Documentation Download (PDF)</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/demos.html">
-       Run Web Demos Online</a></li></td></tr>
+       Run Java or AJAX Demos Online</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="mailto:sales@genlogic.com">
        Request Web Conference</a></li></td></tr>
@@ -430,11 +387,14 @@ function PopupMenu()
    onmouseover="javascript:EnterMenu();" onmouseout="javascript:LeaveMenu();">
 <table class="menu_popup" cellspacing=0 cellpadding=0>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-      <li><a href="http://www.genlogic.com/doc_html/start.html">
-      All Documentation</a></li></td></tr>
+       <li><a href="http://www.genlogic.com/GLGDataSheet.pdf">
+       GLG Toolkit Datasheet</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/news.html">
-       New Release Information</a></li></td></tr>       
+       <li><a href="http://www.genlogic.com/architecture.html">
+       White Paper: Architecture Overview</a></li></td></tr>
+   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
+       <li><a href="http://www.genlogic.com/widgets_faq.html">
+       GLG Widgets FAQs</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/doc_html/start.html#Tutorials">
        GLG Toolkit Tutorials</a></li></td></tr>
@@ -448,26 +408,20 @@ function PopupMenu()
        <li><a href="http://www.genlogic.com/doc_html/start.html#CSharpDoc">
        GLG C# / .NET API Online Reference</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/doc_html/start.html#JavaScriptDoc">
-       GLG HTML5 JavaScript API Online Reference</a></li></td></tr>
+       <li><a href="http://www.genlogic.com/map_server_faq.html">
+       GLG Map Server FAQs</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/doc_html/start.html#Map_Server_Reference">
        GLG Map Server Tutorial</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
        <li><a href="http://www.genlogic.com/doc_html/start.html#Map_Server_Reference">
-       GLG Map Server Documentation</a></li></td></tr>       
+       GLG Map Server Documentation</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/GLGDataSheet.pdf">
-       GLG Toolkit Datasheet</a></li></td></tr>
+       <li><a href="http://www.genlogic.com/news.html">
+       Release Information</a></li></td></tr>
    <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/architecture.html">
-       Architecture Overview</a></li></td></tr>
-   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/widgets_faq.html">
-       GLG Widgets FAQs</a></li></td></tr>       
-   <tr><td onmouseover="EnterMB(this);" onmouseout="LeaveMB(this);">
-       <li><a href="http://www.genlogic.com/map_server_faq.html">
-       GLG Map Server FAQs</a></li></td></tr>
+      <li><a href="http://www.genlogic.com/doc_html/start.html">
+      All Documentation</a></li></td></tr>
 </table>
 </div>
 
@@ -524,255 +478,246 @@ function PopupMenu()
 </table>
 </div>
 
-    <h2> </h2>
-    <table style="width: 100%; text-align: left;" border="1"
-      cellspacing="2" cellpadding="2">
-      <tbody>
-        <tr>
-          <td style="vertical-align: top;">
-            <h2><b><font><b><b><font><b>GLG AJAX Demos<br>
-                        </b></font></b></b></font></b></h2>
-            <h3><b><font><b>GLG Graphics Server ( ASP or JSP )<br>
-                  </b></font></b></h3>
-          </td>
-          <td style="text-align: left; vertical-align: middle; 
-                     font-weight: bold;">
-            <a href="http://www.genlogic.com/demos.html">Click here</a>
-            for HTML5 &amp; JavaScript Demos.</td>
-        </tr>
-      </tbody>
-    </table>
-    <hr width="100%" size="3" noshade="noshade">
-    <p>The demos on this page use <b>server-side AJAX (ASP or JSP)</b>.<br>
-    </p>
-    <p><b><a href="http://www.genlogic.com/demos.html">Click here</a></b>
-      for the <b>HTML5 &amp; JavaScript client-side demos</b>.<br>
-    </p>
-    <table style="width: 100%;" nosave="">
-      <tbody>
-        <tr nosave="">
-          <td nosave="" style="width: 260px; text-align: center;"> <a
-              href="process_demo.html">
-            </a><a name="Process_Control"></a><a
-              href="process_demo.html"><img
-                alt="Process Control Demo" title="Mobile Process Control
-                Demo" src="images/process_250.jpg" style="border: 0px solid ;
-                width: 250px; height: 207px;" align="right" hspace="5"></a>
-          </td>
-          <td nosave=""><b><a
-                href="process_demo.html">AJAX
-
-
-
-                Process Control / SCADA Demo</a><br>
-              <br>
-            </b>This custom process monitoring dashboard shows a live
-            process updated with real-time data.<br>
-            <br>
-            The demo handles user interaction, displays tooltips and
-            pops up dialogs showing the object's state when the object
-            is clicked with the mouse.<b><br>
-            </b></td>
-        </tr>
-      </tbody>
-    </table>
-    <hr style="width: 100%; height: 2px;">
-    <table nosave="" style="width: 100%;">
-      <tbody>
-        <tr nosave="">
-          <td rowspan="3" nosave="" style="width: 260px; text-align:
-            center;"><a name="Circuit_Monitoring"></a><a
-              href="electric_circuit.html"><img
-                alt="Mobile Circuit Monitoring Demo" title="Mobile
-                Circuit Monitoring Demo" src="images/electric_circuit_250.jpg"
-                style="border: 0px solid ; width: 250px; height: 188px;"
-                align="middle" hspace="5"></a> </td>
-          <td nosave=""><b><a
-                href="electric_circuit.html">AJAX
-
-
-
-                Circuit Monitoring / SCADA Demo</a><br>
-            </b><br>
-            This custom electrical circuit monitoring dashboard shows a
-            live process updated with real-time data.<b><br>
-            </b></td>
-        </tr>
-      </tbody>
-    </table>
-    <hr width="100%" size="2" noshade="noshade">
-    <table nosave="" style="width: 100%;">
-      <tbody>
-        <tr nosave="">
-          <td rowspan="3" nosave="" style="width: 260px; text-align:
-            center;"><a name="Mobile_Dashboard"></a><a
-              href="ajax_dashboard_demo.html"><img
-                alt="Mobile Dashboard Demo" title="Mobile Dashboard
-                Demo" src="images/ajax_demo_230.jpg" style="border: 0px solid ;
-                width: 238px; height: 230px;" align="middle" hspace="5"></a>
-          </td>
-          <td nosave=""><b><a
-                href="ajax_dashboard_demo.html">AJAX
-
-
-
-                Dashboard Demo</a><br>
-            </b><br>
-            This demo presents a sample of an AJAX Dashboard that
-            combines several individual servlets in a composite
-            dashboard display.<b><br>
-            </b></td>
-        </tr>
-      </tbody>
-    </table>
-    <hr style="width: 100%; height: 2px;">
-    <table nosave="" style="width: 100%;">
-      <tbody>
-        <tr nosave="">
-          <td rowspan="3" nosave="" style="width: 260px; text-align:
-            center;"><a name="Avionics_Dashboard"></a><a
-              href="avionics_dashboard_demo.html"><img
-                alt="AJAX Avionics Dashboard Demo" title="AJAX Avionics
-                Dashboard Demo" src="images/avionics_200.jpg" style="border:
-                0px solid ; width: 254px; height: 200px;" align="middle"
-                hspace="5"></a> </td>
-          <td nosave=""><b><a
-                href="avionics_dashboard_demo.html">AJAX
-
-
-
-                Avionics Dashboard Demo</a><br>
-            </b><br>
-            This demo presents a sample of an AJAX avionics display with
-            a real-time data feed.<br>
-            <br>
-            The demo uses <a
-              href="http://www.genlogic.com/widgets.html#Avionics">GLG
-              Avionics Widgets</a>.<b><br>
-            </b></td>
-        </tr>
-      </tbody>
-    </table>
-    <hr style="width: 100%; height: 2px;">
-    <table nosave="" style="width: 100%;">
-      <tbody>
-        <tr nosave="">
-          <td rowspan="3" nosave="" style="width: 260px; text-align:
-            center;"><a name="Mobile_GIS"></a><a
-              href="gis_demo.html"><img
-                alt="AJAX GIS Visualization Demo" title="AJAX GIS
-                Visualization Demo" src="images/gis_ajax_250.jpg"
-                style="border: 0px solid ; width: 250px; height: 188px;"
-                align="middle" hspace="5"></a> </td>
-          <td nosave=""><b><a
-                href="gis_demo.html">AJAX
-
-
-
-                GIS Visualization Demo</a><br>
-            </b><br>
-            This demo presents a sample of an AJAX GIS Visualization
-            with dynamic airplane icons and a real-time data feed.<b><br>
-            </b></td>
-        </tr>
-      </tbody>
-    </table>
-    <hr style="width: 100%; height: 2px;">
-    <table nosave="" style="width: 100%;">
-      <tbody>
-        <tr nosave="">
-          <td rowspan="3" nosave="" style="width: 260px; text-align:
-            center;"><a name="Dial_Demo"></a><a
-              href="dial_demo.html"><img
-                alt="Dial Demo" title="Dial Demo"
-                src="images/dial_demo_160.jpg" style="border: 0px solid ;
-                width: 160px; height: 160px;" align="middle" hspace="5"></a>
-          </td>
-          <td nosave=""><b><a
-                href="dial_demo.html">AJAX
-
-
-
-                Dial Demo</a><br>
-            </b><br>
-            This demo displays samples of the <a
-              href="http://www.genlogic.com/widgets.html#Controls">GLG
-              Dial Widgets</a> and demonstrates how to use a dial widget
-            on a web page, including real-time data feed and changing
-            the dial's size.<b><br>
-            </b></td>
-        </tr>
-      </tbody>
-    </table>
-    <hr width="100%" size="2" noshade="noshade">
-    <table nosave="" style="width: 100%;">
-      <tbody>
-        <tr nosave="">
-          <td rowspan="3" nosave="" style="width: 260px; text-align:
-            center;"><a name="Real_Time_Graph_Demo"></a><a
-              href="graph_demo.html"><img
-                alt="Real-Time Graph Demo" title="Real-Time Graph Demo"
-                src="images/realtime_graph_200.jpg" style="border: 0px solid ;
-                width: 266px; height: 201px;" align="middle" hspace="5"></a>
-          </td>
-          <td nosave=""><b><a
-                href="graph_demo.html">AJAX
-Real-Time
-
-
-
-                Graph Demo</a><br>
-            </b><br>
-            This demo displays samples of the <a
-              href="http://www.genlogic.com/widgets.html#2D_Graphs">GLG
-              Graphs</a> and demonstrates how to use a graph widget on a
-            web page and update it with real-time data. The demo's
-            source code provides an example of handling properties of a
-            graph.<b><br>
-            </b></td>
-        </tr>
-      </tbody>
-    </table>
-    <hr style="width: 100%; height: 2px;">
-    <table nosave="" style="width: 100%;">
-      <tbody>
-        <tr nosave="">
-          <td rowspan="3" nosave="" style="width: 260px; text-align:
-            center;"><a name="Graph_Selection_demo"></a><a
-              href="graph_selection_demo.html"><img
-                alt="Graph Selection Demo" title="Graph Selection Demo"
-                src="images/graph_selection_200.jpg" style="border: 0px solid ;
-                width: 266px; height: 200px;" align="middle" hspace="5"></a>
-          </td>
-          <td nosave=""><b><a
-                href="graph_selection_demo.html">AJAX
-
-
-
-                Graph Selection Demo</a><br>
-            </b><br>
-            This demo demonstrates the use of the graph tooltips and
-            drill-down pop-up dialogs when a graph's datasample is
-            selected with the mouse.<b><br>
-            </b></td>
-        </tr>
-      </tbody>
-    </table>
-    <hr width="100%" size="2" noshade="noshade"> These demos demonstrate
-    the <span style="font-weight: bold;">HMI</span><span
-      style="font-weight: bold;">, SCADA and Visualization</span>
-    capabilities of the <a href="http://www.genlogic.com/">GLG Toolkit</a>
-    implemented using server-side ASP or JSP.<br>
-    <br>
-    For the demos implemented using <b>pure HTML5 &amp; JavaScript</b><span
-      style="font-weight: bold;"></span><span style="font-weight: bold;"></span>,
-    <a href="http://www.genlogic.com/demos.html">click here</a>.<br>
-    <br>
-    For examples of the <span style="font-weight: bold;">C / C++ / C# /
-      .NET Real-Time Vector Graphics</span>, <a
-      href="http://www.genlogic.com/download.html#Demo">download GLG
-      Demos</a> (available for both <span style="font-weight: bold;">Linux/Unix</span>
-    and <span style="font-weight: bold;">Windows</span> platforms).<br>
-    <br>
-  </body>
+<h2 style="font-family: Arial;"> </h2>
+<table style="width: 100%; text-align: left; font-family: Arial;"
+ border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h2><b><font><b><b><font><b>GLG Mobile AJAX Demos<br>
+      </b></font></b></b></font></b></h2>
+      <h3><b><font><b>GLG Graphics Server</b></font></b></h3>
+      </td>
+      <td
+ style="text-align: left; vertical-align: middle; font-weight: bold;">No
+Plug-ins
+or Java required.<br>
+      <br>
+      <a href="http://www.genlogic.com/demos.html">Click here</a> for
+Online Java Demos.</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<hr style="font-family: Arial;" noshade="noshade" size="3" width="100%">
+<table style="width: 100%; font-family: Arial;" nosave="">
+  <tbody>
+    <tr nosave="">
+      <td nosave="" style="width: 260px; text-align: center;"> <a
+ href="process_demo.html"> </a><a
+ name="Process_Control"></a><a
+ href="process_demo.html"><img
+ alt="Process Control Demo" title="Mobile Process Control Demo"
+ src="images/process_250.jpg"
+ style="border: 0px solid ; width: 250px; height: 207px;" hspace="5"
+ align="right"></a> </td>
+      <td nosave=""><b><a
+ href="process_demo.html">Mobile
+Process Control / SCADA Demo</a><br>
+      <br>
+      </b>This custom process monitoring dashboard shows a live process
+updated with real-time data.<br>
+      <br>
+The demo handles user interaction, displays tooltips and pops up
+dialogs showing the object's state when the object is clicked with the
+mouse.<b><br>
+      </b></td>
+    </tr>
+  </tbody>
+</table>
+<hr style="width: 100%; height: 2px;">
+<table nosave="" style="width: 100%; font-family: Arial;">
+  <tbody>
+    <tr nosave="">
+      <td rowspan="3" nosave=""
+ style="width: 260px; text-align: center;"><a name="Circuit_Monitoring"></a><a
+ href="electric_circuit.html"><img
+ alt="Mobile Circuit Monitoring Demo"
+ title="Mobile Circuit Monitoring Demo" src="images/electric_circuit_250.jpg"
+ style="border: 0px solid ; width: 250px; height: 188px;" hspace="5"
+ align="middle"></a> </td>
+      <td nosave=""><b><a
+ href="electric_circuit.html">Mobile
+Circuit Monitoring / SCADA Demo</a><br>
+      </b><br>
+This custom electrical circuit monitoring
+dashboard shows a live process
+updated with real-time data.<b><br>
+      </b></td>
+    </tr>
+  </tbody>
+</table>
+<hr style="font-family: Arial;" noshade="noshade" size="2" width="100%">
+<table nosave="" style="width: 100%; font-family: Arial;">
+  <tbody>
+    <tr nosave="">
+      <td rowspan="3" nosave=""
+ style="width: 260px; text-align: center;"><a name="Mobile_Dashboard"></a><a
+ href="ajax_dashboard_demo.html"><img
+ alt="Mobile Dashboard Demo" title="Mobile Dashboard Demo"
+ src="images/ajax_demo_230.jpg"
+ style="border: 0px solid ; width: 238px; height: 230px;" hspace="5"
+ align="middle"></a> </td>
+      <td nosave=""><b><a
+ href="ajax_dashboard_demo.html">Mobile
+Dashboard
+Demo</a><br>
+      </b><br>
+This demo presents a sample of an AJAX Dashboard that combines several
+individual servlets in a composite dashboard display.<b><br>
+      </b></td>
+    </tr>
+  </tbody>
+</table>
+<hr style="width: 100%; height: 2px;">
+<table nosave="" style="width: 100%; font-family: Arial;">
+  <tbody>
+    <tr nosave="">
+      <td rowspan="3" nosave=""
+ style="width: 260px; text-align: center;"><a name="Avionics_Dashboard"></a><a
+ href="avionics_dashboard_demo.html"><img
+ alt="AJAX Avionics Dashboard Demo" title="AJAX Avionics Dashboard Demo"
+ src="images/avionics_200.jpg"
+ style="border: 0px solid ; width: 254px; height: 200px;" hspace="5"
+ align="middle"></a> </td>
+      <td nosave=""><b><a
+ href="avionics_dashboard_demo.html">Mobile
+Avionics
+Dashboard Demo</a><br>
+      </b><br>
+This demo presents a sample of an AJAX avionics display with a
+real-time
+data feed.<br>
+      <br>
+The demo uses <a href="http://www.genlogic.com/widgets.html#Avionics">GLG
+Avionics
+Widgets</a>.<b><br>
+      </b></td>
+    </tr>
+  </tbody>
+</table>
+<hr style="width: 100%; height: 2px;">
+<table nosave="" style="width: 100%; font-family: Arial;">
+  <tbody>
+    <tr nosave="">
+      <td rowspan="3" nosave=""
+ style="width: 260px; text-align: center;"><a name="Mobile_GIS"></a><a
+ href="gis_demo.html"><img
+ alt="AJAX GIS Visualization Demo" title="AJAX GIS Visualization Demo"
+ src="images/gis_ajax_250.jpg"
+ style="border: 0px solid ; width: 250px; height: 188px;" hspace="5"
+ align="middle"></a> </td>
+      <td nosave=""><b><a
+ href="gis_demo.html">Mobile GIS
+Visualization Demo</a><br>
+      </b><br>
+This demo presents a sample of an AJAX GIS Visualization with dynamic
+airplane icons and a real-time data feed.<b><br>
+      </b></td>
+    </tr>
+  </tbody>
+</table>
+<hr style="width: 100%; height: 2px;">
+<table nosave="" style="width: 100%; font-family: Arial;">
+  <tbody>
+    <tr nosave="">
+      <td rowspan="3" nosave=""
+ style="width: 260px; text-align: center;"><a name="Dial_Demo"></a><a
+ href="dial_demo.html"><img
+ alt="Dial Demo" title="Dial Demo" src="images/dial_demo_160.jpg"
+ style="border: 0px solid ; width: 160px; height: 160px;" hspace="5"
+ align="middle"></a> </td>
+      <td nosave=""><b><a
+ href="dial_demo.html">AJAX Dial Demo</a><br>
+      </b><br>
+This demo displays samples of the <a
+ href="http://www.genlogic.com/widgets.html#Controls">GLG Dial Widgets</a>
+and demonstrates how to use a
+dial widget on a web page,
+including real-time data feed and changing the dial's size.<b><br>
+      </b></td>
+    </tr>
+  </tbody>
+</table>
+<hr style="font-family: Arial;" noshade="noshade" size="2" width="100%">
+<table nosave="" style="width: 100%; font-family: Arial;">
+  <tbody>
+    <tr nosave="">
+      <td rowspan="3" nosave=""
+ style="width: 260px; text-align: center;"><a
+ name="Real_Time_Graph_Demo"></a><a
+ href="graph_demo.html"><img
+ alt="Real-Time Graph Demo" title="Real-Time Graph Demo"
+ src="images/realtime_graph_200.jpg"
+ style="border: 0px solid ; width: 266px; height: 201px;" hspace="5"
+ align="middle"></a> </td>
+      <td nosave=""><b><a
+ href="graph_demo.html">AJAX
+Real-Time Graph Demo</a><br>
+      </b><br>
+This demo displays samples of the <a
+ href="http://www.genlogic.com/widgets.html#2D_Graphs">GLG Graphs</a>
+and demonstrates how to use a
+graph widget on a web page and update it with real-time data. The
+demo's source code provides an example of handling properties of a
+graph in a servlet.<b><br>
+      </b></td>
+    </tr>
+  </tbody>
+</table>
+<hr style="width: 100%; height: 2px;">
+<table nosave="" style="width: 100%; font-family: Arial;">
+  <tbody>
+    <tr nosave="">
+      <td rowspan="3" nosave=""
+ style="width: 260px; text-align: center;"><a
+ name="Graph_Selection_demo"></a><a
+ href="graph_selection_demo.html"><img
+ alt="Graph Selection Demo" title="Graph Selection Demo"
+ src="images/graph_selection_200.jpg"
+ style="border: 0px solid ; width: 266px; height: 200px;" hspace="5"
+ align="middle"></a> </td>
+      <td nosave=""><b><a
+ href="graph_selection_demo.html">AJAX
+Graph
+Selection Demo</a><br>
+      </b><br>
+This
+demo demonstrates the use of the graph tooltips and drill-down pop-up
+dialogs when a graph's datasample is selected with the mouse.<b><br>
+      </b></td>
+    </tr>
+  </tbody>
+</table>
+<hr style="font-family: Arial;" noshade="noshade" size="2" width="100%"><span
+ style="font-family: Arial;">
+These demos demonstrate the </span><span
+ style="font-weight: bold; font-family: Arial;">AJAX-based Mobile HMI</span><span
+ style="font-family: Arial;"><span style="font-weight: bold;">, SCADA
+and Visualization</span> capabilities of the </span><a
+ style="font-family: Arial;" href="http://www.genlogic.com/">GLG Toolkit</a><span
+ style="font-family: Arial;">.</span><br style="font-family: Arial;">
+<br style="font-family: Arial;">
+<span style="font-family: Arial;"></span><span
+ style="font-family: Arial;">For the </span><span
+ style="font-weight: bold; font-family: Arial;">Java-based Web HMI,
+SCADA and
+Visualization</span><span style="font-family: Arial;"><span
+ style="font-weight: bold;"> Demos</span>, </span><a
+ style="font-family: Arial;" href="http://www.genlogic.com/demos.html">click
+here</a><span style="font-family: Arial;">.</span><br>
+<span style="font-family: Arial;"><br>
+For examples of the </span><span
+ style="font-weight: bold; font-family: Arial;">C / C++ / C# /
+.NET Real-Time Vector Graphics</span><span style="font-family: Arial;">,
+</span><a style="font-family: Arial;"
+ href="http://www.genlogic.com/download.html#Demo">download
+GLG Demos</a><span style="font-family: Arial;"> (available for both </span><span
+ style="font-weight: bold; font-family: Arial;">Linux/Unix</span><span
+ style="font-family: Arial;">
+and </span><span style="font-weight: bold; font-family: Arial;">Windows</span><span
+ style="font-family: Arial;"> platforms).</span><br
+ style="font-family: Arial;">
+<br>
+</body>
 </html>

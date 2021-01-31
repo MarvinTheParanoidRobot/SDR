@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <title>Java HMI / SCADA Library: Java Process Control and Monitoring
+Online Demo</title>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body style="font-family: Arial;" alink="#ff0000" bgcolor="#ffffff"
+ link="#0000ee" text="#000000" vlink="#551a8b">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/products.html">Products</a>
+</p>
+<h2><font face="Arial">GLG Java Process Demo</font></h2>
+<p><font face="Arial">
+<li><b><a href="#Overview">Overview</a></b></li>
+<li><b><a href="#User_Interface">User Interface</a></b></li>
+</font></p>
+<hr size="2">
+<applet code="GlgProcessDemo.class" archive="GlgDemo.jar,GlgCE.jar"
+ name="process" mayscript="true" height="480" width="650">
+<param name="DrawingURL" value="process.g"></applet>
+<p><font face="Arial"><b><a href="GlgProcessDemo.java">Applet Source
+Code</a></b>
+</font></p>
+<hr size="2">
+<h4><font face="Arial"><a name="Overview"></a>Overview</font></h4>
+<p><font face="Arial">
+This demo shows an <b>example of a Process Control and Monitoring
+application</b> deployed in a web browser using 100% pure Java. The
+drawing was created using the GLG Graphics Builder and deployed on a
+web page using a Java applet and GLG Java class library. The demo uses
+simulated data. However, provided with
+a data source, it can display live data and use user input to
+control the process.
+</font></p>
+<p><font face="Arial">
+The demo demonstrates the following features of the GLG Toolkit:
+</font></p>
+<p><font face="Arial">
+<li>Visualizing a <b>live industrial process</b></li>
+<li>Updating the display with a <b>real-time data feed</b></li>
+<li>Handling <b>user interaction</b> with valves and gauges to control
+the process
+</li>
+<li>Using <b>alternative representations</b> of the same process with
+no changes in the program logic
+</li>
+</font>
+</p>
+<h4><font face="Arial"><a name="User_Interface"></a>User Interface</font></h4>
+<font face="Arial">
+<li><b>Click on valves</b> with the left or right mouse button to <b>open
+or close</b>
+them (the simulation process will be counter-reacting, so try clicking
+repeatedly)
+</li>
+<li>Click on the Solvent Vaporizer Tank to toggle the visibility of the
+pressure gauge.
+</li>
+<li>Use the HTML buttons above the drawing or GLG buttons in the lower
+left corner of the drawing to control the drawing's attributes.</li>
+<li><span style="font-weight: bold;">To <span
+ style="font-weight: bold;">s</span>croll the Temperature History Chart,</span>
+click on the ToggleAutoScroll button above the chart, then use the
+activated X scrollbar. The <span style="font-weight: bold;">Y
+scrollbar is automatically activated</span> when the chart's data go
+out of the chart's Low/High range.<br>
+</li>
+</font>
+<br>
+</body>
+</html>

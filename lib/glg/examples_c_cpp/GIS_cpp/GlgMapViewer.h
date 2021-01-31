@@ -14,8 +14,8 @@ typedef enum
 class GlgMapViewer : public GlgObjectC
 {
  public:
-   GlgMapViewer( void );
-   ~GlgMapViewer( void );
+   GlgMapViewer();
+   ~GlgMapViewer(void);
 
    // True if simulated demo data are used; False for live data. 
    bool RANDOM_DATA;
@@ -51,13 +51,13 @@ class GlgMapViewer : public GlgObjectC
    virtual void Trace( GlgObjectC& callback_viewport, 
                        GlgTraceCBStruct * trace_info );
 
-   void Init( void );
-   void InitBeforeH( void );
-   void InitAfterH( void );
-   void UpdateDrawing( void );
+   void Init();
+   void InitBeforeH();
+   void InitAfterH();
+   void UpdateDrawing();
    void SetSize( GlgLong x, GlgLong y, GlgLong width, GlgLong height );
-   void StopUpdates( void );
-   void StartUpdates( void );
+   void StopUpdates();
+   void StartUpdates();
    void AddDataFeed( DataFeedC * data_feed );
    GlgBoolean GetLatLonInfo( GlgPoint * in_point, GlgPoint * out_point );
    void ShowInfoDisplay( GlgBoolean show, GlgPoint * lat_lon );
@@ -65,7 +65,7 @@ class GlgMapViewer : public GlgObjectC
    void SetIconVisibility( GlgObjectC& icon, GlgBoolean show );
    void PositionIcon( IconData * icon );
    GlgObject GetIconObject( CONST char * icon_name );
-   int ZoomToMode( void );
+   int ZoomToMode();
    void Zoom( char type, double value );
    GlgMapViewer& operator= ( const GlgObjectC& object );
 };

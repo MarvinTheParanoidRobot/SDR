@@ -269,7 +269,8 @@ void GlgSCADAViewer::InitAfterH()
    }
    
    // Load drawing corresponding to the first menu item.
-   LoadDrawingFromMenu( 0, /* update menu object */ GlgTrue );
+   SelectMainMenuItem( 0, /* update menu object */ GlgTrue );
+   LoadDrawingFromMenu( 0 );
 }
 
 /*----------------------------------------------------------------------
@@ -408,14 +409,13 @@ void GlgSCADAViewer::UpdateData()
 
          if( DataFeed->ReadDTag( tag_record, &d_value, &time_stamp ) )
          {
-            /* Push a new data value into a given tag. If the last argument 
-               (if_changed flag) is true, the value is pushed into graphics
-               only if it changed. Otherwise, a new value is always 
-               pushed into graphics. The if_changed flag is ignored for tags
-               attached to the plots in a real time chart, and the new value
-               is always pushed to the chart even if it is the same.
+            /* Push a new data value into a given tag. The last argument 
+               indicates whether or not to set the value depending if the 
+               value has changed.
+               If set to true, push the value only if it has changed.
+               Otherwise, a new value is always pushed into the object.
             */
-            SetTag( tag_record->tag_source, d_value, GlgTrue );
+            SetTag( tag_record->tag_source, d_value, GlgFalse );
 
             /* Push a time stamp to the TimeEntryPoint of a plot in 
                a real-time chart, if found.
@@ -430,7 +430,7 @@ void GlgSCADAViewer::UpdateData()
          SCONST char * s_value;
          if( DataFeed->ReadSTag( tag_record, &s_value ) )
          {
-            SetTag( tag_record->tag_source, s_value, GlgTrue );
+            SetTag( tag_record->tag_source, s_value, GlgFalse );
          }
          break;
       }
@@ -577,14 +577,19 @@ void GlgSCADAViewer::Input( GlgObjectC& viewport, GlgObjectC& message )
 	 Load a new drawing associated with the selected button.
       */
       message.GetResource( "SelectedIndex", &menu_index );
+      SelectMainMenuItem( (GlgLong) menu_index, 
+                          /* don't update menu object */ GlgFalse );
+
+      /* Close active popup dialogs and popup menu, if any. */
+      CloseActivePopups( CLOSE_ALL );
 
       StopUpdates();
 
       /* Load the drawing associated with the selected menu button and
 	 display it in the DrawingArea.
       */
-      LoadDrawingFromMenu( (GlgLong) menu_index,
-                           /* don't update menu object */ GlgFalse );
+      LoadDrawingFromMenu( (GlgLong) menu_index );
+
       StartUpdates();
       viewport.Update();
    }
@@ -600,7 +605,8 @@ void GlgSCADAViewer::Input( GlgObjectC& viewport, GlgObjectC& message )
    // Handle zoom controls on the left.
    else if( strcmp( format, "Button" ) == 0 )
    {
-      if( strcmp( action, "Activate" ) != 0 &&      /* Not a push button */
+      if( !origin ||
+          strcmp( action, "Activate" ) != 0 &&      /* Not a push button */
           strcmp( action, "ValueChanged" ) != 0 )   /* Not a toggle button */
         return;
 
@@ -672,8 +678,8 @@ void GlgSCADAViewer::Input( GlgObjectC& viewport, GlgObjectC& message )
       GlgObjectC action_data;
 
       message.GetResource( "EventLabel", &event_label );
-      if( !event_label || strcmp( event_label, "" ) == 0 )
-        return;    /* Don't process events with empty EventLabel */
+      if( strcmp( event_label, "" ) == 0 )
+         return;    /* Don't process events with empty EventLabel */
 
       /* Retrieve action object. It will be NULL for custom events 
 	 added prior to GLG v.3.5. 
@@ -1041,15 +1047,8 @@ void GlgSCADAViewer::SetupHMIPage( void )
 | Load a new drawing into the DrawingArea when the user selects an item
 | from the navigation menu object (Menu object).
 */
-GlgBoolean GlgSCADAViewer::LoadDrawingFromMenu( GlgLong screen,
-                                                GlgBoolean update_menu )
+GlgBoolean GlgSCADAViewer::LoadDrawingFromMenu( GlgLong screen )
 {
-   if( !SelectMainMenuItem( screen, update_menu ) )
-     return GlgFalse;   /* Invalid page index - don't load. */
-
-   /* Close active popup dialogs and popup menu, if any. */
-   CloseActivePopups( CLOSE_ALL );
-
    /* Loads a new drawing into the DrawingArea subwindow object.
       DrawingAreaVP is assigned in the Hierarchy callback to the 
       ID of the $Widget viewport of the loaded drawing.
@@ -1060,7 +1059,7 @@ GlgBoolean GlgSCADAViewer::LoadDrawingFromMenu( GlgLong screen,
       DeleteTagRecords();
       PageType = UNDEFINED_PAGE_TYPE;
       HMIPage = new EmptyPage( this );
-      return GlgFalse;
+      return False;
    }
  
    /* Query a list of tags using a newly loaded drawing and build a new
@@ -1290,7 +1289,6 @@ void GlgSCADAViewer::SetPlotTimeEP( GlgObjectC& drawing_vp )
    SCONST char
      * tag_comment,
      * tag_source;
-   double is_chart_tag;
    GlgTagRecord * tag_record;
  
    if( !NumTagRecords )
@@ -1319,14 +1317,6 @@ void GlgSCADAViewer::SetPlotTimeEP( GlgObjectC& drawing_vp )
    for( i=0; i<size; ++i )
    {
       tag_obj = tag_list.GetElement( i );
-      
-      /* Check if the tag belongs to a chart's Entry Point.
-         If yes, proceed with finding the PLOT object the tag belongs to.
-         Otherwise, skip this tag object.
-      */
-      tag_obj.GetResource( "AlwaysChanged", &is_chart_tag );
-      if( !is_chart_tag )
-        continue;
 
       /* Retrieve TagSource and TagComment. In the demo, TagComment is
          not used, but the application may use it as needed.
@@ -1655,7 +1645,7 @@ void GlgSCADAViewer::DisplayPopupDialog( GlgObjectC& command_vp,
       if( subwindow.IsNull() )
       {
 	 GlgError( GLG_USER_ERROR, (char * )
-                  "PopupDialog Command failed: Destination object not found." );
+                  "PopupDialog Command failed: Destionation object not found." );
          ClosePopupDialog( dialog_type );
 	 return;
       }
@@ -1828,6 +1818,15 @@ void GlgSCADAViewer::TransferTags( GlgObjectC& selected_obj,
       else
 	num_remapped_tags = 
 	  RemapNamedTags( viewport, tag_name, tag_source );
+      
+      if( RandomData )
+      {
+        /* For demo purposes only, initialize input tags with TagName="Speed"
+           present for motor objects in scada_aeration.g and scada_motir_info.g.
+        */
+        if( strcmp( tag_name, "Speed" ) == 0 )
+          SetTag( tag_source, GlgRand( 300., 1500. ), GlgTrue );
+      }
    }
 }
 
@@ -1930,7 +1929,7 @@ void GlgSCADAViewer::DisplayPopupMenu( GlgObjectC& command_vp,
       if( subwindow.IsNull() )
       {
 	 GlgError( GLG_USER_ERROR, (char*)
-                 "Destination object not found, PopupDialog Command failed." );
+                 "Destionation object not found, PopupDialog Command failed." );
 	 return;
       }
       
@@ -2056,10 +2055,10 @@ void GlgSCADAViewer::PositionPopupMenu()
       the selected object, if possible. Otherwise (viewport is too small), 
       position it in the center of the viewport.
    */   
-   if( converted_box.p2.x + menu_width + offset > parent_width )
+   if( converted_box.p2.x + menu_width > parent_width )
    {
-      /* Outside of the window right edge.
-	 Position the right edge of the popup to the left of the selected object.
+      /* Outside of window right edge.
+	 Position right edge of the popup to the left of the selected object.
 	 Always use GLG_HLEFT anchor to simplify out-of-the-window check.
       */
       x =  converted_box.p1.x - offset - menu_width;
@@ -2067,8 +2066,7 @@ void GlgSCADAViewer::PositionPopupMenu()
    }
    else 
    {
-      /* Position the left edge of the popup to the right of the selected object.
-       */
+      /* Position left edge of the popup to the right of the selected object. */
       x = converted_box.p2.x + offset; 
       x_anchor = GLG_HLEFT;
    }
@@ -2081,9 +2079,9 @@ void GlgSCADAViewer::PositionPopupMenu()
       x_anchor = GLG_HCENTER;
    }
 
-   if( converted_box.p1.y - menu_height - offset < 0. ) 
+   if( converted_box.p1.y - menu_height < 0. ) 
    {
-      /* Outside of the window top edge.
+      /* Outside of window top edge.
 	 Position the top edge of the popup below the selected object.
       */
       y =  converted_box.p2.y + offset;
@@ -2091,8 +2089,8 @@ void GlgSCADAViewer::PositionPopupMenu()
    }
    else 
    {
-      /* Position the bottom edge of the popup above the selected object.
-	 Always use GLG_VTOP anchor to simplify out-of-the-window check.
+      /* Position bottom edge of the popup above the selected object.
+	 Always use GLG_VTOP achor to simplify out-of-the-window check.
       */
       y = converted_box.p1.y - offset - menu_height; 
       y_anchor = GLG_VTOP;
@@ -2201,7 +2199,7 @@ void GlgSCADAViewer::GoTo( GlgObjectC& command_vp,
       if( subwindow.IsNull() )
       {
 	 GlgError( GLG_USER_ERROR, 
-		   (char*) "Invalid Destination object, GoTo Command failed." );
+		   (char*) "Invalid Destionation object, GoTo Command failed." );
 	 return;
       }
    }
@@ -2356,14 +2354,11 @@ void GlgSCADAViewer::WriteValueFromInputWidget( GlgObjectC& command_vp,
       
       SCONST char * read_tag_source;
       
-      if( read_tag_obj.HasResourceObject( "TagSource" ) )
-      { 
-         read_tag_obj.GetResource( "TagSource", &read_tag_source ); 
-         if( !IsUndefined( read_tag_source ) )
-         {
-            SetTag( read_tag_source, value, GlgTrue );
-            Update();
-         }
+      read_tag_obj.GetResource( "TagSource", &read_tag_source ); 
+      if( !IsUndefined( read_tag_source ) )
+      {
+         SetTag( read_tag_source, value, GlgTrue );
+         Update();
       }
    }
 }
@@ -2386,19 +2381,15 @@ GlgLong GlgSCADAViewer::LookUpMenuArray( SCONST char * drawing_name )
 | Select MainMenu item with a specified index.
 | NO_SCREEN value (-1) unselects a previously selected menu item, if any.
 */
-GlgBoolean GlgSCADAViewer::SelectMainMenuItem( GlgLong menu_index, 
-                                               GlgBoolean update_menu )
+void GlgSCADAViewer::SelectMainMenuItem( GlgLong menu_index, 
+					 GlgBoolean update_menu )
 {
    /* Validate menu_index. */
    if( menu_index < NO_SCREEN || menu_index >= NumMenuItems )
-   {
-      GlgError( GLG_WARNING, (char*) "Invalid main menu index." );
-      return GlgFalse;
-   }
-   
+     GlgError( GLG_WARNING, (char*) "Invalid main menu index." );
+     
    if( update_menu )
      Menu.SetResource( "SelectedIndex", menu_index );
-   return GlgTrue;
 }
 
 /*----------------------------------------------------------------------
@@ -2558,46 +2549,7 @@ GlgLong GlgSCADAViewer::RemapNamedTags( GlgObjectC& object,
    for( int i=0; i<size; ++i )
    {
       tag_obj = tag_list.GetElement( i );
-      
-      /* In simulation demo mode, assign new tag source unconditionally,
-         including INIT ONLY tags. In live data mode, handle INIT ONLY tags 
-         using real-time data as shown in the code below. 
-      */
-      if( RandomData )
-      {
-         AssignTagSource( tag_obj, tag_source );
-         
-         /* For demo purposes, initialize tags with TagName="Speed" 
-            using a random data value. These tags are present for motor 
-            ebjects in scada_aeration.g, as well as a gauge and slider 
-            in scada_motor_info.g. 
-         */
-         if( strcmp( tag_name, "Speed" ) == 0 )
-           SetTag( tag_source, GlgRand( 300., 1500. ), GlgTrue );
-         continue;
-      }
-
-      /* If tag is INIT ONLY, initialize its value based on the current 
-         data value for the given tag_source. Don't reassign TagSource 
-         for this tag_obj, it is initilaized only once and will not be 
-         subject to periodic updates.
-      */
-      double access_type;
-      tag_obj.GetResource( "TagAccessType", &access_type );
-      
-      if( access_type == GLG_INIT_ONLY_TAG )
-      {
-         double data_type, d_value;
-         tag_obj.GetResource( "DataType", &data_type );
-
-         if( data_type == GLG_D )
-         {
-            GetTag( tag_source, &d_value );
-            tag_obj.SetResource( NULL, d_value );
-         }
-      }
-      else
-        AssignTagSource( tag_obj, tag_source );
+      AssignTagSource( tag_obj, tag_source );
    }
    
    return size;

@@ -1,21 +1,4 @@
-#include <QtGlobal>
-
-/* QGLWidget is used as a base class of QGlgWidget if the GLG OpenGL driver
-   is used (enabled by uncommenting the GLG_OPENGL line in qt_glg.pro project
-   file).
-
-   QWidget is used as a base class if the GLG X11 driver is used.
-   This may cause Qt to select a parent widget's XVisual that doesn't work 
-   with OpenGL in some system setups.
-*/
-#ifdef GLG_OPENGL
-#  include <QtOpenGL/QGLWidget>
-#  define Q_GLG_BASE_CLASS    QGLWidget
-#else
-#  include <QWidget>
-#  define Q_GLG_BASE_CLASS    QWidget
-#endif
-
+#include <QWidget>
 #include "GlgApi.h"
 
 #ifndef Q_GLG_WIDGET_H
@@ -37,7 +20,7 @@ typedef enum _QGlgCallbackType
    Q_GLG_V_CB
 } QGlgCallbackType;
 
-class QGlgWidget: public Q_GLG_BASE_CLASS
+class QGlgWidget: public QWidget
 {
     Q_OBJECT
 public:
@@ -62,9 +45,8 @@ public:
     virtual void HCB( GlgObject vp );
     virtual void VCB( GlgObject vp );
 
-    /**** Deprecated methods and variables used by AddCallback(), supreseded by
-          EnableCallback().
-    */
+    /**** Deprecated methods and variables used by AddCallback(), 
+      supreseded by EnableCallback(). */
     QGlgCallback h_callback;
     QGlgCallback v_callback;
     void AddCallback( QGlgCallbackType callback_type, QGlgCallback callback );

@@ -116,28 +116,6 @@
 # If set to 0, the selected tag is used as a TagSource.
 #BrowseTagSources = 1
 
-# If set to 1, highlights objects whose attributes are controlled by the selected
-# tag.
-#TraceTags = 0
-
-# If set to 1, highlights objects whose attributes are controlled by the selected
-# resource, property or attribute.
-#TraceResourcesAndConstraints = 0
-
-# Controls tracing behavior. If set to 0, the first found drawable parent of the
-# traced object will be highlighted. If set to 1, the parent that has the
-# IsWidget resource will be highlighted.
-#HighlightWidgets = 0
-
-# Controls tracing behavior. If set to 0, the first found drawable parent of the
-# traced object will be highlighted. If set to 1, the parent that is a direct
-# child of the Drawing Area that has editing focus will be highlighted.
-#HighlightTopLevelObjects = 0
-
-# If set to 1, converts all string objects in the drawing to UTF8 before saving
-# the drawing.
-#ConvertToUTF8OnSave = 0
-
 ########################################################################
 # Builder configuration variables
 ########################################################################
@@ -238,14 +216,6 @@
 # Defines the default size of the fixed scale widget for File, New Widget.
 #WidgetWidth = 800
 #WidgetHeight = 600
-
-# Define $Widget viewport ratio on initial apparance.
-#InitSpanX = 1000
-#InitSpanY = 1000
-
-# Define Custom Width/Height Ratio for the New, Widget (Resize and Stretch) menu.
-#CustomSpanX = 1500
-#CustomSpanY = 1000
 
 ########################################################################
 # Global GLG configuration resources (a partial list).

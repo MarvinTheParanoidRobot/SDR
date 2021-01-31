@@ -3,8 +3,9 @@ JSP / TOMCAT SETUP
 This directory contains JSP servlet examples of the GLG Graphics Server.
 
 To deploy the examples, copy the "glg_demos" directory into the "webapps"
-directory of the JavaEE server (Tomcat, etc.) and load any html file from 
-the "webapps/glg_demos" directory into the web browser via a URL.
+directory of the application server (Tomcat, etc.) and load any html 
+file from the "webapps/glg_demos" directory into the web browser via
+a URL.
 
 For example, for a typical Tomcat installation on a Linux-based local host, 
 use the following URLs:
@@ -52,24 +53,3 @@ contains description of the public methods of the GLG Script Object.
 The HTML pages of the demos in the <glg>/examples_jsp/glg_demos directory
 provide examples of using the GLG Script Object for displaying updating
 image and handling various user actions, such as tooltips or object selection.
-
-COMPILING JSP EXAMPLES
-
-To compile a JSP example, change directory to 
-   <glg_dir>/examples_jsp/glg_demos/WEB-INF/src
-
-Set CLASSPATH, replacing <servlet-api-path> with the path to the directory
-containing the servlet-api.jar file:
-
-  On Linux:
-    export CLASSPATH=.:<servlet-api-path>/servlet-api.jar:../lib/GlgServerCE.jar
-
-  On Windows:
-    set CLASSPATH=.;<servlet-api-path>\servlet-api.jar;..\lib\GlgServerCE.jar
-
-Compile a desired example, for example:
-
-  javac -d ../classes glg_demos/GlgSimpleViewer.java
-
-To deploy, copy the "glg_demos" directory into the "webapps" directory of the
-JavaEE server as described at the beginning of this file.

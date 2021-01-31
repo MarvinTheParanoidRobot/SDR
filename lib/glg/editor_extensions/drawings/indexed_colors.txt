@@ -1,4 +1,4 @@
-# The indexed color list can be defined via a GLG drawing (see
+# The indexed color list can also be defined via a GLG drawing (see
 # indexed_color_palette.g for an example) or an ASCII file.
 #
 # FILE FORMAT:

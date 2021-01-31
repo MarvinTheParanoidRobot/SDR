@@ -4,6 +4,9 @@ num columns=4
 #
 entries=
 #
+button_hmi.g
 tank_hmi.g
+value_display1_hmi.g
+value_display2_hmi.g
 valve1_hmi.g
 valve2_hmi.g

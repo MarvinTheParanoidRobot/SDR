@@ -84,7 +84,7 @@ void TraceCB( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
 void DrawingLoadedCB( GlgObject viewport, GlgAnyType client_data, 
                       GlgAnyType call_data );
 /* Load */
-GlgBoolean LoadDrawingFromMenu( GlgLong screen, GlgBoolean update_menu );
+GlgBoolean LoadDrawingFromMenu( GlgLong screen );
 GlgObject LoadDrawing( GlgObject subwindow, char * drawing_file );
 void SetupLoadedPage( char * title );
 void SetupHMIPage( void );
@@ -137,7 +137,7 @@ PopupMenuType GetPopupMenuType( GlgObject command_obj );
 void Zoom( GlgObject viewport, char zoom_type, double scale );
 GlgBoolean IsUndefined( char * string );
 GlgLong LookUpMenuArray( char * drawing_name );
-GlgBoolean SelectMainMenuItem( GlgLong menu_index, GlgBoolean update_menu );
+void SelectMainMenuItem( GlgLong menu_index, GlgBoolean update_menu );
 void FreeAlarmData( AlarmRecord * alarm_record );
 double GetCurrTime( void );
 GlgObject FindMatchingTimeEP( GlgObject tag_obj );

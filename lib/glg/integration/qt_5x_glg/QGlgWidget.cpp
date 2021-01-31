@@ -31,7 +31,7 @@ void TrapXError( Display * display );
 #endif
 
 /*----------------------------------------------------------------------*/
-QGlgWidget::QGlgWidget( QWidget * parent ) : Q_GLG_BASE_CLASS( parent, 0 )
+QGlgWidget::QGlgWidget( QWidget * parent ) : QWidget( parent, 0 )
 {
    static int initialized = False;
 
@@ -86,7 +86,7 @@ QGlgWidget::~QGlgWidget()
 /*----------------------------------------------------------------------*/
 void QGlgWidget::resizeEvent( QResizeEvent * event ) 
 {
-   Q_GLG_BASE_CLASS::resizeEvent( event );
+   QWidget::resizeEvent( event );
 
    if( !viewport )
      return;
@@ -157,7 +157,7 @@ void QGlgWidget::SetViewport( GlgObject viewport_p )
 */
 extern "C" void 
   QGlgWidgetInputStub( GlgObject callback_viewport,
-                       GlgAnyType client_data, GlgAnyType call_data )
+                      GlgAnyType client_data, GlgAnyType call_data )
 {
    QGlgWidget * initiator = (QGlgWidget*)client_data;
 
@@ -166,7 +166,7 @@ extern "C" void
 
 extern "C" void 
   QGlgWidgetSelectStub( GlgObject callback_viewport,
-                        GlgAnyType client_data, GlgAnyType call_data )
+                       GlgAnyType client_data, GlgAnyType call_data )
 {
    QGlgWidget * initiator = (QGlgWidget*)client_data;
 
@@ -175,7 +175,7 @@ extern "C" void
 
 extern "C" void 
   QGlgWidgetTraceStub( GlgObject callback_viewport,
-                       GlgAnyType client_data, GlgAnyType call_data )
+                      GlgAnyType client_data, GlgAnyType call_data )
 {
    QGlgWidget * initiator = (QGlgWidget*)client_data;
 
@@ -184,7 +184,7 @@ extern "C" void
 
 extern "C" void 
   QGlgWidgetTrace2Stub( GlgObject callback_viewport,
-                        GlgAnyType client_data, GlgAnyType call_data )
+                       GlgAnyType client_data, GlgAnyType call_data )
 {
    QGlgWidget * initiator = (QGlgWidget*)client_data;
 
@@ -193,12 +193,12 @@ extern "C" void
 
 extern "C" void 
   QGlgWidgetHierarchyStub( GlgObject callback_viewport,
-                           GlgAnyType client_data, GlgAnyType call_data )
+                          GlgAnyType client_data, GlgAnyType call_data )
 {
    QGlgWidget * initiator = (QGlgWidget*)client_data;
 
    initiator->HierarchyCB( callback_viewport, 
-                           (GlgHierarchyCBStruct*) call_data );
+                          (GlgHierarchyCBStruct*) call_data );
 }
 
 /*----------------------------------------------------------------------*/
@@ -217,27 +217,27 @@ void QGlgWidget::ResizeViewport( int width, int height, int draw )
       /* Add callbacks if enabled. */
       if( enable_input_cb )
         GlgAddCallback( viewport, GLG_INPUT_CB, 
-                        (GlgCallbackProc)QGlgWidgetInputStub, 
-                        (GlgAnyType)this );
+                       (GlgCallbackProc)QGlgWidgetInputStub, 
+                       (GlgAnyType)this );
 
       if( enable_select_cb )
         GlgAddCallback( viewport, GLG_SELECT_CB,
-                        (GlgCallbackProc)QGlgWidgetSelectStub, 
-                        (GlgAnyType)this );
+                       (GlgCallbackProc)QGlgWidgetSelectStub, 
+                       (GlgAnyType)this );
 
       if( enable_trace_cb )
         GlgAddCallback( viewport, GLG_TRACE_CB,
-                        (GlgCallbackProc)QGlgWidgetTraceStub,
-                        (GlgAnyType)this );
+                       (GlgCallbackProc)QGlgWidgetTraceStub,
+                       (GlgAnyType)this );
       if( enable_trace2_cb )
         GlgAddCallback( viewport, GLG_TRACE2_CB,
-                        (GlgCallbackProc)QGlgWidgetTrace2Stub, 
-                        (GlgAnyType)this );
+                       (GlgCallbackProc)QGlgWidgetTrace2Stub, 
+                       (GlgAnyType)this );
 
       if( enable_hierarchy_cb )
         GlgAddCallback( viewport, GLG_HIERARCHY_CB,
-                        (GlgCallbackProc)QGlgWidgetHierarchyStub, 
-                        (GlgAnyType)this );
+                       (GlgCallbackProc)QGlgWidgetHierarchyStub, 
+                       (GlgAnyType)this );
 
       HCB( viewport );   /* New H callback */     
 
@@ -298,8 +298,8 @@ void QGlgWidget::Trace2CB( GlgObject vp, GlgTraceCBStruct * trace_info )
    Q_UNUSED( trace_info );
 }
 
-void QGlgWidget::HierarchyCB( GlgObject vp,
-                              GlgHierarchyCBStruct * hierarchy_info )
+void QGlgWidget::HierarchyCB( GlgObject vp, 
+                             GlgHierarchyCBStruct * hierarchy_info )
 {
    Q_UNUSED( vp );
    Q_UNUSED( hierarchy_info );
@@ -317,8 +317,8 @@ void QGlgWidget::VCB( GlgObject vp )
 
 /**** Deprecated, superseded by EnableCallback(). ****/
 /*----------------------------------------------------------------------*/
-void QGlgWidget::AddCallback( QGlgCallbackType callback_type,
-                              QGlgCallback callback )
+void QGlgWidget::AddCallback( QGlgCallbackType callback_type, 
+                             QGlgCallback callback )
 {
    switch( callback_type )
    {
@@ -369,7 +369,7 @@ void QGlgTimer::timerEvent( QTimerEvent * event )
 
 /*----------------------------------------------------------------------*/
 extern "C" GlgLong QGlgAddTimer( GlgLong interval, GlgTimerProc proc, 
-                                 GlgAnyType client_data )
+                                GlgAnyType client_data )
 {
    QGlgTimer * timer = new QGlgTimer( proc, client_data );
 
@@ -387,9 +387,9 @@ extern "C" void QGlgRemoveTimer( GlgLong timer_id )
 
 /*----------------------------------------------------------------------*/
 extern "C" void QGlgDrawTooltip( char * tooltip_string, 
-                                 GlgObject viewport, GlgObject top_viewport,
-                                 GlgLong root_x, GlgLong root_y,
-                                 GlgLong win_x, GlgLong win_y )
+                                GlgObject viewport, GlgObject top_viewport,
+                                GlgLong root_x, GlgLong root_y,
+                                GlgLong win_x, GlgLong win_y )
 {
    static QGlgWidget * q_widget = NULL;  /* Used to determine screen info */
    GlgLong lvalue;

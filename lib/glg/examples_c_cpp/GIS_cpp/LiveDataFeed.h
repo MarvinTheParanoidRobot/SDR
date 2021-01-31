@@ -6,7 +6,7 @@ class LiveDataFeed : public DataFeedC
 {
  public:
    LiveDataFeed( GlgMapViewer * viewer );
-   ~LiveDataFeed( void );
+   ~LiveDataFeed();
 
    virtual GlgBoolean GetIconData( IconData * icon );
 

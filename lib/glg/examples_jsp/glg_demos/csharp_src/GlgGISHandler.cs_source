@@ -161,9 +161,9 @@ namespace GISHandler
       // GLG error handler. 
       //
       // A custom GLG error handler may be set using the 
-      // GlgObject.SetErrorHandler method inside this method. 
-      // The request_data.got_errors field may be set to true to flag errors 
-      // in case if a custom error handler is used.
+      // GlgObject.SetErrorHandler method. The data.got_errors field
+      // may be set to true to flag errors in case if a custom error 
+      // handler is used.
       ///////////////////////////////////////////////////////////////////
       void ProcessRequestData( GlgHttpRequestData request_data )
       {

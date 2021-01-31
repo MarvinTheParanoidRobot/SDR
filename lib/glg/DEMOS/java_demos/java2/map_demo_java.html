@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <title>Real-Time Java Graphics: Java Map Monitoring Demo</title>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico" type="image/x-icon"> 
+</head>
+<body alink="#ff0000" bgcolor="#ffffff" link="#0000ee" text="#000000"
+ vlink="#551a8b" style="font-family:Arial;">
+<p style="font-size:80%; font-family:arial;">
+<a href="http://www.genlogic.com">Home</a> | 
+<a href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | 
+<a href="http://www.genlogic.com/demos.html">Java Demos</a> | 
+<a href="http://www.genlogic.com/products.html">Products</a>
+</p>
+<h2><font face="Arial">GLG Supply Chain Visualization Demo</font></h2>
+
+<p><font face="Arial">
+Move the mouse over the map for tooltips, click to select objects.
+</font></p>
+
+<font face="Arial">
+<li><b><a href="#Overview">Overview<a></b></li>
+<li><b><a href="#User_Interface">User Interface<a></b></li>
+</font>
+
+<hr size="2">
+
+<applet code="GlgMapDemo.class"
+ archive="GlgDemo.jar,GlgCE.jar" name="map" mayscript="true"
+ height="600" width="800"><param name="DrawingURL" value="map_demo.g">
+<param name="facilities" value="facilities_s">
+<param name="links" value="links_s">
+<param name="palette" value="palette.g">
+<param name="size_ratio" value="0.75">
+</applet>
+
+<p><font face="Arial">
+<b><a href="GlgMapDemo.java">Applet Source Code</a></font></b>
+</font></p>
+
+<hr size="2">
+
+<h4><a name="Overview"></a><font face="Arial">Overview</font></h4>
+
+<p><font face="Arial">
+This demo demonstrates the GLG Toolkit's features used in the monitoring applications:
+</font></p>
+
+<font face="Arial">
+<li><b>Vector or image map display</b> (see the 
+<a href="http://www.genlogic2.com/java_demos/java2/gis_demo.html">GIS Demo</a>
+for the GIS map displays)
+</li>
+
+<li><b>Dynamic node and link creation and positioning</b>
+based on lat/lon information
+</li>
+
+<li><b>Layering and selective display</b> of the layers</font></li>
+
+<li><b>Dynamic shapes of node icons</b> representing different node states
+</li>
+
+<li><b>Dynamic display of data</b> associated with nodes and links</li>
+
+<li><b>Tooltips and hot spots</b> that show the node or link name on mouse over
+</li>
+
+<li><b>Zooming and panning</b> to selected regions</li>
+<li><b>Switching maps for different regions</b></li>
+
+<li><b>Selection and drill down</b> - pops up a dialog showing data for 
+the selected node, link or state.</li>
+
+<p><font face="Arial">
+The demo reads node information (node name and position) from a file or URL 
+and creates nodes on the map dynamically, based on the information received.
+It also reads connectivity information and connects nodes with dynamic links.
+All objects in the drawing (nodes, links, display labels, map polygons, etc.) 
+may be dynamically updated by changing any of the objects' attributes.
+</font></p>
+
+<p><font face="Arial">
+Any object in the drawing may be selected with the mouse to drill down 
+or display the object's status. The demo uses similated data. In an 
+application, the data would be coming from a live data source or 
+a database.
+</font></p>
+
+<p><font face="Arial">
+Refer to the <b><a href="#User_Interface">User Interface instructions</a></b> 
+below for the description of various demo options.
+</font></p>
+
+<h4><a name="User_Interface"></a><font face="Arial">User Interface</font></h4>
+
+<p><font face="Arial">
+The demo toolbar contains the following buttons (move the mouse over a 
+button to show its tooltip):
+</font><p>
+
+<font face="Arial">
+<li><b>Toggle Color Scheme</b></li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Changes the color scheme used to display the drawing
+<br><br>
+
+<li><b>Toggle Links Layer</b></li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Toggles link layer visibility
+<br><br>
+
+<li><b>Toggle Value Display Layer</b></li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Toggles visibility of the data display layer
+<br><br>
+
+<li><b>Toggle Map Layer</b></li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Toggles map visibility
+<br><br>
+
+<li><b>Toggle Update</b></li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Starts or stops updating data
+<br><br>
+
+<li><b>ZoomIn, ZoomOut, ZoomReset, Zoom and Pan sliders and scrollbars</b></li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Zoom controls
+<br><br>
+
+<li><b>ZoomTo</font></b></li>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Zooming to a rectangular area selected with the mouse (click on <b>ZoomTo</b>,
+then select a rectangular area on the map by clicking and dragging)
+<br>
+
+</font>
+
+<h4><font face="Arial">Mouse selection</font></h4>
+
+<font face="Arial">
+<li><b>Select node</b> to display node information</li>
+<li><b>Select link</b> to display link information</li>
+<li><b>Select US state</b> to display statename</li>
+
+<li>Select anywhere to <b>display lat/lon coordinates</b>
+of the mouse click</li>
+</font>
+<br>
+</body>
+</html>

@@ -50,10 +50,6 @@
 # adding the first viewport-based widget.
 #DisableEditingTips = 0
 
-# If set to 1, converts all string objects in the drawing to UTF8 before saving
-# the drawing.
-#ConvertToUTF8OnSave = 0
-
 #GridInterval     = 100
 #SnapInterval     = 20
 #ShowAxis         = 1
@@ -153,25 +149,6 @@
 # If set to 0, the selected tag is used as a TagSource.
 #BrowseTagSources = 1
 
-# If set to 1, highlights objects whose attributes are controlled by the selected
-# tag, resource, property or attribute.
-#TraceTagsResourcesAndConstraints = 0
-
-# If set to 1, highlights elements in Attribute dialog that are controlled by the
-# attribute marked as Mark0. This may be used to find the exact attribute of
-# the selected object that is controlled by the marked attribute.
-#TraceMark0 = 0
-
-# Controls tracing behavior. If set to 0, the first found drawable parent of the
-# traced object will be highlighted. If set to 1, the parent that has the
-# IsWidget resource will be highlighted.
-#HighlightWidgets = 0
-
-# Controls tracing behavior. If set to 0, the first found drawable parent of the
-# traced object will be highlighted. If set to 1, the parent that is a direct
-# child of the Drawing Area that has editing focus will be highlighted.
-#HighlightTopLevelObjects = 0
-
 # When set to 1, enables OEM mode that allows the user to add export tags
 # for public properties for components to be used in the HMI Editor.
 # The export tags are also used for editing predefined transformation 
@@ -195,10 +172,6 @@
 # Defines the default size of the fixed scale widget for File, New Widget.
 #WidgetWidth = 800
 #WidgetHeight = 600
-
-# Define Custom Width/Height Ratio for the New, Widget (Resize and Stretch) menu.
-#CustomSpanX = 1500
-#CustomSpanY = 1000
 
 ########################################################################
 # Global GLG configuration resources (a partial list).

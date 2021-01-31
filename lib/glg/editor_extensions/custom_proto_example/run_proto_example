@@ -21,7 +21,7 @@ GLG_DIR=${curr_path}/../..
 
 # The Demo Version of the Builder or the HMI Configurator.
 GLG_EXE="${GLG_DIR}/DEMOS/main_demo/GlgDemo -editor"
-#GLG_EXE="${GLG_DIR}/DEMOS/main_demo/GlgDemo -hmi-editor"
+#GLG_EXE="${GLG_DIR}/DEMOS/main_demo/GlgDemo -hmi"
 
 # The Community Edition version of the Builder or the HMI Configurator.
 #GLG_EXE=${GLG_DIR}/bin/GlgBuilderCE

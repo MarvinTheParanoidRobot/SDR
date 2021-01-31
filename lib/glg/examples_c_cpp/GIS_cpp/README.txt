@@ -38,7 +38,7 @@ ICON_NAME1 and ICON_NAME2.
 SUPPORTED FEATURES
 
   - Map zooming and panning.
-  - Map dragging with Click+drag.
+  - Map dragging with left+click+drag.
   - Icon selection with the left or right mouse button, as defined 
     in the drawing via a Custom Event action attached to the icon object.
   - Icon tooltip.

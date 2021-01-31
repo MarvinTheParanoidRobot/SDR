@@ -1,6 +1,7 @@
+
 FEATURES DEMONSTARTED IN THE EXAMPLE
 
-1. GLG object selection events handling in the GLG Input
+1. Glg object selection events handling in the GLG Input
 Callback, using one the following methods:
 
 - Process Command Actions attached to an object in the drawing at
@@ -27,7 +28,7 @@ click), while the dial of the right handles widget selection event on
 MouseClick (left click).
 
 The button widgets have Actions of type SEND COMMAND, with
-CommandType=WriteValue for the "SetValue" button, and Commandtype=GoTo
+CommandType=WriteValue forthe "SetValue" button, and Commandtype=GoTo
 for the "More" button widget. Clicking on the More button will load
 another drawing obj_selection2.g, showing additional widgets with
 other command types. At run-time, the Commands added to the widgets are
@@ -38,3 +39,5 @@ command type CommandType="TankSelected". The command is handled in the
 Input Callback, Format="Command".
 
 This example is written using GLG Intermediate API. 
+
+

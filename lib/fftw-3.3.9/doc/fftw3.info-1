@@ -1,4 +1,4 @@
-This is fftw3.info, produced by makeinfo version 6.5 from fftw3.texi.
+This is fftw3.info, produced by makeinfo version 6.3 from fftw3.texi.
 
 This manual is for FFTW (version 3.3.9, 10 December 2020).
 
@@ -36,20 +36,20 @@ This manual documents FFTW version 3.3.9.
 
 * Menu:
 
-* Introduction::
-* Tutorial::
-* Other Important Topics::
-* FFTW Reference::
-* Multi-threaded FFTW::
-* Distributed-memory FFTW with MPI::
-* Calling FFTW from Modern Fortran::
-* Calling FFTW from Legacy Fortran::
-* Upgrading from FFTW version 2::
-* Installation and Customization::
-* Acknowledgments::
-* License and Copyright::
-* Concept Index::
-* Library Index::
+* Introduction::                
+* Tutorial::                    
+* Other Important Topics::      
+* FFTW Reference::              
+* Multi-threaded FFTW::         
+* Distributed-memory FFTW with MPI::  
+* Calling FFTW from Modern Fortran::  
+* Calling FFTW from Legacy Fortran::  
+* Upgrading from FFTW version 2::  
+* Installation and Customization::  
+* Acknowledgments::             
+* License and Copyright::       
+* Concept Index::               
+* Library Index::               
 
 
 File: fftw3.info,  Node: Introduction,  Next: Tutorial,  Prev: Top,  Up: Top

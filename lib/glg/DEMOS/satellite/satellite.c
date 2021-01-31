@@ -19,8 +19,6 @@ static GlgObject
    GISArray,
    Satellite1,
    Satellite2,
-   Satellite1_GroundTrack,
-   Satellite2_GroundTrack,
    Orbit1,
    Orbit2;
 static GlgLong
@@ -88,10 +86,6 @@ int SatelliteMain( int argc, char * argv[], GlgAppContext app_context )
    /* Get IDs of satellite icons. */
    Satellite1 = GlgGetResourceObject( GISArray, "Satellite1" );
    Satellite2 = GlgGetResourceObject( GISArray, "Satellite2" );
-   Satellite1_GroundTrack =
-     GlgGetResourceObject( GISArray, "Satellite1_GroundTrack" );
-   Satellite2_GroundTrack =
-     GlgGetResourceObject( GISArray, "Satellite2_GroundTrack" );
 
    /* Get orbit templates and remove them from the drawing initially.
       The templates are polygons with 2 points that store graphical
@@ -256,9 +250,6 @@ static void UpdatePosition()
    GlgSetGResource( Satellite1, "Position", lon1, lat1, elev1 );
    GlgSetGResource( Satellite2, "Position", lon2, lat2, elev2 );
 
-   GlgSetGResource( Satellite1_GroundTrack, "Position", lon1, lat1, 0. );
-   GlgSetGResource( Satellite2_GroundTrack, "Position", lon2, lat2, 0. );
-
    /* Update satellite trajectories. */
    if( NumOrbitPoints <= SAT1_PERIOD || NumOrbitPoints <= SAT2_PERIOD )
    {
@@ -277,19 +268,6 @@ static void UpdatePosition()
          SetPolygonPoint( Orbit2, 1, lon2, lat2, elev2 ); 
          GlgAddObjectToTop( GISArray, Orbit2 );
          GlgDropObject( Orbit2 );
-
-         /* Reorder ground tracks to be under the orbit polygons. */
-         GlgReferenceObject( Satellite1_GroundTrack );
-         GlgReferenceObject( Satellite2_GroundTrack );
-
-         GlgDeleteThisObject( GISArray, Satellite1_GroundTrack );
-         GlgDeleteThisObject( GISArray, Satellite2_GroundTrack );
-
-         GlgAddObjectToTop( GISArray, Satellite1_GroundTrack );
-         GlgAddObjectToTop( GISArray, Satellite2_GroundTrack );
- 
-         GlgDropObject( Satellite1_GroundTrack );
-         GlgDropObject( Satellite2_GroundTrack );
       }
       else if( NumOrbitPoints == 1 )
       {

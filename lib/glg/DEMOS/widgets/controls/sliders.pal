@@ -30,12 +30,6 @@ slider31.g
 slider32.g
 slider33.g
 #
-# Slider/spinner combos/misc
-slider34.g
-slider35.g
-slider27.g
-slider40.g
-#
 slider19.g
 slider12.g
 slider17.g
@@ -57,3 +51,8 @@ joystick4.g
 joystick2.g
 joystick3.g
 #
+# Slider/spinner combos
+slider34.g
+slider35.g
+slider27.g
+

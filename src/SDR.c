@@ -165,12 +165,12 @@ int writetextc(float data[][2],int N,char *name){
 }
 
 int testsdr(void){
-    int NUM_CHANNELS,SAMPLE_RATE,BLOCK_SIZE,NUM_ITERATIONS;
-    NUM_CHANNELS=1,SAMPLE_RATE=48000,BLOCK_SIZE=48000,NUM_ITERATIONS=3;
+    int NUM_CHANNELS,SAMPLE_RATE,BLOCK_SIZE;
+    NUM_CHANNELS=1,SAMPLE_RATE=48000,BLOCK_SIZE=48000;
     
     TinyWav tw;
     char * outputPath;
-    outputPath="/home/pi/MCVLIA001/Project/data/output.wav"; 
+    outputPath="../data/output.wav"; 
     tinywav_open_write(&tw, NUM_CHANNELS, SAMPLE_RATE, TW_FLOAT32, TW_INLINE, outputPath);
     
     

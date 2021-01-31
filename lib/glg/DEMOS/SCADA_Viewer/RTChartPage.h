@@ -5,7 +5,7 @@
 #include "HMIPage.h"
 #include "GlgSCADAViewer.h"
 
-/* Constants for scrolling to the beginning or the end of the time range. */
+/* Constants for scrolling to the ends of the time range. */
 #define DONT_CHANGE    0
 #define MOST_RECENT    1  /* Make the most recent data visible. */
 #define LEAST_RECENT   2  /* Make the least recent data visible.*/

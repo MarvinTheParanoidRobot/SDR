@@ -8,5 +8,5 @@ class EmptyPage : public HMIPageBase
  public:
    EmptyPage( GlgSCADAViewer * viewer );
    ~EmptyPage( void );
-   int GetUpdateInterval( void );
+   int GetUpdateInterval();
 };

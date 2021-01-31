@@ -58,3 +58,7 @@ current time for the time stamp.
 To supply a time stamp explicitly, set GlgChart.SUPPLY_TIME_STAMP = true.
  
 This example is written using GLG Intermediate API.
+
+
+
+

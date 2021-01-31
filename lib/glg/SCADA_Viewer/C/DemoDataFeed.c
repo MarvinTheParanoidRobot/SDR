@@ -148,10 +148,7 @@ static GlgBoolean GetDemoValue( char * tag_source, double * out_value,
    switch( Viewer.PageType )
    {
     case AERATION_PAGE:
-      if( strstr( tag_source, "Speed" ) )
-        *out_value = GlgRand( 300., 1500. );
-      else
-        *out_value = GlgRand( 0., 10. );
+      *out_value = GlgRand( 0., 5. );
       return GlgTrue;
 
     case CIRCUIT_PAGE:

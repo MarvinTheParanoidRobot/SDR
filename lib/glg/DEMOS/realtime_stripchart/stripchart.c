@@ -75,7 +75,7 @@ GlgLong
   /* Variables used to keep current state. */
 GlgLong
   TimeSpan = 0,           /* The currently displayed span in seconds. */
-  StoredScrollState = 0,  /* Stored AutoScroll state to be restored if ZoomTo
+  StoredScrollState,      /* Stored AutoScroll state to be restored if ZoomTo
                              is aborted. */
   AutoScroll = True,      /* Current auto-scroll state: enabled or disabled. */
   Mode = REAL_TIME,       /* Current mode: real-time, historical or calendar.*/
@@ -142,6 +142,11 @@ int GlgMain( argc, argv, app_context )
    }
 
    GlgSetDResource( (GlgObject)0, "$config/GlgMouseTooltipTimeout", 0.25 );
+
+#if ENABLE_ZOOM_TO_ON_BUTTON3
+   /* Change ZoomTo button from 1 to 3 if needed. */
+   GlgSetDResource( (GlgObject)0, "$config/GlgZoomToButton", 3. );
+#endif
 
    full_path = GlgGetRelativePath( argv[0], "stripchart.g" );
    Drawing = GlgLoadWidgetFromFile( full_path );
@@ -286,10 +291,6 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       }
       else if( strcmp( origin, "ZoomTo" ) == 0 )
       {
-#if ENABLE_ZOOM_TO_ON_BUTTON3
-         /* Allow the ZoomTo toolbar button to use the left mouse button. */
-         GlgSetDResource( (GlgObject)0, "$config/GlgZoomToButton", 1. );
-#endif
          GlgSetZoom( ChartVP, NULL, 't', 0. );  /* Start ZoomTo op */
       }
       else if( strcmp( origin, "ResetZoom" ) == 0 )
@@ -592,12 +593,7 @@ void Trace( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       {
        case 1: GlgSetZoom( ChartVP, NULL, 's', 0. ); break;   /* Drag */
 #if ENABLE_ZOOM_TO_ON_BUTTON3
-       case 3:
-         /* Change ZoomTo button from 1 to 3. */
-         GlgSetDResource( (GlgObject)0, "$config/GlgZoomToButton", 3. );
-
-         GlgSetZoom( ChartVP, NULL, 't', 0. );      /* ZoomTo */
-         break;
+       case 3: GlgSetZoom( ChartVP, NULL, 't', 0. ); break;   /* ZoomTo */
 #endif
       }
 
@@ -1264,32 +1260,6 @@ void PushPlotPoint( GlgLong plot_index, DataPoint * data_point )
 }
 
 /*----------------------------------------------------------------------
-| Pushes the data_point's data into the plot using low level API methods
-| for increased performance. It is used to prefill a chart with large
-| quantities of data.
-*/
-void PushPlotPointDirect( GlgLong plot_index, DataPoint * data_point )
-{
-   /* Supply an optional time stamp. Use the current time if the time stamp
-      is not supplied.
-   */
-   double time_stamp =
-     ( data_point->has_time_stamp ? data_point->time_stamp : GetCurrTime() );
-
-   float marker_visibility =
-     ( plot_index == 0 && data_point->has_marker ? 1.0f : 0.0f );
-
-   GlgDataSample * datasample = (GlgDataSample*) GlgCreateDataSample( False );
-   datasample->value = data_point->value;
-   datasample->time = time_stamp;
-   datasample->valid = data_point->value_valid;
-   datasample->marker_vis = marker_visibility;
-   datasample->filter_mark = 0;
-   datasample->extended_data = 0;
-   GlgAddDataSample( Plot[ plot_index ], datasample );   
-}
-
-/*----------------------------------------------------------------------
 | Demonstrates different styles of Y axis label positioning.
 |
 | This is usually done by configuring the chart in the GlgBuilder.
@@ -1321,7 +1291,7 @@ void ChangeYAxisLabelType( int new_type )
       label0 = "Var1"; 
       label1 = "Var2"; 
       label2 = "Var3"; 
-      text_direction = GLG_HORIZONTAL_TEXT;
+      text_direction = GLG_HORIZONTAL;
 
       /* Position and anchor axis labels at the center of each axis in the
          horizontal direction. */
@@ -1347,7 +1317,7 @@ void ChangeYAxisLabelType( int new_type )
       label0 = "Variable 1"; 
       label1 = "Variable 2"; 
       label2 = "Variable 3"; 
-      text_direction = GLG_HORIZONTAL_TEXT;
+      text_direction = GLG_HORIZONTAL;
 
       /* Position and anchor axis labels on the left edge of each axis in the
          horizontal direction. */
@@ -1510,7 +1480,7 @@ void FillHistData( GlgLong plot_index, double start_time, double end_time )
       data_point.time_stamp = time_stamp;
       data_point.has_time_stamp = True;
       
-      PushPlotPointDirect( plot_index, &data_point );
+      PushPlotPoint( plot_index, &data_point );
    }
 }
 
@@ -1526,7 +1496,7 @@ void GetDemoData( GlgLong plot_index, DataPoint * data_point )
 {   
    GetDemoPlotValue( plot_index, data_point );  /* Fills a value to plot. */
 
-   /* Let the chart use current time as a time stamp. Optionally,
+   /* Let the chart to use current time as the time stamp. Optionally,
       an application can provide a time stamp in data_point->time_stamp
       and set data_point->has_time_stamp = True.
    */
@@ -1716,7 +1686,7 @@ void GetDemoPlotValue( GlgLong plot_index, DataPoint * data_point )
    ++plot_counter[ plot_index ];
    plot_counter[ plot_index ] = ( plot_counter[ plot_index ] % MAX_COUNTER );
 
-   data_point->value = value;   /* Returned simulated value. */
+   data_point->value = value;   /* Supplied value. */
 }
 
 /*----------------------------------------------------------------------
@@ -1794,10 +1764,7 @@ void SetMode( GlgLong mode )
    */
    if( Mode != REAL_TIME || PrefillData )
      PreFillChartData();
-   else
-     /* Erase prefill message. */
-     GlgSetDResource( ChartVP, "PreFillMessage/Visibility", 0. );
-   
+
    ScrollToDataEnd( MOST_RECENT, False );
 }
 

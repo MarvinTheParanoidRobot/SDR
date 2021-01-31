@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Java HMI / SCADA Library: Java SCADA Viewer Online Demo</title>
+  <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+  <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+ type="image/x-icon">
+</head>
+<body style="font-family: Arial;" link="#0000ee" text="#000000"
+ vlink="#551a8b" alink="#ff0000" bgcolor="#ffffff">
+<p style="font-size: 80%; font-family: arial;">
+<a href="http://www.genlogic.com">Home</a> | <a
+ href="http://www.genlogic.com/ajax_demos.html">AJAX Demos</a> | <a
+ href="http://www.genlogic.com/demos.html">Java Demos</a> | <a
+ href="http://www.genlogic.com/products.html">Products</a>
+</p>
+<h2><font face="Arial">GLG Java SCADA Viewer Demo</font></h2>
+<p><font face="Arial">
+<li><b><a href="#Overview">Overview</a></b></li>
+<li><b><a href="#User_Interface">User Interface</a></b></li>
+</font></p>
+<hr size="2">
+<applet code="GlgSCADAViewer.class" archive="GlgDemo.jar,GlgCE.jar"
+ name="process" mayscript="true" height="700" width="800"><param
+ name="DrawingURL" value="scada_main.g"><param name="ConfigFile"
+ value="scada_config_menu.txt"></applet>
+<p><font face="Arial"><b><a href="GlgSCADAViewer.java">Applet Source
+Code</a></b>
+</font></p>
+<hr size="2">
+<h4><font face="Arial"><a name="Overview"></a>Overview</font></h4>
+<p><font face="Arial">
+This demo shows an <b>example of a generic SCADA Viewer application</b>
+deployed in a web browser as a Java applet that uses </font><font
+ face="Arial">GLG Java class library</font><font face="Arial">. The
+demo is an example of a SCADA viewer that loads arbitrary drawings
+created by the end users and updates them with data without any
+knowledge about the content of the drawings. As a result, no source
+code changes are required to add a new drawing or to add more objects
+into an existing drawing.<br>
+</font></p>
+<p><font face="Arial">A configuration file is used to define a set of
+drawings to be displayed. On start-up, the <span
+ style="font-weight: bold;">Viewer reads the configuration file and
+initializes the navigation menu</span> based on the information
+provided in the configuration file. A new drawing can be added to the
+Viewer by simply adding its filename to the configuration file.<br>
+</font></p>
+<p><font face="Arial">The end users create drawings using either the
+GLG Graphics Builder or GLG HMI Configurator and use data tags to
+define the source of data for run time updates. The SCADA Viewer loads
+the drawings, queries the list of tags defined in each drawing and
+updates the tags from the datasources specified by the end user. <br>
+</font></p>
+<p><font face="Arial">The demo uses a similar generic approach for
+defining popup dialogs to implement drill-down functionality. All
+information about the popup dialogs is defined in the drawing: a new
+popup dialog may be added by editing the drawing </font><font
+ face="Arial">and without any changes to the source code of the viewer.<br>
+</font></p>
+<p><font face="Arial">The demo also demonstrates the use of an
+integrated zooming and panning API. By default, it zooms and pans the
+drawing displayed in its viewing area. However, when the Real-Time
+Strip-Chart is activated by a corresponding button, the same code <span
+ style="font-weight: bold;">zooms and scrolls the data displayed in the
+strip chart</span>.<br>
+</font></p>
+<p><font face="Arial">The demo uses simulated data.
+However, provided with
+a data source in a real application, it will display live data.<br>
+</font></p>
+<p><font face="Arial">
+The demo demonstrates the following features of the GLG Toolkit:
+</font></p>
+<p><font face="Arial">
+<li><span style="font-weight: bold;">Run-time initialization of the
+navigation menu</span> based on the content of the configuration file<br>
+  <span style="font-weight: bold;"></span></li>
+<li><span style="font-weight: bold;">Switching between drawings</span>
+using navigation buttons without the use of the Extended API</li>
+<li>Querying <span style="font-weight: bold;">tags</span> defined in
+the drawing and using them to update the display with a <b>real-time
+data feed</b></li>
+<li>Handling <span style="font-weight: bold;">object selection events</span>
+to open a <span style="font-weight: bold;">pop dialog</span> when an
+object of interest is selected<br>
+</li>
+<li>Implementing a <span style="font-weight: bold;">drill-down</span>
+functionality</li>
+<li>Displaying a scrolling list of system <span
+ style="font-weight: bold;">alarms</span></li>
+<li><span style="font-weight: bold;">Zooming and panning </span>of the
+drawing<br>
+</li>
+</font></p>
+<h4><font face="Arial"><a style="font-weight: normal;"
+ name="User_Interface"></a>User Interface</font></h4>
+<font face="Arial">
+<li><b>Click on a navigation button </b>on the left to display a
+corresponding drawing in the drawing area
+</li>
+<li>Click on the <span style="font-weight: bold;">Alarms</span> button
+to display a popup dialog containing a scrolling list of system alarms<br>
+</li>
+<li>In the <span style="font-weight: bold;">Water Treatment</span>
+display, click on any <span style="font-weight: bold;">motor icon</span>
+(green rectangle) to display a popup dialog containing additional
+information for the selected motor.<br>
+</li>
+</font>
+<br>
+</body>
+</html>

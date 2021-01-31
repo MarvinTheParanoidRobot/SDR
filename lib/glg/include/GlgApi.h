@@ -7,8 +7,8 @@
 #  define GLG_C_CONST_CHAR_PTR  0
 #endif
 
-#define GLG_MAJOR_VERSION     4
-#define GLG_MINOR_VERSION     0
+#define GLG_MAJOR_VERSION     3
+#define GLG_MINOR_VERSION     8
 
 #include <stdio.h>
 #include <time.h>
@@ -147,7 +147,6 @@ typedef enum _GlgObjectType
   GLG_CHART_AREA,
   GLG_ACTION,
   GLG_LIGHT_VIEWPORT,
-  GLG_CHART_ANNOTATION,
   GLG_MAX_OBJECT_TYPE
 } GlgObjectType;
 
@@ -545,8 +544,7 @@ typedef enum _GlgFrameType
    GLG_UNDEFINED_FRAME_TYPE = 0,
    GLG_1D,
    GLG_2D,
-   GLG_3D,
-   GLG_FREE_FRAME
+   GLG_3D
 } GlgFrameType;
 
 typedef enum _GlgXformType
@@ -693,10 +691,8 @@ typedef enum _GlgCompareXformType
    GLG_COMPARE_LT_XT,      /* A <  B  */
    GLG_COMPARE_LE_XT,      /* A <= B */
    GLG_COMPARE_GT_XT,      /* A >  B  */
-   GLG_COMPARE_GE_XT,      /* A >= B */
-   GLG_COMPARE_MIN_XT,     /* min( A, B ) */
-   GLG_COMPARE_MAX_XT      /* max( A, B ) */
-   
+   GLG_COMPARE_GE_XT       /* A >= B */
+     
 } GlgCompareXformType;
 
 /* Move Flag of the offset transformations. */
@@ -864,6 +860,12 @@ typedef enum _GlgComponentQueryType
    GLG_DISPLAY_QUERY        /* X Windows only */
 } GlgComponentQueryType;
 
+typedef enum _GlgShadowType
+{
+   GLG_SHADOW_OUT = 0,
+   GLG_SHADOW_IN
+} GlgShadowType;
+
 typedef enum _GlgStretchType
 {
    GLG_NO_STRETCH = 0,
@@ -968,13 +970,6 @@ typedef enum _GlgPlotType
    GLG_LINE_AND_MARKERS_PLOT = 33,
    GLG_STEP_AND_MARKERS_PLOT = 34
 } GlgPlotType;
-
-typedef enum _GlgAnnotationType
-{   
-   GLG_LABEL_ANNOTATION = 1,
-   GLG_MARKER_ANNOTATION = 2,
-   GLG_LABEL_AND_MARKER_ANNOTATION = 3
-} GlgAnnotationType;
 
 /* Chart filter types. */
 typedef enum _GlgChartFilterType
@@ -1473,12 +1468,9 @@ typedef struct _GlgDataSample
    float marker_vis;
 
    unsigned valid : 1;
-
-   /* Marks the last sample to include, with a forced flush after it. */
-   unsigned filter_mark : 1;
-
-   /* Must be set to False to indicate that no extended data are supplied and 
-      the data sample is an instance of GlgDataSample.
+   unsigned reserved : 1;
+   /* True if extended data are supplied and the data sample is an instance of 
+      GlgDataSampleExt.
    */
    unsigned extended_data : 1;
 
@@ -1492,13 +1484,7 @@ typedef struct _GlgDataSampleExt
    float marker_vis;
 
    unsigned valid : 1;
-
-   /* Marks the last sample to include, with a forced flush after it. */
-   unsigned filter_mark : 1;
-
-   /* Must be set to True to indicate that extended data are supplied and 
-      the data sample is an instance of GlgDataSampleExt.
-   */
+   unsigned reserved : 1;
    unsigned extended_data : 1;
 
    double y_low;
@@ -1594,10 +1580,9 @@ typedef char * (*GlgLabelFormatter)( GlgObject, GlgLong, GlgLong,
 typedef char * (*GlgTooltipFormatter)( GlgObject viewport, GlgObject object, 
                                        GlgObject tooltip_obj, 
                                        GlgLong root_x, GlgLong root_y );
-typedef void (*GlgAlarmHandler)( GlgObject data_obj, GlgObject alarm_obj, 
-                                 CCONST char * alarm_label,
-                                 CCONST char * action, CCONST char* subaction, 
-                                 GlgAnyType reserved );
+typedef void (*GlgAlarmHandler)( GlgObject, GlgObject, 
+                                 CCONST char *, CCONST char *, CCONST char*, 
+                                 GlgAnyType );
 typedef GlgBoolean
    (*GlgGetMapCallback)( GlgObject gis_obj, GlgLong width, GlgLong height, 
                          GlgLong clip, GlgLong clip_min_x, GlgLong clip_max_x,
@@ -1932,16 +1917,6 @@ GlgImport( GlgBoolean ) GlgDeleteTimeLine( GlgObject object,
                                            CCONST char * res_name, 
                                            GlgObject time_line,
                                            double time_stamp );
-GlgImport( GlgObject ) GlgAddAnnotation( GlgObject object, 
-                                         CCONST char * res_name, 
-                                         GlgObject annotation,
-                                         double position_x, double position_y,
-                                         GlgBoolean add_box );
-GlgImport( GlgBoolean ) GlgDeleteAnnotation( GlgObject object, 
-                                             CCONST char * res_name, 
-                                             GlgObject annotation,
-                                             double position_x,
-                                             double position_y );
 GlgImport( GlgBoolean ) GlgClearDataBuffer( GlgObject object, 
                                             CCONST char * res_name );
 GlgImport( GlgBoolean ) GlgSetLinkedAxis( GlgObject object, 
@@ -2102,12 +2077,6 @@ GlgImport( void ) GlgTraverseObjects( GlgObject object,
                                       GlgBoolean (*func)( GlgObject object,
                                                           void * data ),
                                       void * data );
-GlgImport( GlgBoolean ) GlgTraceObject( GlgObject object, GlgBoolean state,
-                                        GlgBoolean is_widget,
-                                        GlgObject top_parent,
-                                        GlgBoolean (*func)( GlgObject object,
-                                                            void * data ),
-                                        void * data );
 GlgImport( GlgBoolean ) GlgIsDrawable( GlgObject object );
 
 GlgImport( GlgCube * ) GlgGetBoxPtr( GlgObject object );
@@ -2173,9 +2142,6 @@ GlgImport( GlgBoolean ) GlgPositionToValue( GlgObject object,
                                             GlgBoolean outside_x, 
                                             GlgBoolean outside_y, 
                                             double * value );
-GlgImport( void * ) GlgCreateDataSample( GlgBoolean extended );
-GlgImport( void ) GlgAddDataSample( GlgObject plot,
-                                    GlgDataSample * datasample );
 GlgImport( GlgObject ) GlgGetLegendSelection( GlgObject object, 
                                               double x, double y );
 GlgImport( GlgObject ) GlgCreateChartSelection( GlgObject object, 
@@ -2330,8 +2296,6 @@ GlgImport( void ) GlgIHResetup( GlgIH ih );
 GlgImport( void ) GlgIHUninstall( void );
 GlgImport( void ) GlgIHUninstallWithToken( GlgIHToken token );
 GlgImport( void ) GlgIHUninstallWithEvent( GlgCallEvent call_event );
-GlgImport( GlgIH ) GlgIHGetCurrIH( void );
-GlgImport( GlgIH ) GlgIHGetPrevIH( void );
 GlgImport( GlgIHEntryPoint ) GlgIHGetFunction( GlgIH ih );
 GlgImport( GlgIHEntryPoint ) GlgIHGetPrevFunction( void );
 GlgImport( GlgIHToken ) GlgIHGetToken( GlgCallEvent call_event );

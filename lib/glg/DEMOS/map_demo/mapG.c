@@ -13,12 +13,11 @@ typedef enum
 {
    UNKNOWN_EVENT = 0,
    BUTTON_PRESS,
+   RESIZE
 } EventType;
 
 GlgObject
    Drawing = (GlgObject)0,
-   /* Viewport used as a parent of a loaded map viewport. */
-   MapContainer = (GlgObject)0,
    IconArray = (GlgObject)0,
    LinkTemplate = (GlgObject)0,
    FacilitiesGroup = (GlgObject)0,
@@ -158,23 +157,9 @@ int GlgMain( argc, argv, app_context )
    GlgSetGResource( Drawing, "Point1", -700., -700., 0. );
    GlgSetGResource( Drawing, "Point2",  700.,  700., 0. );
 
-   /* Set window title. */
-   GlgSetSResource( Drawing, "ScreenName", "GLG Supply Chain Demo" );
+   /* Setting the window title. */
+   GlgSetSResource( Drawing, "ScreenName", "GLG Vector Map Demo" );
 
-   /* Make Selection Dialog a floating dialog, adjust its height and vertical 
-      placement, and set its title.
-   */
-   GlgSetDResource( Drawing, "SelectionDialog/ShellType",
-                    (double) GLG_DIALOG_SHELL );
-   GlgSetDResource( Drawing, "SelectionDialog/DialogHeight", 140. );
-   GlgSetDResource( Drawing, "SelectionDialog/DialogY", -700. );
-   GlgSetSResource( Drawing, "SelectionDialog/Screen/ScreenName",
-                    "Selection Information" );
-   
-   MapContainer = GlgGetResourceObject( Drawing, "MapContainer" );
-   if( !MapContainer )
-     error( "Can't find MapContainer viewport.", True );
-   
    LoadMap();
 
    GlgAddCallback( Drawing, GLG_INPUT_CB, (GlgCallbackProc)Input, NULL );
@@ -210,14 +195,10 @@ void LoadMap()
       
    GlgFree( full_path );
 
-   /* Set viewport name. */
+   /* Set name and position. */
    GlgSetSResource( MapViewport, "Name", "MapArea" );
-
-   /* Set control points of the map viewport to fill the whole area of the
-      MapContainer viewport.
-    */
-   GlgSetGResource( MapViewport, "Point1", -1000., -1000., 0. );
-   GlgSetGResource( MapViewport, "Point2",  1000.,  1000., 0. );
+   GlgSetGResource( MapViewport, "Point1", -990.,  890., 0. );
+   GlgSetGResource( MapViewport, "Point2",  990., -990., 0. );
 
    /* Query extent info from the map. */
    GetExtentInfo( MapViewport );
@@ -243,11 +224,13 @@ void LoadMap()
       SetIconSize();
    }
       
-   /* Add map viewport to the drawing after adding icons. */
-   GlgAddObjectToTop( MapContainer, MapViewport );
+   /* Add map viewport to the drawing after adding icons, to let the Trace's
+      RESIZE case adjust the icon's ratio. */
+   GlgAddObjectToTop( Drawing, MapViewport );
 
-   /* Uncomment the next line to save generated drawing. */
-   /* GlgSaveObject( Drawing, "out.g" ); */
+   /* Uncomment to save generated drawing.
+      GlgSaveObject( Drawing, "out.g" );
+      */
 
    /* Set initial visibility of the value display labels to on. */
    GlgSetDResource( Drawing, "MapArea/Icon0/Group/ValueLabel/Visibility", 1. );
@@ -281,7 +264,7 @@ void UnloadMap()
    SelectedObject = (GlgObject)0;
 
    /* Delete the old map drawing */
-   GlgDeleteThisObject( MapContainer, MapViewport );
+   GlgDeleteThisObject( Drawing, MapViewport );
 
    GlgDropObject( MapViewport );
    MapViewport = (GlgObject)0;
@@ -679,16 +662,20 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
    if( strcmp( format, "Window" ) == 0 )
    {
       if( strcmp( action, "DeleteWindow" ) == 0 )
-        if( strcmp( origin, "SelectionDialog" ) == 0 )
-        {
-           /* Close selection dialog. */
-           GlgSetDResource( Drawing, "SelectionDialog/Visibility", 0. );
-           GlgUpdate( Drawing );	 
-        }
-        else
-          exit( GLG_EXIT_OK );    /* Closing the main window: exit. */
+	if( strcmp( origin, "SelectionDialog" ) == 0 )
+	{
+	   /* Closing the selection dialog. */
+	   GlgSetDResource( Drawing, "SelectionDialog/Visibility", 0. );
+	   GlgUpdate( Drawing );	 
+	   return;
+	}
+	else
+	  exit( GLG_EXIT_OK );    /* Closing the main window: exit. */
+
+      return;
    }
-   else if( strcmp( format, "Button" ) == 0 )
+
+   if( strcmp( format, "Button" ) == 0 )
    {
       if( strcmp( action, "Activate" ) != 0 )
 	return;
@@ -791,7 +778,7 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       GlgGetSResource( message_obj, "EventLabel", &event_label );      
       if( strcmp( event_label, "BackgroundVP" ) == 0 )
       {
-	 /* The background viewport selection is reported only if there
+	 /* The background viewport is selection is reported only if there
 	    are no other selections: erase the highlight.
 	    */
 	 Highlight( Drawing, (GlgObject)0 );

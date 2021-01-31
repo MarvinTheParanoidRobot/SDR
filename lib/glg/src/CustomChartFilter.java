@@ -230,9 +230,8 @@ class CustomChartFilter implements GlgChartFilter
             
             filter_data.x1 = ( filter_data.x1  + filter_data.x2 ) / 2.0;
             
-            if( filter_data.draw_markers )
-              filter_data.marker_vis1 = Math.max( filter_data.marker_vis1, 
-                                                  filter_data.marker_vis2 );
+            filter_data.marker_vis1 = Math.max( filter_data.marker_vis1, 
+                                                filter_data.marker_vis2 );
          }
          else /* Draw two samples. */
            rval = GlgObject.USE_DATA2;

@@ -54,8 +54,7 @@ long
   PanMode = False,
   SuspendPromptUpdates = False,
   CityLabels = True,
-  StateDisplay = True,
-  DraggingFromButton = False;
+  StateDisplay = True;
 
 PlaneData PlaneArray[ NUM_PLANES ];
 PlaneData * SelectedPlane = (PlaneData*)0;
@@ -830,15 +829,12 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       }
       else if( strcmp( origin, "Drag" ) == 0 )
       {
-         /* Activate dragging mode. Dragging will start on the mouse click. 
-            If no object of interest is selected by the mouse click, 
-            dragging will be started by the code in the Trace callback 
-            anyway, but only if no object of interest was selected. 
-            The "Drag" button demostrates an alternative way to start dragging 
-            from a button which starts dragging even if an object of interest
-            is selected by the mouse click.
+         /* Activate dragging mode on both maps. Dragging will start on the
+            mouse click. If no object of interest is selected by the mouse 
+            click, dragging will be started by the code in the Trace 
+            callback anyway. The "Drag" button demonstrates an alternative 
+            way to start dragging from a button.
             */
-         DraggingFromButton = True;
 	 GlgSetZoom( Map[ 0 ], NULL, 's', 0. );
 	 GlgSetZoom( Map[ 1 ], NULL, 's', 0. );
 	 SetStatus( "Click and drag the map with the mouse." );
@@ -903,17 +899,14 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
          GlgZoomState zoom_mode;
 	 double data_index;
 
-         /* Map dragging mode is activated either on a mouse click in the trace 
-            callback, or with the Drag toolbar button. Abort the dragging mode
-            if an object with custom event was selected and the dragging
-            was activated on a mouse click. This gives custom events a higher
-            priority compared to the dragging mode. If it's a ZoomTo mode 
-            activated by a button or dragging activated from the Drag button,
-            don't abort and ignore object selection.
+         /* Map dragging mode is activated on a mouse click in the trace 
+            callback. Abort the dragging mode if an object with custom event
+            was selected. This gives custom events a higher priority compared 
+            to the dragging mode. If it's a ZoomTo mode activated by a button,
+            don't abort and ignore the object selection.
          */
          zoom_mode = ZoomToMode();
-         if( !zoom_mode || 
-             ( zoom_mode & GLG_PAN_DRAG_STATE ) && !DraggingFromButton )
+         if( !zoom_mode || ( zoom_mode & GLG_PAN_DRAG_STATE ) )
          {
             if( zoom_mode )
               GlgSetZoom( Map[1], NULL, 'e', 0. );  /* Abort zoom mode */
@@ -977,10 +970,7 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
          char * message_str;
 
          if( strcmp( subaction, "Drag" ) == 0 )
-         {
-            message_str = "Dragging the map with the mouse....";
-            DraggingFromButton = False;
-         }
+           message_str = "Dragging the map with the mouse....";
          else
            message_str = "Scrolling the map, please wait...";
 
@@ -993,9 +983,8 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
 
          GlgUpdate( Drawing );
       }
-      else if( strcmp( subaction, "End" ) == 0 )   /* Map dragging ended */
+      else if( strcmp( subaction, "End" ) == 0 )   /* Map dragging end */
       {
-         DraggingFromButton = False;
          SuspendPromptUpdates = False;
          SetStatus( "" );   /* Reset prompt when done dragging. */
 
@@ -1008,7 +997,6 @@ void Input( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
       /* Dragging aborted (right mouse button, etc.). */
       else if( strcmp( subaction, "Abort" ) == 0 )
       {
-         DraggingFromButton = False;
          SuspendPromptUpdates = False;
          SetStatus( "" );   /* Reset prompt when aborting dragging. */
          GlgUpdate( Drawing );         
@@ -1151,7 +1139,7 @@ void SyncGlobeWithDetailedMap( char * origin, char * message )
    
    UpdateMapWithMessage( 1, message );
 
-   /* Sync up only if the detailed map (origin == "Map") is rotated,  
+   /* Sync up only of the detailed map (origin == "Map") is rotated,  
       not the thumbnail map (origin == "TopMap").
       */
    if( origin && strcmp( origin , "Map" ) == 0 )
@@ -1189,6 +1177,7 @@ void Trace( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
 {      
    GlgTraceCBStruct * trace_data;
    GlgObject selection;
+   GlgRectangle selection_rect;
    GlgPoint
      point,
      lat_lon;

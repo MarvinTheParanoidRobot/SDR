@@ -676,9 +676,6 @@ void GlgChart::Trace(  GlgObjectC& callback_viewport,
    switch( trace_data->event->type )
    {
     case ButtonPress:
-      if( trace_data->event->xbutton.button != 1 )
-        return;   /* Use only the left button clicks. */
-
       x = trace_data->event->xbutton.x;
       y = trace_data->event->xbutton.y;
       event_type = BUTTON_PRESS;
@@ -708,7 +705,7 @@ void GlgChart::Trace(  GlgObjectC& callback_viewport,
 
       switch( trace_data->event->message )
       {
-       case WM_LBUTTONDOWN:   
+       case LBUTTONDOWN:   
          event_type = BUTTON_PRESS; 
          break;
        case WM_MOUSEMOVE:
