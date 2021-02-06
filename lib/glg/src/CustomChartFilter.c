@@ -318,8 +318,10 @@ GlgLong CustomFilterFlush( GlgChartFilterData * filter_data,
          GOfiX1( filter_data ) = 
            ( GOfiX1( filter_data ) + GOfiX2( filter_data ) ) / 2.;
 
-         GOfiMarkerVis1( filter_data ) = fmax( GOfiMarkerVis1( filter_data ), 
-                                               GOfiMarkerVis2( filter_data ) );
+         if( GOfiDrawMarkers( filter_data ) )
+           GOfiMarkerVis1( filter_data ) =
+             fmax( GOfiMarkerVis1( filter_data ), 
+                   GOfiMarkerVis2( filter_data ) );
       }
       else   /* Draw two samples. */
         rval = GLG_USE_DATA2;

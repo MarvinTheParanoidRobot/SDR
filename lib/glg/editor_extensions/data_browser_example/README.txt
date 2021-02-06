@@ -49,27 +49,31 @@ project file into Visual Studio and build the DLL.
 
 DEPLOYMENT
 
-The -data-lib command line option may be used either the GLG
-Graphics Builder or HMI Configurator to deploy the data browser module
-from any location:
+There are several ways to deploy the custom data browser library.
 
-  Linux/Unix:
-    <glg_dir>/bin/GlgBuilder -data-lib <glg_dir>/editor_extensions/data_browser_example/libglg_custom_data.so
-
-  Windows:
-    <glg_dir>\bin\GlgBuilder -data-lib <glg_dir>\editor_extensions\data_browser_example\glg_custom_data.dll
-
-The CustomDataLib variable of the glg_config and glg_hmi_config
-configuration files may also be used to specify the location of the DLL.
-
-Alternatively, you may copy the shared library / DLL to the
-<glg_dir>/bin directory where GlgBuilder resides. On Linux/UNIX, the
-LD_LIBRARY_PATH environment variable (or LIBPATH environment variable on AIX) 
-will also need to be defined to include the <glg_dir>/bin directory.
+1. The -data-lib command line option may be used with either the GLG
+   Graphics Builder or the HMI Configurator to deploy the data browser module
+   from a specified location:
 
    Linux/Unix:
-      cp libglg_custom_data.so /usr/local/glg/bin 
-      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/glg/bin
+     <glg_dir>/bin/GlgBuilder -data-lib <path>/libglg_custom_data.so
+
+  Windows:
+    <glg_dir>\bin\GlgBuilder -data-lib <path>\glg_custom_data.dll
+
+2. The CustomDataLib variable of the glg_config and glg_hmi_config
+   configuration files may also be used to specify the location of the DLL.
+
+3. Alternatively, the shared library / DLL may be copied to the
+   directory where GlgBuilder or GlgHMIEditor resides, which depends on the
+   version of the Toolkit:
+
+     - Production Version:        data_browser_dir = <glg_dir>/bin
+     - Evaluation Version:        data_browser_dir = <glg_dir>/eval/bin
+     - Community Edition Version: data_browser_dir = <glg_dir>/DEMOS/main_demo
+
+   Linux/Unix:
+      cp libglg_custom_data.so <data_browser_dir>
 
    Windows:
-      cp glg_custom_dala.dll <glg_dir>\bin
+      cp glg_custom_dala.dll <data_browser_dir>

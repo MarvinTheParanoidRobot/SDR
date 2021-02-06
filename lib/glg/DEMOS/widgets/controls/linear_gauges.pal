@@ -1,0 +1,27 @@
+title=Linear Gauges
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+slider37.g
+slider38.g
+slider39.g
+slider41.g
+#
+slider44.g
+slider45.g
+slider46.g
+slider47.g
+#
+slider42.g
+slider43.g
+alarm1.g
+slider36.g
+#
+indicator5.g
+indicator6.g
+gauge3.g
+#
+gauge1.g

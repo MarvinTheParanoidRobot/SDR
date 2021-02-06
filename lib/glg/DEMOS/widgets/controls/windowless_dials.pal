@@ -1,0 +1,24 @@
+# THESE DIALS ARE DEPRECATED.
+# Use the Palettes, Transparent Viewport Background option instead.
+
+title=Windowless Dials
+num columns=4
+# Uncomment next line to scroll the palette
+#num rows=4
+background color=1. 1. 1.
+entries=
+#
+meter29.g
+meter28.g
+meter30.g
+meter18.g
+#
+meter19.g
+meter31.g
+meter23.g
+meter20.g
+#
+meter22.g
+meter24.g
+meter21.g
+meter25.g

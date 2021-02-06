@@ -2,4 +2,4 @@
 
 curr_path=`dirname $0`
 
-${curr_path}/../DEMOS/main_demo/GlgDemo -hmi-editor -glg-disable-opengl $*
+${curr_path}/../DEMOS/main_demo/GlgDemo -hmi-editor $*

@@ -540,7 +540,8 @@ void Trace( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
    {
     case ButtonPress:
       if( trace_data->event->xbutton.button != 1 )
-	return;  /* Use the left button clicks only. */
+	return;  /* Use only the left button clicks. */
+
       x = trace_data->event->xbutton.x;
       y = trace_data->event->xbutton.y;
       event_type = BUTTON_PRESS;

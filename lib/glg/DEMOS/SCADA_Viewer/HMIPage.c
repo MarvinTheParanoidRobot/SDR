@@ -123,7 +123,7 @@ void HMIP_RemapTagObject( HMIPage * hmip,
 }
 
 /*-------------------------------------------------------------------------
-| Perform any desired initialization of the drawing before hierarchy setup.
+| Performs any desired initialization of the drawing before hierarchy setup.
 */
 void HMIP_InitBeforeSetup( HMIPage * hmip )
 {
@@ -135,7 +135,7 @@ void HMIP_InitBeforeSetup( HMIPage * hmip )
 }
 
 /*-------------------------------------------------------------------------
-| Perform any desired initialization of the drawing after hierarchy setup.
+| Performs any desired initialization of the drawing after hierarchy setup.
 */
 void HMIP_InitAfterSetup( HMIPage * hmip )
 {

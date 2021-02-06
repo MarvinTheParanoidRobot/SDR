@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Web HTML5 & JavaScript Real-Time Strip Chart,
+      with Cursor Feedback and Tooltips (Mobile)</title>
+
+    <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon">
+    <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon"> 
+    <link rel="stylesheet" href="demo.css">
+
+    <script defer src="GlgDemo.js"></script>
+    <script defer src="GlgToolkitDemo.js"></script>
+    <script defer src="gunzip.min.js"></script>
+    <script defer src="rt_chart_demo.js"></script>
+    <script> var MobileVersion = true; </script>
+  </head>
+
+  <body>
+    <p>
+      <a href="http://www.genlogic.com">Home</a> |
+      <a href="http://www.genlogic.com/demos.html">Demos</a> |
+      <a href="http://www.genlogic.com/index.html#Products">Products</a>
+    </p>
+
+    <h4>GLG Real-Time Chart Web Demo for Mobile Devices (HTML5 & JavaScript)</h4>
+
+    <p>This version of the GLG Real-Time Chart demo for mobile
+      devices has <b>touch dragging enabled</b> by default to scroll the chart.
+      <a href="rt_chart_demo.html#Usage">More information</a></p>
+    </p>
+
+    <button id="DemoMode" type="button" class="top_button_large"
+            onclick="SetMode( -1 )">Change to Historical</button>
+    <a href="rt_chart_demo.js" target="_blank"
+       style="text-decoration: none; margin-left: 20px;">
+      <button type="button" class="top_button_large">Source Code</button>
+    </a>
+    <br>
+        
+    <button id="SpanButton0" type="button" class="top_button_large"
+            onclick="SetChartSpan( 0 )">10 sec</button>
+    <button id="SpanButton1" type="button" class="top_button_large"
+            onclick="SetChartSpan( 1 )">1 min</button>
+    <button id="SpanButton2" type="button" class="top_button_large"
+            onclick="SetChartSpan( 2 )">10 min</button>
+    <button id="SpanButton3" type="button" class="top_button_large"
+            onclick="SetChartSpan( 3 )">All</button>
+    <br>
+    
+    <div id="glg_area" class="glg_wrapper"
+         style="width: 100%; height: 80vh; background-color: white; 
+                padding: 0px;">
+      </div>
+    </div>
+  </body>
+</html>

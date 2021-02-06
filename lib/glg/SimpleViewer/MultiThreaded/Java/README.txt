@@ -82,3 +82,4 @@ Supported command line options:
   <filename>
          specifies GLG drawing filename to be loaded and animated;
          if not defined, DefaultDrawingName is used.
+

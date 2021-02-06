@@ -196,9 +196,10 @@ void Input( viewport, client_data, call_data )
          return;
       }
 
-      // An example of getting an object id of the selected object.
-      // GlgObject selected_object;
-      // selected_object = GlgGetResourceObject( message_obj, "Object" );
+      /* An example of getting an object id of the selected object.
+         GlgObject selected_object;
+         selected_object = GlgGetResourceObject( message_obj, "Object" );
+      */
 
       GlgGetSResource( message_obj, "Object/Name", &object_name );
       GlgGetDResource( message_obj, "Object/DoubleValue", &value );

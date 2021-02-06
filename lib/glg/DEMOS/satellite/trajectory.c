@@ -28,7 +28,7 @@ static GlgObject
    DropLineArray = (GlgObject)0,
     /* Provides visual feedback when the user defines the trajectory's start
        and end points with the mouse. */  
-   StartEndPolygon = (GlgObject)0;
+   NewTrajectoryPolygon = (GlgObject)0;
 
 static GlgPoint GISCenter;            /* Center of the GIS projection. */
 
@@ -38,6 +38,7 @@ static GlgPoint PrevPosition;
 static GlgLong UpdateCount = 0;
 static GlgLong ZoomLevel = 2;
 static GlgBoolean Pause = False;
+static GlgBoolean NewTrajectoryMode = False;
 
 /**** Simulation parameters ****/
 
@@ -52,8 +53,9 @@ static double CurvatureY;
 static GlgPoint
    StartPoint = { -80.644861, 28.572872, 0. },
    EndPoint = { -80.644861 + 5., 28.572872 - 3., 0. },
-   Point1; /* Is used to define the trajectory's start and end points with 
-              the mouse. */
+   /* Are used to define the trajectory's start and end points with the mouse. */
+   Point1,
+   Point2;
 
 static GlgPoint NormalVector;   /* Used for simulation: normal to the 
                                    trajectory's general direction. */
@@ -69,7 +71,7 @@ static void Trace( GlgObject viewport, GlgAnyType client_data,
 static void Restart( void );
 static void Pan( char direction );
 static void SetZoomLevel( void );
-static void AbortStartEndMode( void );
+static void AbortNewTrajectoryMode( void );
 static void UpdatePosition( GlgAnyType data, GlgIntervalID * id );
 void CreateCraftIcon( void );
 static void GetCraftPosition( double * lon, double * lat, double * elev );
@@ -224,6 +226,8 @@ static void Input( GlgObject viewport, GlgAnyType client_data,
           strcmp( action, "ValueChanged" ) != 0 )
 	return;
 
+      AbortNewTrajectoryMode();
+
       if( strcmp( origin, "Restart" ) == 0 )
       {
          Restart();
@@ -249,6 +253,12 @@ static void Input( GlgObject viewport, GlgAnyType client_data,
             GlgUpdate( Drawing );
          }
       }
+      else if( strcmp( origin, "NewTrajectory" ) == 0 )
+      {
+         NewTrajectoryMode = True;
+         GlgSetDResource( Map, "Prompt/Visibility", 1. );
+         GlgUpdate( Map );
+      }
       else if( strcmp( origin, "Up" ) == 0 )
         Pan( 'u' );
       else if( strcmp( origin, "Down" ) == 0 )
@@ -273,6 +283,11 @@ static void Input( GlgObject viewport, GlgAnyType client_data,
             SetZoomLevel();
          }
       }
+   }
+   else if( strcmp( format, "Slider" ) == 0 )
+   {
+      if( strcmp( action, "ValueChanged" ) == 0 )
+        AbortNewTrajectoryMode();
    }
 }
 
@@ -521,6 +536,7 @@ void CreateCraftIcon()
 typedef enum
 {
    BUTTON_PRESS = 0,
+   BUTTON_RELEASE,
    MOUSE_MOVE
 } EventType;
 
@@ -548,19 +564,26 @@ static void Trace( GlgObject viewport, GlgAnyType client_data,
     case ButtonPress:
       if( trace_data->event->xbutton.button != 1 )
       {
-	 AbortStartEndMode();	 
+	 AbortNewTrajectoryMode();	 
 	 return;  /* Use the left button clicks only. */
       }
 
-      x = trace_data->event->xbutton.x + GLG_COORD_MAPPING_ADJ;
-      y = trace_data->event->xbutton.y + GLG_COORD_MAPPING_ADJ;
       event_type = BUTTON_PRESS;
+      x = trace_data->event->xbutton.x;
+      y = trace_data->event->xbutton.y;
+      break;
+      
+    case ButtonRelease:
+      if( trace_data->event->xbutton.button != 1 )
+        return;
+
+      event_type = BUTTON_RELEASE;
       break;
       
     case MotionNotify:
-      x = trace_data->event->xmotion.x + GLG_COORD_MAPPING_ADJ;
-      y = trace_data->event->xmotion.y + GLG_COORD_MAPPING_ADJ;
       event_type = MOUSE_MOVE;
+      x = trace_data->event->xmotion.x;
+      y = trace_data->event->xmotion.y;
       break;
 
     default: return;
@@ -569,22 +592,28 @@ static void Trace( GlgObject viewport, GlgAnyType client_data,
    switch( trace_data->event->message )
    {
     case WM_LBUTTONDOWN:
-      x = LOWORD( trace_data->event->lParam ) + GLG_COORD_MAPPING_ADJ;
-      y = HIWORD( trace_data->event->lParam ) + GLG_COORD_MAPPING_ADJ;
       event_type = BUTTON_PRESS;
+
+      x = LOWORD( trace_data->event->lParam );
+      y = HIWORD( trace_data->event->lParam );
       break;
       
     case WM_RBUTTONDOWN:
     case WM_MBUTTONDOWN:
-      AbortStartEndMode();
-      break;
+      AbortNewTrajectoryMode();
+      return;
 
     case WM_MOUSEMOVE:
-      x = LOWORD( trace_data->event->lParam ) + GLG_COORD_MAPPING_ADJ;
-      y = HIWORD( trace_data->event->lParam ) + GLG_COORD_MAPPING_ADJ;
       event_type = MOUSE_MOVE;
+
+      x = LOWORD( trace_data->event->lParam );
+      y = HIWORD( trace_data->event->lParam );
       break;
 
+    case WM_LBUTTONUP:
+      event_type = BUTTON_RELEASE;
+      break;
+      
     default: return;
    }
 #endif
@@ -593,88 +622,114 @@ static void Trace( GlgObject viewport, GlgAnyType client_data,
    if( trace_data->viewport != Map )
      return;
 
+   /* COORD_MAPPING_ADJ is added to the cursor coordinates for precise 
+      pixel mapping.
+   */
+   x += GLG_COORD_MAPPING_ADJ;
+   y += GLG_COORD_MAPPING_ADJ;
+
    switch( event_type )
    {
     case BUTTON_PRESS:
+      if( !NewTrajectoryMode )
+        return;
+
+      /* Delete the previous trajectory polygon, if any. */
+      if( NewTrajectoryPolygon )
+      {
+         AbortNewTrajectoryMode();
+         NewTrajectoryMode = True;    /* Restore mode */
+      }
+
+      /* Define the start point of the trajectory. */
       point.x = x;
       point.y = y;
       point.z = 0.;
 
       /* Convert screen coordinates of the mouse to the world coordinates 
-         inside the GIS Object's GISArray - lat/lon. */ 
+         inside the GIS Object's GISArray - lat/lon.
+      */ 
       GlgScreenToWorld( GISArray, True, &point, &lat_lon );
 
-      if( !StartEndPolygon )   /* First time: start point. */
-      {
-         StartEndPolygon = GlgCreateObject( GLG_POLYGON, NULL,
-                                            NULL, NULL, NULL, NULL );
-         GlgSetGResource( StartEndPolygon, "EdgeColor", 1., 1., 0. );
-         
-         /* Initially, set both points to the the mouse position. */
-         Point1 = lat_lon;
-         SetPolygonPoint( StartEndPolygon, 0, Point1.x, Point1.y, 0. );
-         SetPolygonPoint( StartEndPolygon, 1, Point1.x, Point1.y, 0. );
-
-         GlgAddObjectToBottom( GISObject, StartEndPolygon );
-         GlgUpdate( Map );
-      }
-      else /* Second time: end point. */
-      {
-         /* Done with defining trajectory: store the new start and end point. */
-         StartPoint = Point1;
-         EndPoint = lat_lon;
-
-         AbortStartEndMode();   /* Delete StartEndPolygon. */
-
-         /* Set new points if trajectory length != 0. */
-         if( StartPoint.x != EndPoint.x || StartPoint.y != EndPoint.y )
-         {
-            /* Set a smaller curvature to follow the start/end line. */
-            Curvature = -0.2;
-            GlgSetDResource( Drawing, "Toolbar/CurvatureSlider/ValueX", 
-                             Curvature ); 
-            
-            Restart();             /* Restart with the new trajectory. */
-            GlgUpdate( Drawing );
-         }
-      }
+      GlgSetDResource( Map, "Prompt/Visibility", 0. );  /* Remove prompt */
+      
+      NewTrajectoryPolygon = GlgCreateObject( GLG_POLYGON, NULL,
+                                              NULL, NULL, NULL, NULL );
+      GlgSetGResource( NewTrajectoryPolygon, "EdgeColor", 1., 1., 0. );
+      
+      /* Initially, set both polygon points to the the mouse position. */
+      Point1 = lat_lon;
+      Point2 = lat_lon;
+      SetPolygonPoint( NewTrajectoryPolygon, 0, Point1.x, Point1.y, 0. );
+      SetPolygonPoint( NewTrajectoryPolygon, 1, Point1.x, Point1.y, 0. );
+      
+      GlgAddObjectToBottom( GISObject, NewTrajectoryPolygon );
+      GlgUpdate( Map );
       break;
 
     case MOUSE_MOVE:
-      if( StartEndPolygon )
-      {
-         /* Start point has been defined: show the end point. */
-         point.x = x;
-         point.y = y;
-         point.z = 0.;
-	 
-         /* Convert screen coordinates of the mouse to the world coordinates 
-            inside the GIS Object's GISArray - lat/lon. */ 
-         GlgScreenToWorld( GISArray, True, &point, &lat_lon );
-         
-         SetPolygonPoint( StartEndPolygon, 1, lat_lon.x, lat_lon.y, 0. );
-	 GlgUpdate( Map );
-      }
+      if( !NewTrajectoryMode || !NewTrajectoryPolygon )
+        return;
+      
+      /* Start point has been defined: show the end point when dragging. */
+      point.x = x;
+      point.y = y;
+      point.z = 0.;
+      
+      /* Convert screen coordinates of the mouse to the world coordinates 
+         inside the GIS Object's GISArray - lat/lon. */ 
+      GlgScreenToWorld( GISArray, True, &point, &lat_lon );
+      
+      /* Store the end point of the trajectory. */
+      Point2 = lat_lon;
+
+      SetPolygonPoint( NewTrajectoryPolygon, 1, lat_lon.x, lat_lon.y, 0. );
+      GlgUpdate( Map );
       break;
 
+    case BUTTON_RELEASE:
+      if( !NewTrajectoryMode || !NewTrajectoryPolygon )
+        return;
+
+      AbortNewTrajectoryMode();   /* Delete NewTrajectoryPolygon. */
+
+      if( Point1.x == Point2.x && Point1.y == Point2.y )
+        return;    /* Mouse didn't move: no trajectory was defined. */
+
+      /* Trajectory was defined: store the new start and end point. */
+      StartPoint = Point1;
+      EndPoint = Point2;
+      
+      /* Set a smaller curvature to follow the start/end line. */
+      Curvature = -0.2;
+      GlgSetDResource( Drawing, "Toolbar/CurvatureSlider/ValueX", Curvature ); 
+         
+      Restart();             /* Restart with the new trajectory. */
+      GlgUpdate( Drawing );
+      break;
+      
     default: return;
    } 
 }
 
 /*----------------------------------------------------------------------
-| Deletes StartEndPolygon if created.
+| Deletes NewTrajectoryPolygon if created.
 */
-static void AbortStartEndMode()
+static void AbortNewTrajectoryMode()
 {
-   if( StartEndPolygon )
-   {
-      if( GlgContainsObject( GISObject, StartEndPolygon ) )
-        GlgDeleteThisObject( GISObject, StartEndPolygon );
+   /* Remove prompt if it's visible. */
+   GlgSetDResourceIf( Map, "Prompt/Visibility", 0., True );
 
-      GlgDropObject( StartEndPolygon );	 
-      StartEndPolygon = (GlgObject)0;
+   if( NewTrajectoryPolygon )
+   {
+      if( GlgContainsObject( GISObject, NewTrajectoryPolygon ) )
+        GlgDeleteThisObject( GISObject, NewTrajectoryPolygon );
+
+      GlgDropObject( NewTrajectoryPolygon );	 
+      NewTrajectoryPolygon = (GlgObject)0;
       GlgUpdate( Map );
    }
+   NewTrajectoryMode = False;
 }
 
 /*----------------------------------------------------------------------

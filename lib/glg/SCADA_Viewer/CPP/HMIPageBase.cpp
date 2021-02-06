@@ -76,7 +76,7 @@ void HMIPageBase::RemapTagObject( GlgObjectC& tag_obj, SCONST char * tag_name,
 }
 
 /*-------------------------------------------------------------------------
-| Perform any desired initialization of the drawing before hierarchy setup.
+| Performs any desired initialization of the drawing before hierarchy setup.
 */
 void HMIPageBase::InitBeforeSetup(){}
 

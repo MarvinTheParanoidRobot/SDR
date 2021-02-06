@@ -26,10 +26,10 @@ struct _IconDataStruct
 
 /* Function prototypes */
 void Init( void );
-void InitBeforeH();
-void InitAfterH();
-void StopUpdates();
-void StartUpdates();
+void InitBeforeH( void );
+void InitAfterH( void );
+void StopUpdates( void );
+void StartUpdates( void );
 void UpdateDrawing( GlgAnyType client_data, GlgLong * timer_id );
 GlgBoolean GetLatLonInfo( GlgPoint * in_point, GlgPoint * out_point );
 void ShowInfoDisplay( GlgBoolean show, GlgPoint * lat_lon );
@@ -37,7 +37,7 @@ void GetIconData( IconData * icon );
 void PositionIcon( IconData * icon );
 GlgObject GetIconObject( char * icon_name );
 void SetIconVisibility( GlgObject icon, GlgBoolean show );
-int ZoomToMode();
+int ZoomToMode( void );
 void Zoom( char type, double value );
 void SetSize( GlgObject viewport, GlgLong x, GlgLong y, 
               GlgLong width, GlgLong height );

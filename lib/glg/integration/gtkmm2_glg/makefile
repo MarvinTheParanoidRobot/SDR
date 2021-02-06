@@ -11,8 +11,15 @@ DEBUG_FLAGS = -g
 # Linking without the map server.
 MAP_LIBS = -lglg_map_stub 
 
+# When linking with the map server on Linux, uncomment one of the lines
+#   below depending on the libtiff configuration. In Debian Buster,
+#   static libtiff needs additional -lwebp and -lzstd libraries.
+# On non-Linux Unix platforms, comment out both lines.
+#EXTRA_TIFF_LIBS = -llzma -ljbig
+#EXTRA_TIFF_LIBS = -llzma -ljbig -lwebp -lzstd
+
 # Linking with the map server.
-#MAP_LIBS = -lglg_map -ltiff -ltiff -lfreetype
+#MAP_LIBS = -lglg_map -ltiff $(EXTRA_TIFF_LIBS)
 
 # On Linux, uncomment the line below for additional libraries.
 # Due to a known bug in ldd/dlopen, -lpthread is required to avoid a crash 
@@ -33,7 +40,8 @@ GLG_INCLUDES = -I$(GLG_HOME)/include
 GLG_LIB = $(GLG_HOME)/lib
 
 LIBS= $(GTKMM_LIBS) -L$(GLG_LIB) \
-	-lglg_x11 $(MAP_LIBS) -ljpeg -lpng -lz -lXt -lX11 -lXext -lm -ldl
+	-lglg_x11 $(MAP_LIBS) -lXt -lX11 -lXft -lfontconfig -lfreetype \
+	-ljpeg -lpng -lz -lm -ldl
 
 INCLUDES := $(sort $(wildcard *.h))
 SRCS_C	 := $(sort $(wildcard *.c))

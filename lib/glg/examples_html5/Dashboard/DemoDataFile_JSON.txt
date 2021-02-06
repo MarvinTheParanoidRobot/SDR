@@ -1,0 +1,6 @@
+[ { "tag_source": "Temperature", "value": 60.5 },
+  { "tag_source": "TankLevel", "value": 30 },
+  { "tag_source": "Pressure", "value": 10 },
+  { "tag_source": "Voltage", "value": 12 },
+  { "tag_source": "Current", "value": 5 }
+]

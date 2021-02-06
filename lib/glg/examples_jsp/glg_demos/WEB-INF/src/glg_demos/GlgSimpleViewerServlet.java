@@ -379,7 +379,7 @@ public final class GlgSimpleViewerServlet extends HttpServlet
       drawing.drawing_name = drawing_name;
 
       if( DrawingArray == null )
-        DrawingArray = new GlgDynArray( GlgObject.GLG_OBJECT, 0, 0 );
+        DrawingArray = new GlgDynArray( GlgObject.NATIVE_OBJECT, 0, 0 );
 
       // Free space if needed. 
       if( DrawingArray.GetSize() > MAX_NUM_DRAWINGS )

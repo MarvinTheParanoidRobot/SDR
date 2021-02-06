@@ -90,10 +90,10 @@
 
 # Uncomment the following for IIS on Windows. For Apache on Windows, change
 # the path to the cgi-bin directory of the Apache web server.
-#$CGI_DIR="C:\\inetpub\\wwwroot\\Scripts";
-#$MAP_SERVER_EXE="${CGI_DIR}\\GlmMap.exe";
-#$DATASET="${CGI_DIR}\\map_data\\sample.sdf";
-#$ERROR_LOG=">> ${CGI_DIR}\\glm_err.log";
+#$CGI_DIR="C:/inetpub/wwwroot/Scripts";
+#$MAP_SERVER_EXE="${CGI_DIR}/GlmMap.exe";
+#$DATASET="${CGI_DIR}/map_data/sample.sdf";
+#$ERROR_LOG=">> ${CGI_DIR}/glm_err.log";
 
 ##########################################################################
 # Uncomment the following lines for extra logging

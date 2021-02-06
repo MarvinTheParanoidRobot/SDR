@@ -30,7 +30,7 @@ void UpdateProcessTags( GlgObject drawing );
 void UpdateProcessResources( GlgObject drawing );
 double GetFlow( FlowType type );
 double GetFlowValue( double state, double valve );
-int LugVar( int variable, int lug );
+int LagVar( int variable, int lag );
 double PutInRange( double variable, double low, double high );
 
 #endif

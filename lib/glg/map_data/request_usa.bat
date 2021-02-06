@@ -9,16 +9,16 @@ SETLOCAL
 :: installation directory - GLG_DIR, which is set by the GLG installation
 :: otherwise.
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-::SET GLG_DIR_3_8=C:\Glg
+::SET GLG_DIR_4_0=C:\Glg
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Select location of the map server executable
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-::SET MAP_SERVER=%GLG_DIR_3_8%\eval\bin\GlmMap.exe
-::SET MAP_SERVER=%GLG_DIR_3_8%\map_server\bin\GlmMap.exe
-SET MAP_SERVER=%GLG_DIR_3_8%\bin\GlmMap.exe
+::SET MAP_SERVER=%GLG_DIR_4_0%\eval\bin\GlmMap.exe
+::SET MAP_SERVER=%GLG_DIR_4_0%\map_server\bin\GlmMap.exe
+SET MAP_SERVER=%GLG_DIR_4_0%\bin\GlmMap.exe
 
-SET DATASET_DIR=%GLG_DIR_3_8%\map_data
+SET DATASET_DIR=%GLG_DIR_4_0%\map_data
 
 SET OUT_FILE=output.jpg
 

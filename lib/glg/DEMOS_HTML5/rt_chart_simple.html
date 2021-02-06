@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Web HTML5 & JavaScript Real-Time Strip Chart,
+      with Cursor Feedback and Tooltips</title>
+
+    <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon">
+    <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon"> 
+    <link rel="stylesheet" href="demo.css">
+
+    <script defer src="GlgDemo.js"></script>
+    <script defer src="GlgToolkitDemo.js"></script>
+    <script defer src="gunzip.min.js"></script>
+    <script defer src="rt_chart_simple.js"></script>
+  </head>
+
+  <body>
+    <p>
+      <a href="http://www.genlogic.com">Home</a> |
+      <a href="http://www.genlogic.com/demos.html">Demos</a> |
+      <a href="http://www.genlogic.com/index.html#Products">Products</a>
+    </p>
+
+    <h4>GLG Real-Time Chart Web Example (HTML5 & JavaScript)</h4>
+
+    <p>This pure HTML5 and JavaScript example demonstrates basic features of the
+      GLG Real-Time Chart, such as <b>real-time updates</b>,
+      <b>chart tooltips</b> and changing attributes of the chart's plots.
+      <a href="#info" >More information</a></p>
+    
+    <p>To display <b>chart tooltips</b>, hover the mouse over the chart
+      (touch and hold on mobile devices).</p>
+
+    <button id="change_size" type="button" class="top_button"
+            onclick="SetDrawingSize( true )">Change Drawing Size</button>
+    <a href="rt_chart_simple.js" target="_blank" style="text-decoration: none;">
+      <button type="button" class="top_button">Source Code</button>
+    </a>
+
+    <input value="Stop Update" onclick="StopUpdate()"
+           type="button" class="top_button">
+    <input value="Start Update" onclick="StartUpdate()"
+           type="button" class="top_button">
+    <br>
+
+    <input value="Inverse" onclick="Inverse()" type="button" class="top_button">
+    <input value="Change Type" onclick="ChangeType()"
+           type="button" class="top_button">
+    <input value="Change Span" onclick="ChangeSpan()"
+           type="button" class="top_button">
+    <input value="Change Range" onclick="ChangeRange()"
+           type="button" class="top_button">
+    <input value="Change Colors" onclick="ChangeColors()"
+           type="button" class="top_button">
+    <input value="Change Line Width" onclick="ChangeLineWidth()"
+           type="button" class="top_button">
+    
+    <br><br>
+    <div id="glg_area" class="glg_wrapper"
+         style="width: 100%; height: 500px; background-color: white; 
+                padding: 0px;"> 
+    </div>
+ 
+    <p><a id="info" />
+      The demo loads a GLG drawing containing a real-time chart with
+      interface controls and animates it with real-time data.
+      The drawing was created with an interactive <b>GLG Graphics Builder</b>,
+      which can be used to customize chart layout. The GLG JavaScript Library
+      provides an API for displaying the drawing on a web page, as well as
+      supplying real-time data and handling user interaction.</p>
+
+    <p>The GLG JavaScript Library implements full GLG run-time functionality
+      present in the GLG C/C++, C# and Java libraries, allowing the same
+      graphical page and programming logic to be shared between the desktop
+      and Web/Mobile version of an application.</p>
+
+    <p>Check the <a href="rt_chart_demo.html"><b>GLG Real-Time Chart Demo</b></a>
+      for more elaborate features, such as <b>integrated zooming and
+        scrolling, Real-Time, Historical and Calendar chart modes,
+          legend item selection</b> and other GLG chart features.</p>
+
+  </body>
+</html>

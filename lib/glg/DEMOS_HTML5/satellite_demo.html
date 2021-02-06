@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HTML5 & JavaScript Real-Time Launch Control: Satellite Orbits Web Demo
+    </title>
+
+    <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon">
+    <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon"> 
+    <link rel="stylesheet" href="demo.css">
+
+    <script defer src="GlgDemo.js"></script>
+    <script defer src="GlgToolkitDemo.js"></script>
+    <script defer src="gunzip.min.js"></script>
+    <script defer src="satellite_demo.js"></script>
+    <script> var MobileVersion = false; </script>
+  </head>
+
+  <body>
+    <p>
+      <a href="http://www.genlogic.com">Home</a> |
+      <a href="http://www.genlogic.com/demos.html">Demos</a> |
+      <a href="http://www.genlogic.com/index.html#Products">Products</a>
+    </p>
+
+    <h4>Satellite Orbits Web Demo (HTML5 & JavaScript)</h4>
+
+    <p>This demo demonstrates the use of the <b>GLG Map Server</b> and
+      <b>GIS Object</b> to display 3D trajectories. Satellite icons are placed
+      inside the GIS Object and positioned by supplying lat/lon coordinates.
+      The <b>elevation above the Earth surface</b> may be supplied as the
+      Z coordinate, making it possible to display 3D trajectories.
+      A <b>ground track</b> of each satellite is also displayed at elevation=0.
+      <a href="#info" >More information</a><p>
+
+    <p>The <a href="trajectory_demo.html">Trajectory Demo</a> presents
+      another example of a 3D trajectory with a <b>ground track</b> and
+      <b>drop lines</b>.</p>
+      
+    <button id="change_size" type="button" class="top_button"
+            onclick="SetDrawingSize( true )">Change Drawing Size</button>
+    <a href="satellite_demo.js" target="_blank" style="text-decoration: none;">
+      <button type="button" class="top_button">Source Code</button>
+    </a>
+    <button type="button" class="top_button" onclick="EnableTouchDragging()">
+      Enable Touch Dragging</button>
+    <a href="satellite_demo_mobile.html" style="text-decoration: none;">
+      <button type="button" class="top_button">Mobile Version</button>
+    </a>
+
+    <br><br>
+    <div id="glg_area" class="glg_wrapper"
+         style="width: 100%; height: 300px; background-color: white; 
+                padding: 0px;"> 
+    </div>
+
+    <p><a name="info"></a>
+      The GLG Map Server is used to display the globe in the orthographic
+      projection. The <b>globe can be rotated by dragging</b> the drawing
+      with the mouse or using the directional buttons. The <b>GIS Object</b>
+      takes a complete care of the map display, automatically
+      generating Map Server requests to re-generate the image when the
+      globe is rotated. The trajectory polygons are generated on the
+      fly by adding points representing the current positions of the
+      satellites.</p>
+
+    <p>The JavaScript version of the demo provides the same functionality as
+      the desktop versions written in C/C++, C# and Java. The GLG drawing and
+      the programming logic are shared between all versions of the demo, with
+      only syntax differences between the source code of different versions.
+      The <a href="http://www.genlogic.com/download.html">GLG Demo Download</a>
+      includes the desktop versions of this demo.</p>
+    
+    <p><b>NOTE:</b> To run the demo locally from your own server, the
+      GLG Map Server has to be setup on that server. If the map server
+      is not set up, the map image will be missing.</p>
+
+  </body>
+</html>

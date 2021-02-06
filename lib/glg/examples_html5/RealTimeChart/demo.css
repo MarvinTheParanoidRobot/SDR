@@ -1,0 +1,32 @@
+html, body {
+  background-color: white; 
+  font-family: Arial;
+}
+
+.glg_wrapper {
+  margin: 0px;
+  border: solid thin black;
+}
+
+.top_button {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-right: 5px;
+  font-size: medium;
+  color: rgb(0,50,100);
+  background-color: rgb(240,240,240);
+  -webkit-appearance: button;
+}
+
+.top_button_large {
+  margin-top: 5px;
+  margin-bottom: 15px;
+  margin-right: 5px;
+  font-size: large;
+  color: rgb(0,50,100);
+  -webkit-appearance: button;
+}
+
+li {
+  margin-bottom: 10px;
+}

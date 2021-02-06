@@ -11,7 +11,7 @@ class DataFeedC
 {
  public:
    DataFeedC( GlgMapViewer * viewer );
-   ~DataFeedC() {};
+   ~DataFeedC( void ) {};
 
    GlgMapViewer * Viewer;
    

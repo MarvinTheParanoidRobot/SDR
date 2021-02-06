@@ -9,7 +9,7 @@ with data.
 
 The drawing filename may be supplied as a command line argument if used in
 a standalone Java program, or as DrawingURL applet parameter if used as
-an applet. If not supplied, a default drawing name defined in the
+an applet. If not supplied, a default drawing name defined in the 
 application code is loaded. In this example, the default drawing name
 is "tags_example.g".
 
@@ -35,9 +35,8 @@ the display to show new dynamic values.
 To use live data for animation:
 
 1. Provide custom implementation of the Read/Write methods in LiveDataFeed.java.
-
 2. Set RANDOM_DATA flag in GlgViewer.java to false, or use -live-data command 
-   line option. 
+line option. 
 
 Supported command line options:
 
@@ -50,3 +49,6 @@ Supported command line options:
   <filename>
          specifies GLG drawing filename to be loaded and animated;
          if not defined, DefaultDrawingName is used.
+
+
+

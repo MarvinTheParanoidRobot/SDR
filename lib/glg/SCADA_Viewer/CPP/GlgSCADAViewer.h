@@ -120,7 +120,7 @@ class GlgSCADAViewer : public GlgObjectC
    void InitMenu( void );
  
    // Load
-   GlgBoolean LoadDrawingFromMenu( GlgLong screen );
+   GlgBoolean LoadDrawingFromMenu( GlgLong screen, GlgBoolean update_menu );
    GlgObject LoadDrawing( GlgObjectC& subwindow, SCONST char * drawing_file );
    void SetupLoadedPage( SCONST char * title );
    void SetupHMIPage( void );
@@ -155,15 +155,15 @@ class GlgSCADAViewer : public GlgObjectC
 		      GlgBoolean unset_tags );
    void DisplayPopupMenu( GlgObjectC& command_vp, GlgObjectC& selected_obj, 
 			  GlgObjectC& command_obj );
-   void PositionPopupMenu();
+   void PositionPopupMenu( void );
    void ClosePopupMenu( PopupMenuType menu_type );
    void GoTo( GlgObjectC& command_vp, GlgObjectC& selected_obj, 
 	 GlgObjectC& command_obj );
    void WriteValue( GlgObjectC& command_vp, GlgObjectC& selected_obj, 
 		    GlgObjectC& command_obj );
-   void WriteValueFromInputWidget( GlgObjectC& command_vp, GlgObjectC& selected_obj, 
+   void WriteValueFromInputWidget( GlgObjectC& command_vp,
+                                   GlgObjectC& selected_obj, 
 				   GlgObjectC& command_obj );
-
 
    // Misc functions
    void CloseActivePopups( DialogType allow_dialog );
@@ -172,7 +172,7 @@ class GlgSCADAViewer : public GlgObjectC
    PageTypeEnum GetPageType( GlgObjectC& drawing );
    GlgBoolean ToggleResource( SCONST char * resource_name );
    GlgLong LookUpMenuArray( SCONST char * drawing_name );
-   void SelectMainMenuItem( GlgLong menu_index, GlgBoolean update_menu );
+   GlgBoolean SelectMainMenuItem( GlgLong menu_index, GlgBoolean update_menu );
    CommandType GetCommandType( GlgObjectC& command_obj );
    DialogType GetDialogType( GlgObjectC& command_obj );
    PopupMenuType GetPopupMenuType( GlgObjectC& command_obj );

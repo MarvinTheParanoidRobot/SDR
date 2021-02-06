@@ -177,9 +177,6 @@ typedef enum _GlmOverrideType
    GLM_OVERRIDE_ALL
 } GlmOverrideType;
 
-
-
-
 typedef enum _GlmGridLabelCharPosition
 {
    GLM_NO_CHAR = 0,
@@ -189,13 +186,14 @@ typedef enum _GlmGridLabelCharPosition
 
 typedef enum _GlmMGRSAccuracy
 {
-   GLM_NO_ACCURACY = 0,
+   GLM_FAILED_ACCURACY = -1,    /* Indicates failed coordinate conversion. */
    GLM_10000_METER,
    GLM_1000_METER,
    GLM_100_METER,
    GLM_10_METER,
    GLM_1_METER,
-   GLM_MAX_ACCURACY
+
+   GLM_MAX_ACCURACY             /* For internal use */
 } GlgMGRSAccuracy;
 
 typedef struct _GlmUtmPoint

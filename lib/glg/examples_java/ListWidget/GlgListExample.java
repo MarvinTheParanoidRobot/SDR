@@ -287,7 +287,7 @@ public class GlgListExample extends GlgJBean
    // SetItemState
    // GetSelectedItemList
    //////////////////////////////////////////////////////////////////////////
-   void  SendSelectionMessages( String obj_name, int case_index )
+   void SendSelectionMessages( String obj_name, int case_index )
    {
       GlgObject viewport = GetViewport();
       String handler_res = GlgObject.ConcatResNames( obj_name, "Handler" );

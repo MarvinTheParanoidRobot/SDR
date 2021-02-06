@@ -313,22 +313,19 @@ int GlgMain( int argc, char * argv[], GlgAppContext InitAppContext )
    if( ProcessDiagram )
      GlgAddTimeOut( AppContext, UPDATE_INTERVAL, 
                    (GlgTimerProc) UpdateProcessDiagram, DrawingArea );
-
-   /* Install top level interface handler. EK */
+   
+   /* Install and start the top level interface handler. */
    GlgIHInstall( MainIH );
-
-   /* Start the installed interface handler. EK */
    GlgIHStart();
 
    return (int) GlgMainLoop( AppContext );
 }
 
 /*----------------------------------------------------------------------
-| Top level main interface handler. 
+| Top level interface handler. 
 | Parameters:
-| ih - interface handler handle
-| call_event - event the handler is invoked with
-| EK
+|   ih - interface handler handle
+|   call_event - event the handler is invoked with
 */
 void MainIH( GlgIH ih, GlgCallEvent call_event )
 {
@@ -341,12 +338,12 @@ void MainIH( GlgIH ih, GlgCallEvent call_event )
      * icon_type,
      * button_name;
 
-   /* Retrieve the event type the handler has been invoked with.
-     GLG_HI_SETUP_EVENT - triggered when handler is started by GlgIHStart 
-     GLG_MESSAGE_EVENT  - trigerred when handler is called by 
-                          GlgIHCallCurrIHWithToken or GlgIHCallCurrIH
-     GLG_CLEANUP_EVENT  - trigerred when handler is uninstalled by GlgIHUninstall
-     EK
+   /* Retrieve the event type the handler was invoked with.
+      GLG_HI_SETUP_EVENT - triggered when handler is started by GlgIHStart 
+      GLG_MESSAGE_EVENT  - trigerred when handler is called by 
+                           GlgIHCallCurrIHWithToken, GlgIHCallCurrIH, etc.
+      GLG_CLEANUP_EVENT  - trigerred when handler is uninstalled by 
+                           GlgIHUninstall
    */
    event_type = GlgIHGetType( call_event );
    switch( event_type )
@@ -355,9 +352,7 @@ void MainIH( GlgIH ih, GlgCallEvent call_event )
       break;
 
     case GLG_MESSAGE_EVENT:
-      /* Retrieve the token from the event and nandle known tokens as needed. 
-         EK 
-      */
+      /* Retrieve the token from the event and handle known tokens as needed. */
       token = GlgIHGetToken( call_event );
       switch( token )
       {
@@ -410,12 +405,11 @@ void MainIH( GlgIH ih, GlgCallEvent call_event )
          break;
 
        case IH_ICON_SELECTED:
-         /* Retrieve handler parameters. 
+         /* Retrieve selected icon parameters. 
             $selected_icon   - parameter of type GlgObject
             $selected_button - parameter of type S (string) 
-            These parameters are global and are assigned in Input callback 
+            These parameters are global and are assigned in the input callback 
             InputCB.
-            EK
          */
          icon = GlgIHGetOParameter( GLG_IH_GLOBAL, "$selected_icon" );
          button_name = GlgIHGetSParameter( GLG_IH_GLOBAL, "$selected_button" );
@@ -445,18 +439,16 @@ void MainIH( GlgIH ih, GlgCallEvent call_event )
             SetPrompt( "" );
          }
 
-         /* For an icon type "Link" or "Node", install a corresponding 
-            Set new parameters for the newly installed handler, using
-            name/value pair:
-            "template" parameter is of type GlgObject and holds the icon object
-            id to be added to the drawing area, either a link object or a node;
-            "button_name" parameter is a string and holds the icon button name.
+         /* For an icon type "Link" or "Node", install a corresponding handler,
+            set its parameters, and start the handler.
+
+            "template" parameter supplies the GlgObject id of the selected icon
+            to be added to the drawing area, either a link or a node.
+            "button_name" parameter supplies the name of the selected icon 
+            button.
             
-            GlgIHStart() will start the handler, triggering the handler to
-            to be called with the event type GLG_HI_SETUP_EVENT. 
-            The parameters assigned here are passed to the hadler function
-            and can be retrieved using GlgIHSet%Parameter.
-            EK
+            The parameters are passed to the handler function and can be 
+            retrieved using GlgIHSet*Parameter.
          */
          else if( strcmp( icon_type, "Link" ) == 0 )
          {
@@ -484,7 +476,7 @@ void MainIH( GlgIH ih, GlgCallEvent call_event )
          /* Selects the object and installs MoveObjectIH to drag the object 
             with the mouse.
             "$cursor_pos" is a global parameter assigned in Trace callback
-            or when the object is moved or dragged.  EK 
+            when the object is moved or dragged.
          */
          SelectObjectWithMouse( GlgIHGetOParameter( GLG_IH_GLOBAL, 
                                                     "$cursor_pos" ) );
@@ -501,34 +493,28 @@ void MainIH( GlgIH ih, GlgCallEvent call_event )
          break;    /* Allow: do nothing. */
 
        default: 
-         /* EK: New comment
-            Handle unrecognized tokens: in this demo, the unrecognized
-            token is passed to the special "pass-through" handler 
-            EditPropertiesIH, which is used to handle the Properties dialog. 
-            Properties dialog is a floating dialog that can remain open, 
-            and its content is changed to show properties
-            of the selected object. A "pass-through" handler is a special
-            handler type allowing to handle floating dialogs.
-         */
+         /* Handle unrecognized tokens. In this demo, unrecognized tokens
+            are passed to a special "pass-through" handler EditPropertiesIH, 
+            which is used to handle the Properties dialog. 
 
-         /* EK: old comment, remove
-            Pass these tokens to be processed by a pass-through 
-            EditPropertiesIH for dialog that can stay open to show 
-            properties while selecting different objects in the drawing.
-          */
+            Properties dialog is a floating dialog that can remain open, and 
+            its content is changed to show properties of the selected object. 
+            A "pass-through" handler is a special handler type that handles 
+            floating dialogs.
+         */
 
          /* Set a global flag indicating the current handler is invoked
             as a "pass-through" handler with a token passed from the
-            previous handler. EK
+            previous handler.
          */
          GlgIHSetIParameter( GLG_IH_GLOBAL, "fall_through_call", True );
 
-         /* Installs EditPropertiesIH handler, start it and invoke
-            it with a given token. EK
+         /* Install EditPropertiesIH handler, start it and invoke it with 
+            a given token.
          */ 
          GlgIHPassToken( EditPropertiesIH, token, False );
 
-         /* Reset flag */
+         /* Reset the flag */
          GlgIHSetIParameter( GLG_IH_GLOBAL, "fall_through_call", False );
 
          if( !GlgIHGetIParameter( GLG_IH_GLOBAL, "token_used" ) )
@@ -538,7 +524,7 @@ void MainIH( GlgIH ih, GlgCallEvent call_event )
       break;
 
     case GLG_CLEANUP_EVENT:
-      /* Invoked when the handler is uninstalled via GlgIHUninstall. EK */
+      /* Invoked when the handler is uninstalled via GlgIHUninstall. */
       SetError( "Main ih handler should never be uninstalled." );
       break;
    }
@@ -579,16 +565,12 @@ void SelectObjectWithMouse( GlgObject cursor_pos_obj )
             SelectObjectCB( sel_object, GetData( sel_object ),
                             selection_type == NODE );
 
-	    /* Prepare for dragging the object with the mouse. 
-               Install new handler MoveObjectIH. EK
+	    /* Install the MoveObjectIH handler to handle dragging the object 
+               with the mouse. The current cursor position is passed to
+               the handler as the start point parameter.
             */
             GlgIHInstall( MoveObjectIH );
-
-	    /* Store the start point using current cursor position as
-               a parameter of the newly installed handler MoveObjectIH.  EK
-            */
             GlgIHSetOParameter( GLG_IH_NEW, "start_point", cursor_pos_obj );
-
             GlgIHStart();
 
 	    GlgDropObject( selection );
@@ -603,7 +585,7 @@ void SelectObjectWithMouse( GlgObject cursor_pos_obj )
 }
 
 /*----------------------------------------------------------------------
-| Handler parameters:    EK
+| Handler parameters:
 |   start_point (G data obj)
 */
 void MoveObjectIH( GlgIH ih, GlgCallEvent call_event )
@@ -667,15 +649,15 @@ void MoveObjectIH( GlgIH ih, GlgCallEvent call_event )
          break;
 
        case IH_MOUSE_RELEASED:
-         /* Uninstall the current handler on mouse release. EK  */
+         /* Uninstall the handler on mouse release. */
          GlgIHUninstall();
          break;
 
        default:
-         /* Unrecognized token: uninstall the current handler and
-            invoke the parent handler, passing call_event to it. EK
+         /* Unrecognized token: uninstall the current handler and invoke the 
+            parent handler, passing call_event to it.
          */
-         GlgIHUninstallWithEvent( call_event ); /* EK: old comment -- Pass to the parent IH. */
+         GlgIHUninstallWithEvent( call_event );
          break;
       }
       break;
@@ -688,13 +670,12 @@ void MoveObjectIH( GlgIH ih, GlgCallEvent call_event )
 }
 
 /*----------------------------------------------------------------------
-| Handler parameters:   EK
+| Handler parameters:
 |   template    (GlgObject)
 |   button_name (string)
 |  
-| The AddNodeIH handler is triggered via GlgIHCallCurrIHWithToken from the
-| Trace callback. Passed tokens: IH_MOUSE_PRESSED, IH_MOUSE_MOVED.
-| EK
+| The AddNodeIH handler is invoked with the IH_MOUSE_PRESSED and IH_MOUSE_MOVED
+| tokens by the GlgIHCallCurrIHWithToken function in the Trace callback.
 */
 void AddNodeIH( GlgIH ih, GlgCallEvent call_event )
 {
@@ -744,15 +725,15 @@ void AddNodeIH( GlgIH ih, GlgCallEvent call_event )
          break;   /* Allow: do nothing. */
 
        default:
-         /* Unrecognized token: uninstall current handler and invoke 
-            the parent handler, passing the call_event to it. EK
+         /* Unrecognized token: uninstall current handler and invoke the 
+            parent handler, passing the call_event to it.
          */
-         GlgIHUninstallWithEvent( call_event ); /* EK: old..Pass to the parent IH. */
+         GlgIHUninstallWithEvent( call_event );
          break;
       }
       break;
 
-    case GLG_CLEANUP_EVENT:  /* Triggered when handler is uninstalled. EK */
+    case GLG_CLEANUP_EVENT:  /* Triggered when handler is uninstalled. */
       TraceMouseMove = False;
       SetRadioBox( SELECT_BUTTON_NAME );   /* Highlight Select button */
       SetPrompt( "" );
@@ -762,17 +743,16 @@ void AddNodeIH( GlgIH ih, GlgCallEvent call_event )
 }
 
 /*----------------------------------------------------------------------
-| Handler Parameters:   EK
-|   template (obj)
-|   button_name (string)
-|
-| The AddLinkIH handler is triggered via GlgIHCallCurrIHWithToken passing
+| The AddLinkIH handler is invoked via GlgIHCallCurrIHWithToken with
 | the following tokens:
 | IH_MOUSE_PRESSED, IH_MOUSE_MOVED, IH_ESC and IH_MOUSE_BUTTON3 are 
 |   passed from the Trace callback;
 | IH_FINISH_LINK is passed from the AddLinkIH handler itself when the
-|   user finished creating a link.
-| EK
+|   user finishes link creation.
+|
+| Handler parameters: 
+|   template (obj)
+|   button_name (string)
 */
 void AddLinkIH( GlgIH ih, GlgCallEvent call_event )
 {
@@ -813,8 +793,9 @@ void AddLinkIH( GlgIH ih, GlgCallEvent call_event )
       /* Fall through */
 
     case GLG_HI_RESETUP_EVENT:  
-      /* Triggered by GlgIHResetup, invoked in AddLinkIH handler itself
-         allowing to create more links, in case StickyCreateMode=True. EK
+      /* This event type is triggered by the GlgIHResetup call in this handler,
+         which is used to reset the handler to the inital state to continue 
+         creating new links of this type when StickyCreateMode=True.
       */
       GlgIHSetIParameter( ih, "first_node", True );
       GlgIHSetIParameter( ih, "middle_point_added", False );
@@ -1326,7 +1307,7 @@ void GetDataSourceIH( GlgIH ih, GlgCallEvent call_event )
 /*----------------------------------------------------------------------
 | OK/Cancel confirmation dialog. 
 |
-| Parameters:
+| Handler parameters:
 |   message
 |   title (optional, default "Confirm")
 |   ok_label (optional, def. "OK")
@@ -1635,6 +1616,7 @@ void InputCB( GlgObject viewport, GlgAnyType client_data, GlgAnyType call_data )
            SetError( "Can't find icon." );
          else
          {
+            /* Store selection data as global parameters. */
             GlgIHSetOParameter( GLG_IH_GLOBAL, "$selected_icon", icon );
             GlgIHSetSParameter( GLG_IH_GLOBAL, "$selected_button", full_origin );
             token = IH_ICON_SELECTED;

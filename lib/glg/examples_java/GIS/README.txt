@@ -44,7 +44,7 @@ ADDITIONAL EXAMPLES
 The GlgGISExample2.java provides an additional functionality,
 demonstrating how to add a list of target icons, such as airports, to
 the map. A target may be selected with the mouse, making it currently
-selected target.  Once a target is selected, a DistancePopup overlay
+selected target. Once a target is selected, a DistancePopup overlay
 is displayed, printing the name of the selected target and distance in
 km between the target and moving aircraft. GetGlobeDistance() function
 in this program is used to calculate distance in meters between two
@@ -52,5 +52,5 @@ points on the globe, defined in lat,lon coordinates.
 
 The program also demonstrates how to turn ON/OFF map layers
 dynamically at run-time, from a menu containing a list of available
-layers.  LayersDialog may be opened/closed using the ToggleMapLayers
+layers. LayersDialog may be opened/closed using the ToggleMapLayers
 toolbar button.

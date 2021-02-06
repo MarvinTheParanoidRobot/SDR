@@ -115,12 +115,12 @@ public class GlgProcessDemoData
       
       if( HeaterLevel > 0.9 || heater_high != 0 )
       {
-         heater_high = LugVar( heater_high, 10 );
+         heater_high = LagVar( heater_high, 10 );
          SolventValve -= VALVE_CHANGE_SPEED;
       }
       else if( HeaterLevel < 0.45 || heater_low != 0 )
       {
-         heater_low = LugVar( heater_low, 10 );
+         heater_low = LagVar( heater_low, 10 );
          SolventValve += VALVE_CHANGE_SPEED;
       }
       SolventValve = PutInRange( SolventValve, 0., 1. );
@@ -128,36 +128,36 @@ public class GlgProcessDemoData
       // Inversed
       if( WaterLevel > 0.2 || water_high != 0 )
       {
-         water_high = LugVar( water_high, 10 );
+         water_high = LagVar( water_high, 10 );
          WaterValve += VALVE_CHANGE_SPEED;
       }
       else if( WaterLevel < 0.05 || water_low != 0 )
       {
-         water_low = LugVar( water_low, 10 );
+         water_low = LagVar( water_low, 10 );
          WaterValve -= VALVE_CHANGE_SPEED;
       }
       WaterValve = PutInRange( WaterValve, 0., 1. );
       
       if( SteamTemperature > 0.9 || steam_high != 0 )
       {
-         LugVar( steam_high, 20 );
+         LagVar( steam_high, 20 );
          SteamValve -= STEAM_VALVE_CHANGE_SPEED;
       }
       else if( SteamTemperature < 0.2 || steam_low != 0 )
       {
-         LugVar( steam_low, 20 );
+         LagVar( steam_low, 20 );
          SteamValve += STEAM_VALVE_CHANGE_SPEED;
       }
       SteamValve = PutInRange( SteamValve, 0., 1. );
       
       if( CoolingTemperature > 0.7 || cooling_high != 0 )
       {
-         LugVar( cooling_high, 10 );
+         LagVar( cooling_high, 10 );
          CoolingValve += VALVE_CHANGE_SPEED;
       }
       else if( CoolingTemperature < 0.3 || cooling_low != 0 )
       {
-         LugVar( cooling_low, 10 );
+         LagVar( cooling_low, 10 );
          CoolingValve -= VALVE_CHANGE_SPEED;
       }
       CoolingValve = PutInRange( CoolingValve, 0., 1. );
@@ -170,14 +170,14 @@ public class GlgProcessDemoData
    }
 
    //////////////////////////////////////////////////////////////////////////
-   // Helps to implement lug behavior
+   // Helps to implement lag behavior
    //////////////////////////////////////////////////////////////////////////
-   int LugVar( int variable, int lug )
+   int LagVar( int variable, int lag )
    {
       if( variable != 0 )
         return --variable;
       else
-        return lug;
+        return lag;
    }
 
    //////////////////////////////////////////////////////////////////////////

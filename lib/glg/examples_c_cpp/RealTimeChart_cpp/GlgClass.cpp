@@ -1266,7 +1266,6 @@ GlgObject GlgObjectC::GetElement( GlgLong index )
    return GlgGetElement( glg_obj, index );
 }
 
-
 GlgObject GlgObjectC::GetNamedPlot( SCONST char * res_name, 
                                     SCONST char * plot_name )
 {

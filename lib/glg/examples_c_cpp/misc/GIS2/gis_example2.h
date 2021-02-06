@@ -32,7 +32,7 @@ struct TargetDataStruct
 /* Function prototypes */
 void Init( void );
 void PositionIcon( IconDataStruct * icon_data );
-void CreateTargetsArray();
+void CreateTargetsArray( void );
 void AddTarget( TargetData * target_data, long index );
 void Zoom( long type, double value );
 void GetIconPosition( IconDataStruct * icon_data  );
@@ -41,7 +41,7 @@ void UpdateIconPosition( GlgAnyType client_data, GlgLong * timer_id );
 void SetLayersMenuButtons( GlgObject menu_object );
 void SetLayersFromMenu( GlgObject menu_object, GlgBoolean init );
 void ToggleResource( GlgObject object, char * res_name );
-void DisplayDistance();
+void DisplayDistance( void );
 double GetGlobeDistance( GlgPoint lat_lon1, GlgPoint lat_lon2 );
 void GetPointXYZ( GlgPoint * lat_lon, GlgPoint * xyz );
 

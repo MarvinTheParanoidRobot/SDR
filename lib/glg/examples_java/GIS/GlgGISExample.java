@@ -16,7 +16,7 @@ public class GlgGISExample extends GlgJBean implements ActionListener
    final static boolean RANDOM_DATA = true;
 
    // Time interval for periodic updates, in millisec.
-   double UPDATE_INTERVAL = 50.; 
+   int UPDATE_INTERVAL = 50; 
 
    // GLG Drawing name to be displayed in the GLG control
    static String DRAWING_NAME = "gis_example.g";
@@ -72,21 +72,6 @@ public class GlgGISExample extends GlgJBean implements ActionListener
       
       // Activate Trace callback.
       AddListener( GlgObject.TRACE_CB, this );
-   }
-
-   /////////////////////////////////////////////////////////////////////
-   // Invoked by the browser to start the applet
-   /////////////////////////////////////////////////////////////////////
-   public void start()
-   {
-      super.start();
-
-      // Set a Glg drawing URL to be displayed in the Glg bean.
-      // The drawing URL is relative to applet's document base directory.
-      SetDrawingURL( DRAWING_NAME );
-
-      // Start periodic updates 
-      StartUpdates();
    }
 
    //////////////////////////////////////////////////////////////////////
@@ -452,7 +437,7 @@ public class GlgGISExample extends GlgJBean implements ActionListener
    {
       if( timer == null )
       {
-         Timer timer = new Timer( 200, this );
+         timer = new Timer( UPDATE_INTERVAL, this );
          timer.setRepeats( true );
          timer.start();
       }
@@ -468,9 +453,6 @@ public class GlgGISExample extends GlgJBean implements ActionListener
          timer.stop();
          timer = null;
       }
-
-      // Disable dynamic updates of the drawing
-      IsReady = false;
    }
 
    //////////////////////////////////////////////////////////////////////////

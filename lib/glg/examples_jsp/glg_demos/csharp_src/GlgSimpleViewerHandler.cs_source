@@ -117,9 +117,9 @@ namespace SimpleViewerHandler
       // GLG error handler. 
       //
       // A custom GLG error handler may be set using the 
-      // GlgObject.SetErrorHandler method. The data.got_errors field
-      // may be set to true to flag errors in case if a custom error 
-      // handler is used.
+      // GlgObject.SetErrorHandler method inside this method. 
+      // The request_data.got_errors field may be set to true to flag errors 
+      // in case if a custom error handler is used.
       ///////////////////////////////////////////////////////////////////
       void ProcessRequestData( GlgHttpRequestData request_data )
       {
@@ -364,7 +364,8 @@ namespace SimpleViewerHandler
          drawing.drawing_name = drawing_name;
          
          if( DrawingArray == null )
-           DrawingArray = new GlgDynArray( GlgContainerType.GLG_OBJECT, 0, 0 );
+           DrawingArray = 
+             new GlgDynArray( GlgContainerType.NATIVE_OBJECT, 0, 0 );
          
          // Free space if needed. 
          if( DrawingArray.GetSize() > MAX_NUM_DRAWINGS )

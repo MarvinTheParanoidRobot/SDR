@@ -1,113 +1,106 @@
-The following Glg Java examples are provided in the following 
+The following GLG Java examples are provided in the following 
 subdirectories:
 
 Controls
-  GlgControlBean.java
-     Demonstrates how to create multiple instances of a Glg bean, 
-     each displaying its own drawing. The drawings are control 
-     widgets from <glg_dir>/widgets/controls directory, and are 
-     used without modifications. It also shows how to handle user 
-     interaction in the control widgets, for example reterieving  
-     values from a slider or a knob based on the user actions.
+   Demonstrates how to create multiple instances of a GLG bean, 
+   each displaying its own drawing. The drawings are control 
+   widgets from <glg_dir>/widgets/controls directory, and are 
+   used without modifications. It also shows how to handle user 
+   interaction in the control widgets, for example reterieving  
+   values from a slider or a knob based on the user actions.
    
-  GlgControlPanel.java   
-     Demonstrates how to use a Glg bean to display and interact
-     with a Glg drawing containing a panel of Glg controls. 
-     The drawing has been composed in the GlgBuilder and contains 
-     several Glg control widgets.
+Dashboard
+   Demonstrates how to use a GLG bean to display and interact
+   with a GLG drawing containing a panel of GLG controls. 
+   The drawing has been composed in the GlgBuilder and contains 
+   several GLG control widgets.
 
 RealTimeChart
-     Demonstrates how to display and update a GLG realtime
-     stripchart widget and use its integrated interactive behavior.
+   Demonstrates how to display and update a GLG realtime
+   stripchart widget and use its integrated interactive behavior.
 
 RealTimeChartSimple
-     A basic version of the RealTimeChart example.
+   A basic version of the RealTimeChart example.
 
 RealTimeChartAlarm
-     In addition to the functionality shown in the RealTimeChart example,
-     this example also demonsrates how to handle GLG Alarms using a global
-     Alarm handler. The alarms are added to the chart's plots in 
-     the GLG Builder.
+   In addition to the functionality shown in the RealTimeChart example,
+   this example also demonsrates how to handle GLG Alarms using a global
+   Alarm handler. The alarms are added to the chart's plots in 
+   the GLG Builder.
 	
 RTChartMarkerFeedback
-     In addition to the functionality shown in the RealTimeChart example,
-     this example also demonsrates how to show/hide a marker for a data sample
-     selected with a double click. 
+   In addition to the functionality shown in the RealTimeChart example,
+   this example also demonsrates how to show/hide a marker for a data sample
+   selected with a double click. 
 
 BarGraph2D
-  GlgGraphApplet.java   
-     Demonstrates how to subclass a GlgBean and use it as a top
-     level applet. It displays a Glg drawing containing a bar graph 
-     which is updated periodically with new data values.
-
-  GlgGraphComponent.java 
-     Demonstrates how display and update a GLG graph in a Glg bean.
-     The Glg bean is used as a component inside another applet.
+   Demonstrates how display and update a GLG graph in a GLG bean.
+   The GLG bean is used as a component inside another applet.
 
 LineGraph2D
-     Demostrates the use of the GLG single line graph. Displays the
-     current time stamps as the X axis labels.
+   Demostrates the use of the GLG single line graph. Displays the
+   current time stamps as the X axis labels.
 
 ObjectSelection
-     Demonstrates how to handle Glg object selection events using 
-     Glg InputCallback. It shows how to process event types such as
-     CustomEvent and ObjectSelection.
+   Demonstrates how to handle GLG object selection events using 
+   GLG InputCallback. It shows how to process event types such as
+   CustomEvent and ObjectSelection.
 
 Subclassing
-     Demonstrates how to subclass a GlgBean and use it as a custom 
-     graphics component inside another applet. 
+   Demonstrates how to subclass a GlgBean and use it as a custom 
+   graphics component inside another applet. 
 
 ConstrainAttributes
-    Demonstrates how to constrain object attributes.
+   Demonstrates how to constrain object attributes.
 
 CustomData
-    Demonstrates how to add custom properties to an object,
-    such as custom MouseClickEvent and TooltipString, as well as custom
-    DataValue property of the D (double) type.
+   Demonstrates how to add custom properties to an object,
+   such as custom MouseClickEvent and TooltipString, as well as custom
+   DataValue property of the D (double) type.
 
 ObjectCreateAndMove
-    Demonstrates the following features:
-      - the use of the Trace callback;
-      - how to create a polygon object using the mouse;
-      - how to add an object to the drawing;
-      - how to traverse a container object, such as a polygon;
-      - how to convert screen coordinates to world coordinates;
-      - how to select and move objects with the mouse.
+   Demonstrates the following features:
+     - the use of the Trace callback;
+     - how to create a polygon object using the mouse;
+     - how to add an object to the drawing;
+     - how to traverse a container object, such as a polygon;
+     - how to convert screen coordinates to world coordinates;
+     - how to select and move objects with the mouse.
 
 ObjectPosition
-    Demonstrates the following features:
-      - the use of the Trace callback;
-      - drag&drop an icon from a palette to the Drawing Area;
-      - create a polygon object with the mouse;
-      - scale an object as it is placed in the drawing area;
-      - move an object with the mouse;
-      - highlight the selected object by displaying a rectangle surrounding 
-        the object's bounding box; 
-      - cut/paste operations;
-      - save/load operations.
+   Demonstrates the following features:
+     - the use of the Trace callback;
+     - drag&drop an icon from a palette to the Drawing Area;
+     - create a polygon object with the mouse;
+     - scale an object as it is placed in the drawing area;
+     - move an object with the mouse;
+     - highlight the selected object by displaying a rectangle surrounding 
+       the object's bounding box; 
+     - cut/paste operations;
+     - save/load operations.
 
 Blinking
-    Demonstrates how to use integrated blinking feature of the 
-    GLG Toolkit.
+   Demonstrates how to use integrated blinking feature of the 
+   GLG Toolkit.
 
 ListWidget
-    Demonstrates how to use GLG List Widget, handle input events
-    occured in the widget, as well as use the list widget's messages
-    to query the list widget's settings and modify its items.
+   Demonstrates how to use GLG List Widget, handle input events
+   occured in the widget, as well as use the list widget's messages
+   to query the list widget's settings and modify its items.
 
 OptionMenu
-    Demonstrates how to use GLG OptionMenu Widget and its messages.
+   Demonstrates how to use GLG OptionMenu Widget and its messages.
 
 TagsExample
-    Demonstrates how to use GLG tags feature to query a list of tags
-    defined in a drawing, and use them to animate the drawing with data.
+   Demonstrates how to use GLG tags feature to query a list of tags
+   defined in a drawing, and use them to animate the drawing with data.
 
 SCADA_Viewer
-    An example of a generic SCADA Viewer application that loads a GLG drawing
-    and updates all tags defined in the drawing with realtime data.
-    It also demonstrates how to navigate between several drawings.
-    The example can be extended with custom application-specific 
-    functionality.    
+   An example of a generic SCADA Viewer application that loads a GLG drawing
+   and updates all tags defined in the drawing with realtime data.
+   It also demonstrates how to navigate between several drawings.
+   The example can be extended with custom application-specific 
+   functionality.    
 
 GIS
   GlgGISExample.java
@@ -146,6 +139,13 @@ GIS
     The drawing used in this example, gis_example2.g, also needs to be
     modified so that GISMapServerURL property of the GIS object points
     to the correct MapServer URL.
+
+  GIS_PilotView
+    Demonstrates how to integrate mapping functionality with the dynamic
+    features of the GLG Toolkit in a Java application using asynchronous GIS
+    map loading request. It also demonstrates "pilot view" functionality,
+    with the map periodically adjusted to keep it centered on the moving
+    aircraft icon.
 
 All examples may be used either as applets in a browser or as standalone 
 Java programs. The examples have to be built prior to running them.

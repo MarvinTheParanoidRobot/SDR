@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Web HTML5 & JavaScript Real-Time Strip Chart,
+      with Cursor Feedback and Tooltips</title>
+
+    <link rel="icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon">
+    <link rel="shortcut icon" href="http://www.genlogic.com/favicon.ico"
+          type="image/x-icon"> 
+    <link rel="stylesheet" href="demo.css">
+
+    <script defer src="GlgDemo.js"></script>
+    <script defer src="GlgToolkitDemo.js"></script>
+    <script defer src="gunzip.min.js"></script>
+    <script defer src="graph_demo.js"></script>
+  </head>
+
+  <body>
+    <p>
+      <a href="http://www.genlogic.com">Home</a> |
+      <a href="http://www.genlogic.com/demos.html">Demos</a> |
+      <a href="http://www.genlogic.com/index.html#Products">Products</a>
+    </p>
+
+    <h4> GLG Real-Time Chart Web Demo (HTML5 & JavaScript)</h4>
+
+    <p>This pure HTML5 and JavaScript example demonstrates the use of
+      the GLG API to customize GLG 2D and 3D graph widgets.
+      <a href="http://www.genlogic.com/widgets.html#2D_Graphs"
+         target="_blank"><b>Click here</b></a>
+      to see all available<b> graph and chart widgets</b>.</p>
+
+    <p>Examples of real-time charts with integrated scrolling and cursor feedback
+      may be found in the
+      <a href="http://www.genlogic.com/html5_demos/rt_chart_demo.html"
+         target="_blank" ><b>Real-Time Strip-Chart Demo</b></a>.<p>
+
+    <p>The demo loads GLG drawings containing GLG 2D and 3D graphs, animates
+      them with real-time data and changes graphs' properties.
+      The <b>GLG JavaScript Library</b> provides an API for displaying drawings
+      on a web page, as well as updating them with data and changing their
+      properties at run time.
+      <a href="#info" >More information</a></p>
+
+    <button id="change_size" type="button" class="top_button"
+            onclick="SetDrawingSize( true )">Change Drawing Size</button>
+    <a href="graph_demo.js" target="_blank" style="text-decoration: none;">
+      <button type="button" class="top_button">Source Code</button>
+    </a>
+
+    <hr size="2">
+    <form name="input_form">
+      <input value="Bars"         onclick="LoadGraph( BAR )"
+             type="button" class="top_button">
+      <input value="3D Bars"      onclick="LoadGraph( BAR_3D )"
+             type="button" class="top_button">
+      <input value="Line"         onclick="LoadGraph( LINE )"
+             type="button" class="top_button">
+      <input value="3D Line"      onclick="LoadGraph( RIBBON )"
+             type="button" class="top_button">
+      <input value="Change Scroll Type" onclick="ScrollType()"
+             type="button" class="top_button" id="scroll_type_button">
+      <input value="Reverse"      onclick="Reverse()"
+             type="button" class="top_button" id="reverse_button">
+
+      <div style="line-height:50%;"><br></div>
+      
+      <input value="Update Whole Frame" onclick="WholeFrame()"
+             type="button" class="top_button">
+      <input value="Update By 1 Sample" onclick="OneSample()"
+             type="button" class="top_button">
+      <input value="Change Number of Samples" onclick="NumberOfSamples()"
+             type="button" class="top_button">
+      <input value="Change Range"       onclick="ChangeRange()"
+             type="button" class="top_button">
+
+      <div style="line-height:50%;"><br></div>
+      
+      <input value="Change Number of Y Labels" onclick="ChangeYLabels()"
+             type="button" class="top_button">
+      <input value="Change Number of X Labels" onclick="ChangeXLabels( 1 )"
+             type="button" class="top_button">
+      <input value="Change Y Label Format"     onclick="ChangeYFormat()"
+             type="button" class="top_button">
+      
+      <div style="line-height:50%;"><br></div>
+      
+      <input value="Start Update"  onclick="StartUpdate()"
+             type="button" class="top_button">
+      <input value="Stop Update"   onclick="StopUpdate()"
+             type="button" class="top_button">
+      <input value="Change X Grid" onclick="Grid( 1 )"
+             type="button" class="top_button" id="x_grid_button">
+      <input value="Change Y Grid" onclick="Grid( 0 )"
+             type="button" class="top_button" id="y_grid_button">
+
+      <div style="line-height:50%;"><br></div>
+      
+      Enter new text for graph annotations, press <i>&lt;Enter&gt;</i> when done:
+      
+      <div style="line-height:10%;"><br></div>
+      
+      <input name="title" value="Bar Graph"
+             onchange="SetTitles( document.input_form.title.value,
+                                  document.input_form.titleX.value,
+                                  document.input_form.titleY.value )"
+             type="textinput" style="margin-top: 5px;">
+      <input name="titleY" value="Text_Y"
+             onchange="SetTitles( document.input_form.title.value,
+                                  document.input_form.titleX.value,
+                                  document.input_form.titleY.value )"
+             type="textinput" style="margin-top: 5px;">
+      <input name="titleX" value="Text_X"
+             onchange="SetTitles( document.input_form.title.value,
+                                  document.input_form.titleX.value,
+                                  document.input_form.titleY.value )"
+             type="textinput" style="margin-top: 5px; margin-bottom: 10px;">
+    </form>
+    
+    <div id="glg_area" class="glg_wrapper"
+         style="width: 100%; height: 500px; background-color: white; 
+                padding: 0px;"> 
+    </div>
+ 
+    <p><a id="info" />
+      An interactive drawing editor, <b>GLG Graphics Builder</b>, may be used to
+      edit parameters of charts, graphs and other widgets, as well as to
+      create <b>panels</b> containing charts, dials, meters and custom graphical
+      objects with elaborate dynamic behavior. A drawing created in the
+      Graphics Builder is saved into a <i>.g</i> file, which is then displayed
+      on a web page.
+    </p>
+
+    <p>The <b>GLG JavaScript Library</b> is used to deploy the drawing on a
+      web page. The library provides an API to load and display the drawing,
+      animate it with real-time data and handle user interaction.</p>
+
+    <p><a id="info" />The GLG JavaScript Library implements full GLG
+      run-time functionality present in the GLG C/C++, C# and Java
+      libraries, allowing the same graphical page and programming
+      logic to be shared between the desktop and Web/Mobile version of
+      an application.</p>
+
+  </body>
+</html>

@@ -22,7 +22,7 @@ will be displayed:
 
   Can't find default font!
   Make sure 75dpi and 100dpi X fonts are installed:
-  - xfonts-75dpi xfonts-100dpi packages for Debian/Ubuntu.
+  - xfonts-base xfonts-75dpi xfonts-100dpi packages for Debian/Ubuntu.
   - xorg-x11-fonts-ISO8859-1-75dpi, xorg-x11-fonts-ISO8859-1-100dpi         
     and xorg-x11-fonts-misc packages for RedHat/Fedora.         
   The X Server may need to be restarted after installing the fonts.

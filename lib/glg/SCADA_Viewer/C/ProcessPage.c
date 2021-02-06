@@ -143,12 +143,12 @@ void IterateProcess( GlgObject drawing )
 
    if( HeaterLevel > 0.9 || heater_high )
    {
-      heater_high = LugVar( heater_high, 10 );
+      heater_high = LagVar( heater_high, 10 );
       SolventValve -= VALVE_CHANGE_SPEED;
    }
    else if( HeaterLevel < 0.45 || heater_low )
    {
-      heater_low = LugVar( heater_low, 10 );
+      heater_low = LagVar( heater_low, 10 );
       SolventValve += VALVE_CHANGE_SPEED;
    }
    SolventValve = PutInRange( SolventValve, 0., 1. );
@@ -156,36 +156,36 @@ void IterateProcess( GlgObject drawing )
    /* Inversed */
    if( WaterLevel > 0.2 || water_high )
    {
-      water_high = LugVar( water_high, 10 );
+      water_high = LagVar( water_high, 10 );
       WaterValve += VALVE_CHANGE_SPEED;
    }
    else if( WaterLevel < 0.05 || water_low )
    {
-      water_low = LugVar( water_low, 10 );
+      water_low = LagVar( water_low, 10 );
       WaterValve -= VALVE_CHANGE_SPEED;
    }
    WaterValve = PutInRange( WaterValve, 0., 1. );
 
    if( SteamTemperature > 0.9 || steam_high )
    {
-      steam_high = LugVar( steam_high, 20 );
+      steam_high = LagVar( steam_high, 20 );
       SteamValve -= STEAM_VALVE_CHANGE_SPEED;
    }
    else if( SteamTemperature < 0.2 || steam_low )
    {
-      steam_low = LugVar( steam_low, 20 );
+      steam_low = LagVar( steam_low, 20 );
       SteamValve += STEAM_VALVE_CHANGE_SPEED;
    }
    SteamValve = PutInRange( SteamValve, 0., 1. );
 
    if( CoolingTemperature > 0.7 || cooling_high )
    {
-      cooling_high = LugVar( cooling_high, 10 );
+      cooling_high = LagVar( cooling_high, 10 );
       CoolingValve += VALVE_CHANGE_SPEED;
    }
    else if( CoolingTemperature < 0.3 || cooling_low )
    {
-      cooling_low = LugVar( cooling_low, 10 );
+      cooling_low = LagVar( cooling_low, 10 );
       CoolingValve -= VALVE_CHANGE_SPEED;
    }
    CoolingValve = PutInRange( CoolingValve, 0., 1. );
@@ -551,14 +551,14 @@ double GetFlowValue( double state, double valve )
 }
    
 /*---------------------------------------------------------------------
-| Helps to implement lug behavior
+| Helps to implement lag behavior
 */
-int LugVar( int variable, int lug )
+int LagVar( int variable, int lag )
 {
    if( variable )
      return --variable;
    else
-     return lug;
+     return lag;
 }
 
 /*---------------------------------------------------------------------

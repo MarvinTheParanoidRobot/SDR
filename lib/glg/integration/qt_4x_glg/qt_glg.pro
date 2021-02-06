@@ -5,7 +5,7 @@ TARGET = glg_example
 DEPENDPATH += .
 INCLUDEPATH += . /usr/local/glg/include
 LIBS = -L/usr/local/glg/lib -lglg_x11 -lglg_map_stub \
-       -lXt -lX11 -ljpeg -lpng -lz -ldl 
+       -lXt -lX11 -lXft -lfontconfig -lfreetype -ljpeg -lpng -lz -ldl 
 
 # On Linux, uncomment the line below for additional libraries.
 # Due to a known bug in ldd/dlopen, -lpthread is required to avoid a crash 
