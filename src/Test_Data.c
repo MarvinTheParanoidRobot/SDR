@@ -29,13 +29,16 @@
 // FUNCTION DECLARATIONS
 //====================================================================
 void Create_Sine_Wave(double sample_rate, double frequency, int Number_of_samples,int bit,double t_start,float dataout[]); //creates a sampled sinewave of length N
-void DSB_SC_MOD(double sample_rate, double frequency, int Number_of_samples,int bit,double t_start,float dataout[]);//short carrier modulator samples of length N
-void DSB_LC_MOD(double sample_rate, double frequency, int Number_of_samples,int bit, int A,double t_start,float  dataout[]);//Large carrier modulatorsamples of length N
 
+void DSB_SC_MOD(double sample_rate, double frequency, int Number_of_samples,int bit,double t_start,float dataout[]);//short carrier modulator samples of length N
+
+void DSB_LC_MOD(double sample_rate, double frequency, int Number_of_samples,int bit, int A,double t_start,float  dataout[]);//Large carrier modulatorsamples of length N
 
 //====================================================================
 // FUNCTION DEFINITIONS
 //====================================================================
+
+//Creates a simple sinewave where you can designate the frequency,sample rate, number of samples, bit level and what time it should start at.
 void Create_Sine_Wave(double sample_rate, double frequency, int Number_of_samples,int bit,double t_start,float dataout[]){
     
     int i;
@@ -53,7 +56,10 @@ void Create_Sine_Wave(double sample_rate, double frequency, int Number_of_sample
         
     }
 }
+
+// Simple Double Sideband Short Carrier Modulation implementation
 void DSB_SC_MOD(double sample_rate, double frequency, int Number_of_samples,int bit,double t_start,float dataout[]){
+
     int i;
     double w,t;
     w=2*M_PI*frequency;
@@ -69,7 +75,10 @@ void DSB_SC_MOD(double sample_rate, double frequency, int Number_of_samples,int 
         
     }
 }
+
+// Simple Double Sideband Large Carrier Modulation implementation
 void DSB_LC_MOD(double sample_rate, double frequency, int Number_of_samples,int bit, int A,double t_start,float dataout[]){
+     
     int i;
     double w,t;
     w=2*M_PI*frequency;

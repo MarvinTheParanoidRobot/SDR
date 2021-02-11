@@ -20,3 +20,23 @@ Warning: Detected SLOW OpenGL software renderer <Mesa OffScreen> - check OpenGL 
 Info: Use -glg-disable-hardware-opengl option to suppress this warning,
 
 Info:  or use -glg-disable-opengl to switch to the X renderer.
+
+Info: Detected non-vendor Mesa OpenGL driver installed on the system.
+
+Info:  Switching to libOSMesa software OpenGL to avoid problems on some systems.
+
+Info:  To disable switching, use either the -glg-disable-mesa-switch command-line option 
+
+Info:  or set the GLG_OPENGL_MESA_SWITCH environment variable to false.
+
+Info:  Alternatively, install vendor-supplied OpenGL driver for your graphics card.
+
+Info:  To disable OpenGL, use the -glg-disable-opengl command-line option,
+
+Info:  or set the GLG_OPENGL_MODE environment variable to false.
+
+Warning: Detected SLOW OpenGL software renderer <Mesa OffScreen> - check OpenGL / graphics card setup.
+
+Info: Use -glg-disable-hardware-opengl option to suppress this warning,
+
+Info:  or use -glg-disable-opengl to switch to the X renderer.

@@ -56,7 +56,10 @@ int testsdr(void);
 //====================================================================
 // FUNCTION DEFINITIONS
 //====================================================================
+
+//Simple Triangle window for Signal Processing
 int triangle(int window_size, float data[]){
+    
     int i;
     for (i=0;i<=window_size;i++){
         data[i]=1-(i*(window_size/2))/(window_size/2);
@@ -64,7 +67,9 @@ int triangle(int window_size, float data[]){
     return 0;
 }
 
+//Simple Welch window for Signal Processing
 int Welch(int window_size, float data[]){
+    
     int i;
     for (i=0;i<=window_size;i++){
         data[i]=1-powf(((i-(window_size/2))/(window_size/2)),2);
@@ -72,7 +77,9 @@ int Welch(int window_size, float data[]){
     return 0;
 }
 
+//Simple Sine window for Signal Processing
 int Sine(int window_size, float data[]){
+    
     int i;
     for (i=0;i<=window_size;i++){
         data[i]=sinf((M_PI*i)/window_size);
@@ -80,7 +87,9 @@ int Sine(int window_size, float data[]){
     return 0;
 }
 
+//Simple Hann window for Signal Processing
 int Hann(int window_size, float data[]){
+    
     int i;
     for (i=0;i<=window_size;i++){
         data[i]=powf(sinf((M_PI*i)/window_size),2);
@@ -88,7 +97,9 @@ int Hann(int window_size, float data[]){
     return 0;
 }
 
+//Simple Hamming window for Signal Processing
 int Hamming(int window_size,float data[]){
+    
     int i;
     for (i=0;i<=window_size;i++){
         data[i]=0.54 + 0.46*cosf((2*M_PI/window_size)*i);
@@ -96,7 +107,9 @@ int Hamming(int window_size,float data[]){
     return 0;
 }
 
+//Simple Blackman window for Signal Processing
 int Blackman(int window_size, float data[]){
+    
     int i;
     for (i=0;i<=window_size;i++){
         data[i]=0.42 - 0.5*cosf((2*M_PI/window_size)*i)+  0.08*cosf((2*M_PI/window_size)*i);
@@ -104,7 +117,9 @@ int Blackman(int window_size, float data[]){
     return 0;
 }
 
+//Simple Gaussian window for Signal Processing
 int Gaussian(int window_size, float data[],float delta){
+    
     int i;
     for (i=0;i<=window_size;i++){
         data[i]=expf(-0.5*powf((i-(window_size/2))/(delta*window_size/2),2));
@@ -112,7 +127,9 @@ int Gaussian(int window_size, float data[],float delta){
     return 0;
 }
 
+//Simple array multiplication for multiplying data input with a window
 int multiply( float window[],float data[],int window_size,float final_data[]){
+    
     int i;
     for(i=0;i<=window_size;i++){
         final_data[i]= window[i]*data[i];
@@ -120,7 +137,9 @@ int multiply( float window[],float data[],int window_size,float final_data[]){
     return 0;
 }
 
+//Simple array division for dividing data output with a window
 int divide(float window[],float data[],int window_size, float final_data[]){
+    
     int i;
     for(i=0;i<=window_size;i++){
         final_data[i]= data[i]/window[i];
@@ -128,7 +147,9 @@ int divide(float window[],float data[],int window_size, float final_data[]){
     return 0;
 }
 
+//Write a float data array to a txt file with option of dividing data by its array length for normalisation
 int writetextf(float data[],int N,char *name, bool normalised){
+     
     FILE *f = fopen(name, "w");
     if (f == NULL){
         printf("Error opening file!\n");
@@ -149,7 +170,9 @@ int writetextf(float data[],int N,char *name, bool normalised){
     return 0;
 }
 
+//Write a float data array to a txt file used for writing complex data created from FFTW3 library
 int writetextc(float data[][2],int N,char *name){
+    
     FILE *f = fopen(name, "w");
     if (f == NULL){
         printf("Error opening file!\n");
@@ -164,7 +187,9 @@ int writetextc(float data[][2],int N,char *name){
     return 0;
 }
 
+//simple test function that tests the writing of a wav file as well as testing the FFTW library by writing txt files for original data, transformed data(Frequency domain) and transformed data(Time domain)
 int testsdr(void){
+     
     int NUM_CHANNELS,SAMPLE_RATE,BLOCK_SIZE;
     NUM_CHANNELS=1,SAMPLE_RATE=48000,BLOCK_SIZE=48000;
     
@@ -180,7 +205,7 @@ int testsdr(void){
     double frequency;
     frequency=1000;
     int i;
-    for(i=0;i<10;i++){
+    for(i=0;i<10;i++){ //wav file of sinewave with increasing frequency every second
         Create_Sine_Wave(SAMPLE_RATE,frequency,Number_of_samples,16,0, datain);
         tinywav_write_f(&tw, datain, Number_of_samples);
         frequency=frequency+1000;
@@ -189,19 +214,26 @@ int testsdr(void){
     
     float datatest[Number_of_samples];
     Create_Sine_Wave(SAMPLE_RATE,1000,Number_of_samples,16,0, datatest);
+
     float *out;
     fftwf_complex *out_cpx;
+
     out = (float *) malloc(BLOCK_SIZE*sizeof(float));
+
     fftwf_plan fft;
     fftwf_plan ifft;
+
     out_cpx = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex)*BLOCK_SIZE);
+
     fft=fftwf_plan_dft_r2c_1d(BLOCK_SIZE, datatest, out_cpx, FFTW_MEASURE);
     fftwf_execute(fft); 
     writetextc(out_cpx,BLOCK_SIZE,"../data/Test fft");
+
     ifft=fftwf_plan_dft_c2r_1d(BLOCK_SIZE, out_cpx,  out,FFTW_MEASURE);
     fftwf_execute(ifft);
     writetextf(out,BLOCK_SIZE,"../data/Test ifft",0);
     writetextf(datatest,BLOCK_SIZE,"../data/Test data",1);
+
     fftwf_destroy_plan(fft);
     fftwf_destroy_plan(ifft);
     free(out);fftwf_free(out_cpx);

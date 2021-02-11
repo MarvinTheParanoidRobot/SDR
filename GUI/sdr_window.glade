@@ -3,6 +3,7 @@
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="window_main">
+    <property name="resizable">False</property>
     <property name="default_width">1000</property>
     <property name="default_height">800</property>
     <property name="icon_name">Software Defined Radio</property>
@@ -10,6 +11,7 @@
     <child>
       <object class="GtkFixed" id="fixed">
         <property name="width_request">1000</property>
+        <property name="height_request">800</property>
         <property name="visible">True</property>
         <child>
           <object class="GtkMenuBar" id="menubar">
@@ -263,6 +265,58 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkMenuItem" id="Sampling_rate">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">_Sampling rate</property>
+                        <property name="use_underline">True</property>
+                        <child type="submenu">
+                          <object class="GtkMenu" id="menu7">
+                            <property name="visible">True</property>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="sampling">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">44.1 kHz</property>
+                                <property name="use_underline">True</property>
+                                <property name="active">True</property>
+                                <property name="draw_as_radio">True</property>
+                                <signal name="toggled" handler="on_sampling_toggled"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="sampling_1">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">48 kHz</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_as_radio">True</property>
+                                <property name="group">sampling</property>
+                                <signal name="toggled" handler="on_sampling_1_toggled"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="sampling_2">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">88.2 kHz</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_as_radio">True</property>
+                                <property name="group">sampling</property>
+                                <signal name="toggled" handler="on_sampling_2_toggled"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="sampling_3">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">96 kHz</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_as_radio">True</property>
+                                <property name="group">sampling</property>
+                                <signal name="toggled" handler="on_sampling_3_toggled"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -322,9 +376,110 @@
                 <property name="homogeneous">True</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkToggleToolButton" id="Skip">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Skip</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-media-forward</property>
+                <signal name="toggled" handler="on_Skip_toggled"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="Zoom_in">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Zoom in</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-zoom-in</property>
+                <signal name="toggled" handler="on_Zoom_in_toggled"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="Zoom_out">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Zoom out</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-zoom-out</property>
+                <signal name="toggled" handler="on_Zoom_out_toggled"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="y">20</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkViewport" id="viewport">
+            <property name="width_request">1000</property>
+            <property name="height_request">221</property>
+            <property name="visible">True</property>
+            <property name="resize_mode">immediate</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="y">60</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkViewport" id="viewport1">
+            <property name="width_request">1000</property>
+            <property name="height_request">221</property>
+            <property name="visible">True</property>
+            <property name="resize_mode">immediate</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="y">279</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkViewport" id="viewport2">
+            <property name="width_request">1000</property>
+            <property name="height_request">221</property>
+            <property name="visible">True</property>
+            <property name="resize_mode">immediate</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="y">498</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkVolumeButton" id="volume">
+            <property name="width_request">100</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="resize_mode">immediate</property>
+            <property name="relief">none</property>
+            <property name="focus_on_click">False</property>
+            <property name="orientation">vertical</property>
+            <property name="icons">audio-volume-muted
+audio-volume-high
+audio-volume-low
+audio-volume-medium</property>
+          </object>
+          <packing>
+            <property name="y">721</property>
           </packing>
         </child>
       </object>
