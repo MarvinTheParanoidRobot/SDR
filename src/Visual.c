@@ -84,14 +84,17 @@ typedef struct Widgets {
 //====================================================================
 // GLOBAL VARIABLES
 //====================================================================
-
+GlgObject Plots[2]; 
+GlgObject Plots1[1]; 
 Widgets glade;
 
 //====================================================================
 // FUNCTION DECLARATIONS
 //====================================================================
 
-static gint AnimateControlPanel( gpointer data );
+void InitChartBeforeH( gpointer data,double major_interval,double minor_interval,int NUM_PLOTS, int TimeSpan,double Low, double High );
+void InitChartAfterH(  gpointer data, GlgObject Plots[],int NUM_PLOTS, GlgLong num_plots_in_drawing );
+static gint UpdateChart( gpointer data );
 void on_window_main_destroy();
 void test_wav();
 
@@ -151,9 +154,8 @@ int main(int argc, char *argv[]) {
   	GlgSetSResource( NULL, "$config/GlgSearchPath", full_path );
   	GlgFree( full_path );
 
-	glade.Glg_viewport = GlgLoadWidgetFromFile( "Data_graph.g"  );
-	glade.Glg_viewport1 = GlgLoadWidgetFromFile( "Data_graph.g" );
-	
+	glade.Glg_viewport = GlgLoadWidgetFromFile( "chart2.g"  );
+	glade.Glg_viewport1 = GlgLoadWidgetFromFile( "chart11.g" );
 
   	gtk_glg_set_viewport(glade.glg, glade.Glg_viewport   );
 	gtk_glg_set_viewport(glade.glg1, glade.Glg_viewport1 );
@@ -164,12 +166,22 @@ int main(int argc, char *argv[]) {
 	gtk_container_add( GTK_CONTAINER( glade.viewport  ), glade.glg  );
 	gtk_container_add( GTK_CONTAINER( glade.viewport1 ), glade.glg1 );
 
+	InitChartBeforeH(glade.Glg_viewport,-6,-5,2,60,-1.,1.);
+	InitChartBeforeH(glade.Glg_viewport1,-6,-5,1,60,0.,10000.);
+
+	double num_plots_d ,num_plots_d1;
+	GlgGetDResource( glade.Glg_viewport, "Chart/NumPlots", &num_plots_d );
+	GlgGetDResource( glade.Glg_viewport1, "Chart/NumPlots", &num_plots_d1 );
+	InitChartAfterH(glade.Glg_viewport,Plots,2,num_plots_d );
+	InitChartAfterH(glade.Glg_viewport1,Plots1,1,num_plots_d1 );
+
   	gtk_widget_show( glade.glg    );
 	gtk_widget_show( glade.glg1   );
   	gtk_widget_show( glade.window );
   
   	/* Add timer to update control panel with data. */
-  	g_timeout_add( (guint32) UPDATE_INTERVAL, AnimateControlPanel, (gpointer) glade.Glg_viewport );   
+  	g_timeout_add( (guint32) UPDATE_INTERVAL, UpdateChart, (gpointer) glade.Glg_viewport );  
+	g_timeout_add( (guint32) UPDATE_INTERVAL, UpdateChart, (gpointer) glade.Glg_viewport1 ); 
 
 	//----- ENTER THE GTK MAIN LOOP -----
 	gtk_main();		//Enter the GTK+ main loop until the application closes.
@@ -177,14 +189,72 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-static gint AnimateControlPanel( gpointer data )
+/*----------------------------------------------------------------------
+| Initializes chart parameters before hierarchy setup occurred.
+*/
+void InitChartBeforeH( gpointer data,double major_interval,double minor_interval,int NUM_PLOTS, int TimeSpan,double Low, double High ){
+   	GlgObject viewport = (GlgObject) data;
+
+   	/* Set new number of plots as needed. */
+   	GlgSetDResource( viewport, "Chart/NumPlots", NUM_PLOTS );
+
+   	/* Set Time Span for the X axis. */
+   	GlgSetDResource(  viewport, "Chart/XAxis/Span", TimeSpan );
+
+   	/* Set tick intervals for the Time axis. Positive value sets the
+      	exact interval in sec, while negative value sets the number of ticks
+      	regardless of the time span. 
+   	*/
+
+   	GlgSetDResource( viewport, "Chart/XAxis/MajorInterval", major_interval );
+   	GlgSetDResource( viewport, "Chart/XAxis/MinorInterval", minor_interval );
+
+   	/* Set data value range. Since the graph has one Y axis and
+      	common data range for the plots, Low/High data range is
+      	set on the YAxis level.
+     	*/
+   	GlgSetDResource( viewport, "Chart/YAxis/Low", Low );
+   	GlgSetDResource( viewport, "Chart/YAxis/High", High );
+}
+
+/*----------------------------------------------------------------------
+| Initializes chart parameters after hierarchy setup has occurred.
+*/
+void InitChartAfterH( gpointer data, GlgObject Plots[],int NUM_PLOTS, GlgLong num_plots_in_drawing ){
+	GlgObject viewport = (GlgObject) data;
+   	GlgLong i;
+   	char *res_name;
+
+   	/* Store objects IDs for each plot. */
+   	for( i=0; i<NUM_PLOTS; ++i ){
+      	res_name = GlgCreateIndexedName( "Plot#%", i );
+      	Plots[i] = GlgGetNamedPlot( viewport, "Chart", res_name ); 
+      	GlgFree( res_name );
+   	}
+      
+   	/* For the existing plots, use color and line annotation setting 
+     	 from the drawing; initialize new plots using random colors and strings
+      	for demo purposes. 
+   	*/
+   	if( num_plots_in_drawing < NUM_PLOTS ){
+     	for( i=num_plots_in_drawing; i < NUM_PLOTS; ++i ){
+			/* Using a random color for a demo. */
+			GlgSetGResource( Plots[i], "EdgeColor", GlgRand(0., 1.), GlgRand(0., 1.), GlgRand(0., 1.) );
+			res_name = GlgCreateIndexedName( "Var%", i );
+			GlgSetSResource( Plots[i], "Annotation", res_name );
+			GlgFree( res_name );
+     	}
+	}
+}
+
+static gint UpdateChart( gpointer data )
 {
    	GlgObject viewport = (GlgObject) data;
 
 	GlgUpdate( viewport );
     GlgSync( viewport );
    	/* Reinstall the timer */
-   	g_timeout_add( (guint32) UPDATE_INTERVAL, AnimateControlPanel, (gpointer) viewport );   
+   	g_timeout_add( (guint32) UPDATE_INTERVAL, UpdateChart, (gpointer) viewport );   
 
 	return False;
 }
