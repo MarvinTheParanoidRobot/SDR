@@ -18,9 +18,11 @@
 #include <fftw3.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <gtk/gtk.h>
 #include <../include/SDR.h>
 #include <gtkglg.h>
+
 
 //====================================================================
 // STRUCTURES
@@ -66,10 +68,14 @@ typedef struct Widgets {
 	GtkWidget	*Skip;
 	GtkWidget	*Zoom_out;
 	GtkWidget	*Zoom_in;
+	GtkWidget	*File_name;
 	GlgObject   *Glg_viewport;
-	GtkWidget   * glg;
+	GtkWidget   *glg;
 	GlgObject   *Glg_viewport1;
-	GtkWidget   * glg1;
+	GtkWidget   *glg1;
+	GtkWidget   *recentchooserdialog1;
+	GtkWidget 	*Savedialog;
+	char        *filename;
 
 } Widgets;
 
@@ -87,13 +93,13 @@ typedef struct Widgets {
 GlgObject Plots[2]; 
 GlgObject Plots1[1]; 
 Widgets glade;
-
+bool user_edited_a_new_document=true;
 //====================================================================
 // FUNCTION DECLARATIONS
 //====================================================================
 
-void InitChartBeforeH( gpointer data,double major_interval,double minor_interval,int NUM_PLOTS, int TimeSpan,double Low, double High );
-void InitChartAfterH(  gpointer data, GlgObject Plots[],int NUM_PLOTS, GlgLong num_plots_in_drawing );
+void InitChartBeforeH( gpointer data,double major_interval,double minor_interval,int NUM_PLOTS, int TimeSpan,double Low, double High, GlgObject Plots[], GlgLong num_plots_in_drawing  );
+
 static gint UpdateChart( gpointer data );
 void on_window_main_destroy();
 void test_wav();
@@ -109,10 +115,11 @@ int main(int argc, char *argv[]) {
     gtk_builder_add_from_file (glade.builder, "../GUI/sdr_window.glade", NULL);
 
     glade.window        = GTK_WIDGET(gtk_builder_get_object(glade.builder, "window_main"));
+
     gtk_builder_connect_signals(glade.builder, NULL);
 	
 	glade.glg           = gtk_glg_new();
-	glade.glg1           = gtk_glg_new();
+	glade.glg1          = gtk_glg_new();
 	glade.fixed         = GTK_WIDGET(gtk_builder_get_object(glade.builder, "fixed"));
 	glade.menubar       = GTK_WIDGET(gtk_builder_get_object(glade.builder, "menubar"));
 	glade.New           = GTK_WIDGET(gtk_builder_get_object(glade.builder, "New"));
@@ -149,8 +156,14 @@ int main(int argc, char *argv[]) {
 	glade.Skip          = GTK_WIDGET(gtk_builder_get_object(glade.builder, "Skip"));
 	glade.Zoom_out      = GTK_WIDGET(gtk_builder_get_object(glade.builder, "Zoom_out"));
 	glade.Zoom_in       = GTK_WIDGET(gtk_builder_get_object(glade.builder, "Zoom_in"));
-
-  	full_path = GlgCreateRelativePath( argv[0], "../Drawings", False, False );
+	glade.File_name    = GTK_WIDGET(gtk_builder_get_object(glade.builder, "File_name"));
+	glade.recentchooserdialog1   = gtk_file_chooser_dialog_new ("Open File",GTK_WINDOW(glade.window),GTK_FILE_CHOOSER_ACTION_OPEN,"_CANCEL", GTK_RESPONSE_CANCEL,"_OPEN", GTK_RESPONSE_ACCEPT,NULL);
+	glade.Savedialog= gtk_file_chooser_dialog_new ("Save File",GTK_WINDOW(glade.window),GTK_FILE_CHOOSER_ACTION_SAVE,"_CANCEL", GTK_RESPONSE_CANCEL,"_SAVE", GTK_RESPONSE_ACCEPT,NULL);
+  	
+	gtk_widget_set_size_request (glade.recentchooserdialog1,100,200);
+	gtk_widget_set_size_request (glade.Savedialog,100,200);
+	
+	full_path = GlgCreateRelativePath( argv[0], "../Drawings", False, False );
   	GlgSetSResource( NULL, "$config/GlgSearchPath", full_path );
   	GlgFree( full_path );
 
@@ -166,19 +179,18 @@ int main(int argc, char *argv[]) {
 	gtk_container_add( GTK_CONTAINER( glade.viewport  ), glade.glg  );
 	gtk_container_add( GTK_CONTAINER( glade.viewport1 ), glade.glg1 );
 
-	InitChartBeforeH(glade.Glg_viewport,-6,-5,2,60,-1.,1.);
-	InitChartBeforeH(glade.Glg_viewport1,-6,-5,1,60,0.,10000.);
-
 	double num_plots_d ,num_plots_d1;
 	GlgGetDResource( glade.Glg_viewport, "Chart/NumPlots", &num_plots_d );
 	GlgGetDResource( glade.Glg_viewport1, "Chart/NumPlots", &num_plots_d1 );
-	InitChartAfterH(glade.Glg_viewport,Plots,2,num_plots_d );
-	InitChartAfterH(glade.Glg_viewport1,Plots1,1,num_plots_d1 );
+
+	InitChartBeforeH(glade.Glg_viewport,-6,-5,2,60,-1.,1.,Plots,num_plots_d );
+	InitChartBeforeH(glade.Glg_viewport1,-6,-5,1,60,0.,10000.,Plots1,num_plots_d1 );
+	gtk_entry_set_text (GTK_ENTRY(glade.File_name),"No wav file Chosen");
 
   	gtk_widget_show( glade.glg    );
 	gtk_widget_show( glade.glg1   );
   	gtk_widget_show( glade.window );
-  
+
   	/* Add timer to update control panel with data. */
   	g_timeout_add( (guint32) UPDATE_INTERVAL, UpdateChart, (gpointer) glade.Glg_viewport );  
 	g_timeout_add( (guint32) UPDATE_INTERVAL, UpdateChart, (gpointer) glade.Glg_viewport1 ); 
@@ -192,7 +204,7 @@ int main(int argc, char *argv[]) {
 /*----------------------------------------------------------------------
 | Initializes chart parameters before hierarchy setup occurred.
 */
-void InitChartBeforeH( gpointer data,double major_interval,double minor_interval,int NUM_PLOTS, int TimeSpan,double Low, double High ){
+void InitChartBeforeH( gpointer data,double major_interval,double minor_interval,int NUM_PLOTS, int TimeSpan,double Low, double High, GlgObject Plots[], GlgLong num_plots_in_drawing  ){
    	GlgObject viewport = (GlgObject) data;
 
    	/* Set new number of plots as needed. */
@@ -215,13 +227,7 @@ void InitChartBeforeH( gpointer data,double major_interval,double minor_interval
      	*/
    	GlgSetDResource( viewport, "Chart/YAxis/Low", Low );
    	GlgSetDResource( viewport, "Chart/YAxis/High", High );
-}
 
-/*----------------------------------------------------------------------
-| Initializes chart parameters after hierarchy setup has occurred.
-*/
-void InitChartAfterH( gpointer data, GlgObject Plots[],int NUM_PLOTS, GlgLong num_plots_in_drawing ){
-	GlgObject viewport = (GlgObject) data;
    	GlgLong i;
    	char *res_name;
 
@@ -247,6 +253,7 @@ void InitChartAfterH( gpointer data, GlgObject Plots[],int NUM_PLOTS, GlgLong nu
 	}
 }
 
+
 static gint UpdateChart( gpointer data )
 {
    	GlgObject viewport = (GlgObject) data;
@@ -256,7 +263,7 @@ static gint UpdateChart( gpointer data )
    	/* Reinstall the timer */
    	g_timeout_add( (guint32) UPDATE_INTERVAL, UpdateChart, (gpointer) viewport );   
 
-	return False;
+	return 0;
 }
 
 // called when window is closed
@@ -271,16 +278,55 @@ void on_Quit_activate(GtkMenuItem *menuitem){
 
 // called when New is clicked
 void on_New_activate(GtkMenuItem *menuitem){
-	
+	gtk_entry_set_text (GTK_ENTRY(glade.File_name),"Untitled.wav");
+	glade.filename="../data/Untitled.wav";
+	user_edited_a_new_document=false;
 }
 
 // called when Open is clicked
 void on_Open_activate(GtkMenuItem *menuitem){
 	
+	if (gtk_dialog_run (GTK_DIALOG ( glade.recentchooserdialog1 )) == GTK_RESPONSE_ACCEPT){
+    	char *filename;
+
+    	filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER ( glade.recentchooserdialog1 ));
+		glade.filename=filename;
+		gtk_entry_set_text (GTK_ENTRY(glade.File_name),strrchr(glade.filename, '/') + 1);
+		user_edited_a_new_document=false;
+    	g_free(filename);
+  	}
+
+	gtk_widget_hide( glade.recentchooserdialog1 );
 }
 
 // called when Save is clicked
 void on_Save_activate(GtkMenuItem *menuitem){
+	
+	
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER (glade.Savedialog),TRUE);
+	if (user_edited_a_new_document){
+  		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (glade.Savedialog),"../data/Untitled.wav");
+		user_edited_a_new_document=false;
+	}
+	else{
+  		gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (glade.Savedialog), glade.filename);
+	}
+	if (gtk_dialog_run (GTK_DIALOG (glade.Savedialog)) == GTK_RESPONSE_ACCEPT){
+    	char *filename;
+
+    	filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (glade.Savedialog));
+		glade.filename=filename;
+		gtk_entry_set_text (GTK_ENTRY(glade.File_name),strrchr(glade.filename, '/') + 1);
+    	g_free (filename);
+  	}
+	
+
+	gtk_widget_hide ( glade.Savedialog );
+}
+
+void	on_Filename_changed(GtkEntry *e) {
+	glade.filename=gtk_entry_get_text(e);
+	user_edited_a_new_document=false;
 	
 }
 
@@ -540,6 +586,8 @@ void on_sampling_3_toggled(GtkRadioMenuItem *radio) {
 		
 	}
 }
+
+
 
 //Simple test of reading from wav file containing music and rewriting to a new wav file and txt file of the data read
 void test_wav(){

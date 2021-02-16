@@ -9,7 +9,7 @@ GLG_INCLUDES = -I$(GLG_HOME)/include
 
 DEBUG_FLAGS = -g
 
-CFLAGS=-I$(IDIR) $(DEBUG_FLAGS) $(OPT_FLAGS) -Wall  $(GLG_INCLUDES) `pkg-config --libs gtk+-3.0` `pkg-config --cflags gtk+-3.0` -export-dynamic 
+CFLAGS=-I$(IDIR) $(DEBUG_FLAGS) $(OPT_FLAGS) -Wall  $(GLG_INCLUDES) `pkg-config --libs gtk+-3.0` `pkg-config --cflags gtk+-3.0` -export-dynamic  
 
 MAP_LIBS = -lglg_map_stub 
 
