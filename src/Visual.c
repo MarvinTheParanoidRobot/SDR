@@ -76,6 +76,7 @@ typedef struct Widgets {
 	GtkWidget   *recentchooserdialog1;
 	GtkWidget 	*Savedialog;
 	char        *filename;
+	char        *path;
 
 } Widgets;
 
@@ -159,9 +160,9 @@ int main(int argc, char *argv[]) {
 	glade.File_name    = GTK_WIDGET(gtk_builder_get_object(glade.builder, "File_name"));
 	glade.recentchooserdialog1   = gtk_file_chooser_dialog_new ("Open File",GTK_WINDOW(glade.window),GTK_FILE_CHOOSER_ACTION_OPEN,"_CANCEL", GTK_RESPONSE_CANCEL,"_OPEN", GTK_RESPONSE_ACCEPT,NULL);
 	glade.Savedialog= gtk_file_chooser_dialog_new ("Save File",GTK_WINDOW(glade.window),GTK_FILE_CHOOSER_ACTION_SAVE,"_CANCEL", GTK_RESPONSE_CANCEL,"_SAVE", GTK_RESPONSE_ACCEPT,NULL);
-  	
-	gtk_widget_set_size_request (glade.recentchooserdialog1,100,200);
-	gtk_widget_set_size_request (glade.Savedialog,100,200);
+  	gtk_window_set_default_size(GTK_WINDOW(glade.recentchooserdialog1),100,150);
+	gtk_window_set_default_size(GTK_WINDOW(glade.Savedialog),100,150);
+
 	
 	full_path = GlgCreateRelativePath( argv[0], "../Drawings", False, False );
   	GlgSetSResource( NULL, "$config/GlgSearchPath", full_path );
@@ -280,7 +281,6 @@ void on_Quit_activate(GtkMenuItem *menuitem){
 void on_New_activate(GtkMenuItem *menuitem){
 	gtk_entry_set_text (GTK_ENTRY(glade.File_name),"Untitled.wav");
 	glade.filename="../data/Untitled.wav";
-	user_edited_a_new_document=false;
 }
 
 // called when Open is clicked
@@ -289,34 +289,55 @@ void on_Open_activate(GtkMenuItem *menuitem){
 	if (gtk_dialog_run (GTK_DIALOG ( glade.recentchooserdialog1 )) == GTK_RESPONSE_ACCEPT){
     	char *filename;
 
-    	filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER ( glade.recentchooserdialog1 ));
-		glade.filename=filename;
-		gtk_entry_set_text (GTK_ENTRY(glade.File_name),strrchr(glade.filename, '/') + 1);
-		user_edited_a_new_document=false;
-    	g_free(filename);
+    	glade.filename= gtk_file_chooser_get_filename (GTK_FILE_CHOOSER ( glade.recentchooserdialog1 ));
+		if (strrchr(glade.filename, '/')==NULL){
+			filename=glade.filename;
+		}
+		else{
+			filename=strrchr(glade.filename, '/')+1;
+		}
+		glade.path=gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER ( glade.recentchooserdialog1 ));
+		if(glade.path!=NULL){
+			gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (glade.Savedialog), glade.path);
+		}
+		gtk_entry_set_text (GTK_ENTRY(glade.File_name),filename);
+		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (glade.Savedialog),filename);
   	}
+	  
 
 	gtk_widget_hide( glade.recentchooserdialog1 );
 }
 
 // called when Save is clicked
 void on_Save_activate(GtkMenuItem *menuitem){
-	
+	char *filename;
+	if (strrchr(glade.filename, '/')==NULL){
+		filename=glade.filename;
+	}
+	else{
+		filename=strrchr(glade.filename, '/')+1;
+	}
 	
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER (glade.Savedialog),TRUE);
+	
 	if (user_edited_a_new_document){
-  		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (glade.Savedialog),"../data/Untitled.wav");
+  		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (glade.Savedialog),filename);
+		gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (glade.Savedialog), "../data/");
 		user_edited_a_new_document=false;
 	}
 	else{
-  		gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (glade.Savedialog), glade.filename);
+		
+  		gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (glade.Savedialog),filename);
 	}
 	if (gtk_dialog_run (GTK_DIALOG (glade.Savedialog)) == GTK_RESPONSE_ACCEPT){
-    	char *filename;
-
-    	filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (glade.Savedialog));
-		glade.filename=filename;
-		gtk_entry_set_text (GTK_ENTRY(glade.File_name),strrchr(glade.filename, '/') + 1);
+    	glade.filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (glade.Savedialog));
+		if (strrchr(glade.filename, '/')==NULL){
+			filename=glade.filename;
+		}
+		else{
+			filename=strrchr(glade.filename, '/')+1;
+		}
+		gtk_entry_set_text (GTK_ENTRY(glade.File_name),filename);
     	g_free (filename);
   	}
 	
@@ -326,7 +347,6 @@ void on_Save_activate(GtkMenuItem *menuitem){
 
 void	on_Filename_changed(GtkEntry *e) {
 	glade.filename=gtk_entry_get_text(e);
-	user_edited_a_new_document=false;
 	
 }
 
