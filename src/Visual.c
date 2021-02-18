@@ -22,6 +22,8 @@
 #include <gtk/gtk.h>
 #include <../include/SDR.h>
 #include <gtkglg.h>
+#define _GNU_SOURCE
+#include <string.h>
 
 
 //====================================================================
@@ -65,6 +67,7 @@ typedef struct Widgets {
 	GtkWidget	*viewport;
 	GtkWidget	*viewport1;
 	GtkWidget	*viewport2;
+	GtkWidget	*viewport3;
 	GtkWidget	*Skip;
 	GtkWidget	*Zoom_out;
 	GtkWidget	*Zoom_in;
@@ -75,6 +78,7 @@ typedef struct Widgets {
 	GtkWidget   *glg1;
 	GtkWidget   *recentchooserdialog1;
 	GtkWidget 	*Savedialog;
+	GtkFileFilter	*filter;
 	char        *filename;
 	char        *path;
 
@@ -158,11 +162,8 @@ int main(int argc, char *argv[]) {
 	glade.Zoom_out      = GTK_WIDGET(gtk_builder_get_object(glade.builder, "Zoom_out"));
 	glade.Zoom_in       = GTK_WIDGET(gtk_builder_get_object(glade.builder, "Zoom_in"));
 	glade.File_name    = GTK_WIDGET(gtk_builder_get_object(glade.builder, "File_name"));
-	glade.recentchooserdialog1   = gtk_file_chooser_dialog_new ("Open File",GTK_WINDOW(glade.window),GTK_FILE_CHOOSER_ACTION_OPEN,"_CANCEL", GTK_RESPONSE_CANCEL,"_OPEN", GTK_RESPONSE_ACCEPT,NULL);
-	glade.Savedialog= gtk_file_chooser_dialog_new ("Save File",GTK_WINDOW(glade.window),GTK_FILE_CHOOSER_ACTION_SAVE,"_CANCEL", GTK_RESPONSE_CANCEL,"_SAVE", GTK_RESPONSE_ACCEPT,NULL);
-  	gtk_window_set_default_size(GTK_WINDOW(glade.recentchooserdialog1),100,150);
-	gtk_window_set_default_size(GTK_WINDOW(glade.Savedialog),100,150);
-
+	glade.viewport3    = GTK_WIDGET(gtk_builder_get_object(glade.builder, "viewport3"));
+	gtk_widget_set_sensitive(glade.Save ,false);
 	
 	full_path = GlgCreateRelativePath( argv[0], "../Drawings", False, False );
   	GlgSetSResource( NULL, "$config/GlgSearchPath", full_path );
@@ -186,7 +187,7 @@ int main(int argc, char *argv[]) {
 
 	InitChartBeforeH(glade.Glg_viewport,-6,-5,2,60,-1.,1.,Plots,num_plots_d );
 	InitChartBeforeH(glade.Glg_viewport1,-6,-5,1,60,0.,10000.,Plots1,num_plots_d1 );
-	gtk_entry_set_text (GTK_ENTRY(glade.File_name),"No wav file Chosen");
+	gtk_label_set_text (GTK_LABEL(glade.File_name),"No wav file Chosen");
 
   	gtk_widget_show( glade.glg    );
 	gtk_widget_show( glade.glg1   );
@@ -279,75 +280,66 @@ void on_Quit_activate(GtkMenuItem *menuitem){
 
 // called when New is clicked
 void on_New_activate(GtkMenuItem *menuitem){
-	gtk_entry_set_text (GTK_ENTRY(glade.File_name),"Untitled.wav");
-	glade.filename="../data/Untitled.wav";
+	gtk_label_set_text (GTK_LABEL(glade.File_name),"Untitled.wav");
+	glade.filename="Untitled.wav";
+	gtk_widget_set_sensitive(glade.Save ,true);
+	glade.path="../data/";
+
 }
 
 // called when Open is clicked
 void on_Open_activate(GtkMenuItem *menuitem){
-	
+	gtk_widget_set_sensitive(glade.Save ,true);
+	glade.recentchooserdialog1 = gtk_file_chooser_dialog_new ("Open File",GTK_WINDOW(glade.window),GTK_FILE_CHOOSER_ACTION_OPEN,"_CANCEL", GTK_RESPONSE_CANCEL,"_OPEN", GTK_RESPONSE_ACCEPT,NULL);
+	glade.filter =gtk_file_filter_new();
+    gtk_file_filter_set_name(glade.filter,"Wav Files");
+	gtk_file_filter_add_pattern(glade.filter,"*.wav");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER ( glade.recentchooserdialog1 ),glade.filter);
+	gtk_window_set_default_size(GTK_WINDOW(glade.recentchooserdialog1),100,150);
 	if (gtk_dialog_run (GTK_DIALOG ( glade.recentchooserdialog1 )) == GTK_RESPONSE_ACCEPT){
     	char *filename;
-
-    	glade.filename= gtk_file_chooser_get_filename (GTK_FILE_CHOOSER ( glade.recentchooserdialog1 ));
-		if (strrchr(glade.filename, '/')==NULL){
-			filename=glade.filename;
-		}
-		else{
-			filename=strrchr(glade.filename, '/')+1;
-		}
-		glade.path=gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER ( glade.recentchooserdialog1 ));
-		if(glade.path!=NULL){
-			gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (glade.Savedialog), glade.path);
-		}
-		gtk_entry_set_text (GTK_ENTRY(glade.File_name),filename);
-		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (glade.Savedialog),filename);
+    	glade.filename= gtk_file_chooser_get_filename(GTK_FILE_CHOOSER ( glade.recentchooserdialog1 ));
+		filename=g_path_get_basename (glade.filename);
+		user_edited_a_new_document=false;
+		gtk_label_set_text (GTK_LABEL(glade.File_name),filename);
+		g_free (filename);
+		glade.path=g_path_get_dirname(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER ( glade.recentchooserdialog1 )));
   	}
-	  
+	
 
-	gtk_widget_hide( glade.recentchooserdialog1 );
+	gtk_widget_destroy( glade.recentchooserdialog1 );
 }
 
 // called when Save is clicked
 void on_Save_activate(GtkMenuItem *menuitem){
+	
 	char *filename;
-	if (strrchr(glade.filename, '/')==NULL){
-		filename=glade.filename;
-	}
-	else{
-		filename=strrchr(glade.filename, '/')+1;
-	}
-	
+	glade.Savedialog= gtk_file_chooser_dialog_new ("Save File",GTK_WINDOW(glade.window),GTK_FILE_CHOOSER_ACTION_SAVE,"_CANCEL", GTK_RESPONSE_CANCEL,"_SAVE", GTK_RESPONSE_ACCEPT,NULL);
+	glade.filter =gtk_file_filter_new();
+    gtk_file_filter_set_name(glade.filter,"Wav Files");
+	gtk_file_filter_add_pattern(glade.filter,"*.wav");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER ( glade.Savedialog),glade.filter);
+	gtk_window_set_default_size(GTK_WINDOW(glade.Savedialog),100,150);
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER (glade.Savedialog),TRUE);
-	
 	if (user_edited_a_new_document){
-  		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (glade.Savedialog),filename);
-		gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (glade.Savedialog), "../data/");
-		user_edited_a_new_document=false;
+  		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (glade.Savedialog),glade.filename);
 	}
 	else{
-		
-  		gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (glade.Savedialog),filename);
+  		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER (glade.Savedialog),glade.filename);
+	}
+	if(glade.path!=NULL){
+		gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (glade.Savedialog),glade.path);
 	}
 	if (gtk_dialog_run (GTK_DIALOG (glade.Savedialog)) == GTK_RESPONSE_ACCEPT){
     	glade.filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (glade.Savedialog));
-		if (strrchr(glade.filename, '/')==NULL){
-			filename=glade.filename;
-		}
-		else{
-			filename=strrchr(glade.filename, '/')+1;
-		}
-		gtk_entry_set_text (GTK_ENTRY(glade.File_name),filename);
+		filename=g_path_get_basename (glade.filename);
+		gtk_label_set_text (GTK_LABEL(glade.File_name),filename);
     	g_free (filename);
+		user_edited_a_new_document=false;
+		glade.path=g_path_get_dirname(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER ( glade.Savedialog )));
   	}
-	
 
-	gtk_widget_hide ( glade.Savedialog );
-}
-
-void	on_Filename_changed(GtkEntry *e) {
-	glade.filename=gtk_entry_get_text(e);
-	
+	gtk_widget_destroy ( glade.Savedialog );
 }
 
 // called when Save as is clicked
